@@ -7,15 +7,14 @@
     <style>
         :root {
             --pink: #e6bbc7;
-            --pink-glow: rgba(230, 187, 199, 0.5);
-            --black: #050505;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-inner-glow: rgba(255, 255, 255, 0.02);
-            --blur: 16px;
+            --pink-glow: rgba(230, 187, 199, 0.4);
+            --black: #060606;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --blur: 24px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
 
         body {
             background-color: var(--black);
@@ -27,70 +26,68 @@
             position: relative;
         }
 
-        .bg-gradient {
+        /* Animated Mesh Background */
+        .bg-canvas {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
             background: radial-gradient(circle at 10% 20%, #1a1214 0%, transparent 50%),
                         radial-gradient(circle at 90% 80%, #0d0f14 0%, transparent 50%);
-            filter: blur(60px);
+            filter: blur(80px);
         }
 
         .bg-orb {
             position: absolute;
-            width: 50vw; height: 50vw;
+            width: 400px; height: 400px;
             background: var(--pink);
             border-radius: 50%;
-            filter: blur(140px);
-            opacity: 0.04;
-            animation: move 25s infinite alternate ease-in-out;
-            pointer-events: none;
+            filter: blur(120px);
+            opacity: 0.05;
+            animation: drift 20s infinite alternate ease-in-out;
         }
 
-        @keyframes move {
-            0% { transform: translate(-20%, -20%) scale(1); }
-            100% { transform: translate(30%, 40%) scale(1.2); }
+        @keyframes drift {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(30%, 40%); }
         }
 
+        /* Glass Header */
         .header {
-            padding: 24px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 15px;
             z-index: 10;
         }
 
         .brand {
             font-size: 13px;
-            letter-spacing: 6px;
+            letter-spacing: 7px;
             text-transform: uppercase;
             color: var(--pink);
-            text-shadow: 0 0 20px var(--pink-glow);
-            opacity: 0.9;
+            text-shadow: 0 0 15px var(--pink-glow);
             font-weight: 300;
         }
 
         .version-bar {
             display: flex;
             gap: 6px;
-            background: var(--glass-bg);
+            background: var(--glass);
             padding: 5px;
             border-radius: 100px;
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--border);
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
-            box-shadow: inset 0 0 10px var(--glass-inner-glow);
         }
 
         .ver-btn {
             background: transparent;
             border: none;
-            color: rgba(255,255,255,0.4);
+            color: rgba(255,255,255,0.3);
             padding: 8px 18px;
             border-radius: 100px;
             font-size: 11px;
-            font-weight: 500;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -99,16 +96,16 @@
             background: rgba(230, 187, 199, 0.15);
             color: var(--pink);
             box-shadow: 0 0 15px rgba(230, 187, 199, 0.1);
-            border: 1px solid rgba(230, 187, 199, 0.2);
         }
 
+        /* Chat Window */
         #chat-window {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 28px;
+            gap: 25px;
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
@@ -118,137 +115,95 @@
         #chat-window::-webkit-scrollbar { display: none; }
 
         .msg {
-            max-width: 85%;
+            max-width: 80%;
             padding: 16px 22px;
-            border-radius: 28px;
+            border-radius: 26px;
             line-height: 1.6;
             font-size: 15px;
-            position: relative;
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
-            border: 1px solid var(--glass-border);
-            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            border: 1px solid var(--border);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             opacity: 0;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .user {
             align-self: flex-end;
-            background: rgba(230, 187, 199, 0.12);
+            background: rgba(230, 187, 199, 0.1);
             color: var(--pink);
-            border: 1px solid rgba(230, 187, 199, 0.2);
-            border-bottom-right-radius: 6px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            border-bottom-right-radius: 4px;
         }
 
         .ai {
             align-self: flex-start;
-            background: var(--glass-bg);
-            border-bottom-left-radius: 6px;
-            box-shadow: inset 0 0 20px var(--glass-inner-glow);
+            background: var(--glass);
+            border-bottom-left-radius: 4px;
         }
 
-        .attachment-preview {
-            max-width: 280px;
-            border-radius: 18px;
-            margin-bottom: 12px;
-            border: 1px solid var(--glass-border);
-            display: block;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.3);
-        }
-
+        /* Input Glass Bar */
         .input-area {
-            padding: 20px 20px 40px;
+            padding: 20px 20px 50px;
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
-            z-index: 10;
         }
-
-        #preview-box {
-            display: none;
-            padding: 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            margin-bottom: 16px;
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            width: fit-content;
-            animation: pop 0.3s ease;
-        }
-
-        #preview-box img { max-height: 90px; border-radius: 12px; }
 
         .input-container {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            border: 1px solid var(--border);
             border-radius: 100px;
             display: flex;
             align-items: center;
-            padding: 8px 10px;
+            padding: 8px 15px;
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: inset 0 0 15px var(--glass-inner-glow);
+            transition: 0.3s;
         }
 
         .input-container:focus-within {
             border-color: rgba(230, 187, 199, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 40px rgba(230, 187, 199, 0.08), inset 0 0 15px var(--glass-inner-glow);
+            box-shadow: 0 0 30px rgba(230, 187, 199, 0.05);
         }
 
         input {
             flex: 1;
             background: transparent;
             border: none;
-            color: #fff;
-            padding: 14px 18px;
+            color: white;
+            padding: 14px;
             outline: none;
             font-size: 15px;
-            letter-spacing: 0.2px;
         }
 
-        input::placeholder { color: rgba(255,255,255,0.25); }
-
-        .icon-btn {
+        .send-btn {
             background: transparent;
             border: none;
             color: var(--pink);
             font-size: 22px;
             cursor: pointer;
             padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            opacity: 0.7;
+            transition: transform 0.2s ease;
         }
 
-        .icon-btn:hover { opacity: 1; transform: scale(1.08); }
-
-        .send-svg { fill: var(--pink); width: 20px; height: 20px; filter: drop-shadow(0 0 8px var(--pink-glow)); }
-
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .send-btn:hover { transform: scale(1.1); }
 
         .thinking .brand {
             animation: breathe 2s infinite ease-in-out;
         }
 
         @keyframes breathe {
-            0%, 100% { opacity: 0.5; text-shadow: 0 0 10px var(--pink-glow); }
-            50% { opacity: 1; text-shadow: 0 0 30px var(--pink-glow); }
+            50% { opacity: 0.3; text-shadow: 0 0 5px var(--pink-glow); }
         }
     </style>
 </head>
 <body id="main-body">
 
-    <div class="bg-gradient"></div>
+    <div class="bg-canvas"></div>
     <div class="bg-orb"></div>
 
     <div class="header">
@@ -256,32 +211,26 @@
         <div class="version-bar">
             <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
             <button class="ver-btn" onclick="setVer('Complex', this)">Complex</button>
-            <button class="ver-btn" onclick="setVer('Development', this)">Dev</button>
-            <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
+            <button class="ver-btn" onclick="setVer('Dev', this)">Dev</button>
         </div>
     </div>
 
     <div id="chat-window">
-        <div class="msg ai">yo. i'm dubaaai. we chillin today or what?</div>
+        <div class="msg ai">yo. i'm dubaaai. we chillin or what?</div>
     </div>
 
     <div class="input-area">
-        <div id="preview-box">
-            <img id="img-preview" src="">
-        </div>
         <div class="input-container">
-            <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()">+</button>
-            <input type="text" id="user-input" placeholder="type sum or paste image..." autocomplete="off">
-            <button class="icon-btn" onclick="send()">
-                <svg class="send-svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
+            <input type="text" id="user-input" placeholder="type sum..." autocomplete="off">
+            <button class="send-btn" onclick="send()">🚀</button>
         </div>
     </div>
 
     <script>
+        // PASTE YOUR KEY INSIDE THE QUOTES BELOW
+        const GROQ_KEY = "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";
+        
         let currentVer = "Fast";
-        let pendingImage = null;
 
         function setVer(v, btn) {
             currentVer = v;
@@ -289,51 +238,11 @@
             btn.classList.add('active');
         }
 
-        function handleFile(input) {
-            const file = input.files[0];
-            if (file) showPreview(file);
-        }
-
-        document.addEventListener('paste', (e) => {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let item of items) {
-                if (item.type.indexOf("image") !== -1) {
-                    showPreview(item.getAsFile());
-                }
-            }
-        });
-
-        function showPreview(file) {
-            pendingImage = file;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('img-preview').src = e.target.result;
-                document.getElementById('preview-box').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function clearPreview() {
-            pendingImage = null;
-            document.getElementById('preview-box').style.display = 'none';
-        }
-
-        function addMessage(text, type, imageSrc = null) {
+        function addMessage(text, type) {
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
             div.className = `msg ${type}`;
-            
-            if (imageSrc) {
-                const img = document.createElement('img');
-                img.src = imageSrc;
-                img.className = 'attachment-preview';
-                div.appendChild(img);
-            }
-            
-            const span = document.createElement('span');
-            span.textContent = text.toLowerCase();
-            div.appendChild(span);
-            
+            div.textContent = text.toLowerCase();
             win.appendChild(div);
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
@@ -342,25 +251,45 @@
             const body = document.getElementById('main-body');
             const input = document.getElementById('user-input');
             const text = input.value.trim();
-            if (!text && !pendingImage) return;
+            if (!text) return;
 
-            const imgSrc = pendingImage ? document.getElementById('img-preview').src : null;
-            addMessage(text || "sent an image", 'user', imgSrc);
-            
+            addMessage(text, 'user');
             input.value = '';
-            clearPreview();
             body.classList.add('thinking');
 
-            let response = "ion even know what to say to that lol";
-            if (currentVer === "Fast") response = "fosho. i got u.";
-            if (currentVer === "Complex") response = "man, that's heavy. honestly if u think about the way the world moves... we gotta look at the vibes and the data together. its complex but we gonna figure it out.";
-            if (currentVer === "Development") response = "ite so i checked the logic. u gotta wrap that function in a try-catch or the whole site gonna crash. here is the snippet: let dubaaai = true;";
-            if (currentVer === "Image") response = "ight bet. i'm cookin up that visual for u right now, it's gonna be high res asf.";
+            let systemPrompt = "you are dubaaai. speak like a chill guy. all lowercase. use slang like 'ite', 'bet', 'fosho'. keep it short and modern.";
+            if(currentVer === "Complex") systemPrompt += " give deeper advice but keep the chill vibe.";
+            if(currentVer === "Dev") systemPrompt += " focus on code help but explain it like a friend.";
 
-            setTimeout(() => {
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${GROQ_KEY}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: text }
+                        ],
+                        temperature: 0.8
+                    })
+                });
+
+                const data = await response.json();
                 body.classList.remove('thinking');
-                addMessage(response, 'ai');
-            }, 1000);
+                
+                if (data.choices && data.choices[0]) {
+                    addMessage(data.choices[0].message.content, 'ai');
+                } else {
+                    addMessage("link's acting up. check your api key.", 'ai');
+                }
+            } catch (e) {
+                body.classList.remove('thinking');
+                addMessage("ion know what happened. try again?", 'ai');
+            }
         }
 
         document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
