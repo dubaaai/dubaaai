@@ -7,51 +7,99 @@
     <style>
         :root {
             --pink: #e6bbc7;
-            --black: #0a0a0a;
-            --glass: rgba(230, 187, 199, 0.05);
-            --border: rgba(230, 187, 199, 0.15);
+            --pink-glow: rgba(230, 187, 199, 0.5);
+            --black: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-inner-glow: rgba(255, 255, 255, 0.02);
+            --blur: 16px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
 
         body {
             background-color: var(--black);
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
-        /* Version Switcher */
-        .version-bar {
-            padding: 15px;
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 10% 20%, #1a1214 0%, transparent 50%),
+                        radial-gradient(circle at 90% 80%, #0d0f14 0%, transparent 50%);
+            filter: blur(60px);
+        }
+
+        .bg-orb {
+            position: absolute;
+            width: 50vw; height: 50vw;
+            background: var(--pink);
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.04;
+            animation: move 25s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes move {
+            0% { transform: translate(-20%, -20%) scale(1); }
+            100% { transform: translate(30%, 40%) scale(1.2); }
+        }
+
+        .header {
+            padding: 24px;
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .brand {
+            font-size: 13px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--pink);
+            text-shadow: 0 0 20px var(--pink-glow);
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .version-bar {
+            display: flex;
+            gap: 6px;
+            background: var(--glass-bg);
+            padding: 5px;
+            border-radius: 100px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            box-shadow: inset 0 0 10px var(--glass-inner-glow);
         }
 
         .ver-btn {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            color: var(--pink);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 500;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .ver-btn.active {
-            background: var(--pink);
-            color: var(--black);
-            border-color: var(--pink);
-            font-weight: bold;
+            background: rgba(230, 187, 199, 0.15);
+            color: var(--pink);
+            box-shadow: 0 0 15px rgba(230, 187, 199, 0.1);
+            border: 1px solid rgba(230, 187, 199, 0.2);
         }
 
         #chat-window {
@@ -60,100 +108,157 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            max-width: 850px;
+            gap: 28px;
+            max-width: 800px;
             margin: 0 auto;
             width: 100%;
+            scrollbar-width: none;
         }
+
+        #chat-window::-webkit-scrollbar { display: none; }
 
         .msg {
             max-width: 85%;
-            padding: 15px 20px;
-            border-radius: 20px;
-            line-height: 1.5;
-            animation: slideUp 0.3s ease;
+            padding: 16px 22px;
+            border-radius: 28px;
+            line-height: 1.6;
+            font-size: 15px;
+            position: relative;
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
         }
 
-        .user { align-self: flex-end; background: var(--pink); color: var(--black); border-bottom-right-radius: 4px; }
-        .ai { align-self: flex-start; background: var(--glass); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .user {
+            align-self: flex-end;
+            background: rgba(230, 187, 199, 0.12);
+            color: var(--pink);
+            border: 1px solid rgba(230, 187, 199, 0.2);
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .ai {
+            align-self: flex-start;
+            background: var(--glass-bg);
+            border-bottom-left-radius: 6px;
+            box-shadow: inset 0 0 20px var(--glass-inner-glow);
+        }
 
         .attachment-preview {
-            max-width: 200px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            max-width: 280px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            border: 1px solid var(--glass-border);
             display: block;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.3);
         }
 
         .input-area {
-            padding: 20px;
-            max-width: 850px;
+            padding: 20px 20px 40px;
+            max-width: 800px;
             margin: 0 auto;
             width: 100%;
+            z-index: 10;
         }
 
+        #preview-box {
+            display: none;
+            padding: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            width: fit-content;
+            animation: pop 0.3s ease;
+        }
+
+        #preview-box img { max-height: 90px; border-radius: 12px; }
+
         .input-container {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
             display: flex;
             align-items: center;
-            padding: 5px 15px;
+            padding: 8px 10px;
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: inset 0 0 15px var(--glass-inner-glow);
+        }
+
+        .input-container:focus-within {
+            border-color: rgba(230, 187, 199, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 40px rgba(230, 187, 199, 0.08), inset 0 0 15px var(--glass-inner-glow);
         }
 
         input {
             flex: 1;
             background: transparent;
             border: none;
-            color: white;
-            padding: 12px;
+            color: #fff;
+            padding: 14px 18px;
             outline: none;
-            font-size: 16px;
+            font-size: 15px;
+            letter-spacing: 0.2px;
         }
+
+        input::placeholder { color: rgba(255,255,255,0.25); }
 
         .icon-btn {
             background: transparent;
             border: none;
             color: var(--pink);
-            font-size: 20px;
+            font-size: 22px;
             cursor: pointer;
             padding: 10px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            opacity: 0.7;
         }
 
-        #preview-box {
-            display: none;
-            padding: 10px;
-            background: rgba(230, 187, 199, 0.1);
-            border-radius: 15px;
-            margin-bottom: 10px;
-            position: relative;
+        .icon-btn:hover { opacity: 1; transform: scale(1.08); }
+
+        .send-svg { fill: var(--pink); width: 20px; height: 20px; filter: drop-shadow(0 0 8px var(--pink-glow)); }
+
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .thinking .brand {
+            animation: breathe 2s infinite ease-in-out;
         }
 
-        #preview-box img { max-height: 80px; border-radius: 8px; }
-
-        .close-preview {
-            position: absolute;
-            top: -5px; right: -5px;
-            background: var(--pink);
-            color: black;
-            border-radius: 50%;
-            width: 20px; height: 20px;
-            font-size: 12px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
+        @keyframes breathe {
+            0%, 100% { opacity: 0.5; text-shadow: 0 0 10px var(--pink-glow); }
+            50% { opacity: 1; text-shadow: 0 0 30px var(--pink-glow); }
         }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <div class="version-bar">
-        <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
-        <button class="ver-btn" onclick="setVer('Complex', this)">Complex</button>
-        <button class="ver-btn" onclick="setVer('Development', this)">Dev</button>
-        <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
+    <div class="bg-gradient"></div>
+    <div class="bg-orb"></div>
+
+    <div class="header">
+        <div class="brand">dubaaai</div>
+        <div class="version-bar">
+            <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
+            <button class="ver-btn" onclick="setVer('Complex', this)">Complex</button>
+            <button class="ver-btn" onclick="setVer('Development', this)">Dev</button>
+            <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
+        </div>
     </div>
 
     <div id="chat-window">
@@ -162,14 +267,15 @@
 
     <div class="input-area">
         <div id="preview-box">
-            <span class="close-preview" onclick="clearPreview()">×</span>
             <img id="img-preview" src="">
         </div>
         <div class="input-container">
             <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
             <button class="icon-btn" onclick="document.getElementById('file-input').click()">+</button>
-            <input type="text" id="user-input" placeholder="type sum or paste an image..." autocomplete="off">
-            <button class="icon-btn" onclick="send()">🚀</button>
+            <input type="text" id="user-input" placeholder="type sum or paste image..." autocomplete="off">
+            <button class="icon-btn" onclick="send()">
+                <svg class="send-svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
         </div>
     </div>
 
@@ -188,13 +294,11 @@
             if (file) showPreview(file);
         }
 
-        // Handle Image Pasting
         document.addEventListener('paste', (e) => {
-            const items = e.clipboardData.items;
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let item of items) {
                 if (item.type.indexOf("image") !== -1) {
-                    const blob = item.getAsFile();
-                    showPreview(blob);
+                    showPreview(item.getAsFile());
                 }
             }
         });
@@ -227,15 +331,15 @@
             }
             
             const span = document.createElement('span');
-            // Force lowercase and chill tone
             span.textContent = text.toLowerCase();
             div.appendChild(span);
             
             win.appendChild(div);
-            win.scrollTo(0, win.scrollHeight);
+            win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
 
         async function send() {
+            const body = document.getElementById('main-body');
             const input = document.getElementById('user-input');
             const text = input.value.trim();
             if (!text && !pendingImage) return;
@@ -245,15 +349,18 @@
             
             input.value = '';
             clearPreview();
+            body.classList.add('thinking');
 
-            // Simulate AI logic based on Version
-            let response = "";
-            if (currentVer === "Fast") response = "fosho. i got u quick.";
-            if (currentVer === "Complex") response = "man, that's deep. honestly if u look at the data and the way things are movin, it's clear that we gotta analyze the whole vibe of the situation first...";
-            if (currentVer === "Development") response = "here is the logic for that code block. make sure u check the dependencies before u deploy. // code: let dubaaai = 'cool';";
-            if (currentVer === "Image") response = "generating that visual for u now, gimme a sec to render the high-res details.";
+            let response = "ion even know what to say to that lol";
+            if (currentVer === "Fast") response = "fosho. i got u.";
+            if (currentVer === "Complex") response = "man, that's heavy. honestly if u think about the way the world moves... we gotta look at the vibes and the data together. its complex but we gonna figure it out.";
+            if (currentVer === "Development") response = "ite so i checked the logic. u gotta wrap that function in a try-catch or the whole site gonna crash. here is the snippet: let dubaaai = true;";
+            if (currentVer === "Image") response = "ight bet. i'm cookin up that visual for u right now, it's gonna be high res asf.";
 
-            setTimeout(() => addMessage(response, 'ai'), 600);
+            setTimeout(() => {
+                body.classList.remove('thinking');
+                addMessage(response, 'ai');
+            }, 1000);
         }
 
         document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
