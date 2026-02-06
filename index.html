@@ -17,14 +17,13 @@
         body {
             background-color: var(--black);
             color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        /* Subtle background glow */
         .glow-bg {
             position: fixed;
             top: 50%;
@@ -100,7 +99,7 @@
             width: 100%; 
             height: auto; 
             display: block; 
-            transition: opacity 0.5s ease; 
+            transition: opacity 0.8s ease; 
         }
 
         .subtle-brand {
@@ -112,7 +111,6 @@
             color: var(--pink);
             opacity: 0.3;
             font-weight: 300;
-            transition: opacity 0.5s;
         }
 
         .input-area {
@@ -163,15 +161,14 @@
         button:hover { transform: scale(1.05); filter: brightness(1.1); }
         svg { fill: var(--black); width: 22px; }
 
-        /* Thinking animation */
         .thinking .subtle-brand {
             animation: pulse 1.5s infinite;
             opacity: 0.8;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.9; }
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.05); }
         }
     </style>
 </head>
@@ -187,7 +184,7 @@
 
     <div class="input-area">
         <div class="input-container">
-            <input type="text" id="user-input" placeholder="Message or generate..." autocomplete="off">
+            <input type="text" id="user-input" placeholder="Ask or generate an image..." autocomplete="off">
             <button id="send-btn">
                 <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
@@ -205,14 +202,20 @@
             div.className = `msg ${type}`;
             
             if (isImage) {
-                div.innerHTML = `<span style="opacity:0.5; font-size:11px; letter-spacing:1px;">SYNTHESIZING...</span>`;
+                div.innerHTML = `<span style="opacity:0.5; font-size:11px; letter-spacing:1px;">GENESIS...</span>`;
                 const wrapper = document.createElement('div');
                 wrapper.className = 'img-wrapper';
                 const img = new Image();
+                img.crossOrigin = "anonymous";
                 img.style.opacity = '0';
                 img.onclick = () => window.open(content, '_blank');
-                img.onload = () => img.style.opacity = '1';
-                img.onerror = () => { wrapper.innerHTML = '<span style="font-size:12px; opacity:0.4;">Visualization failed. Try again.</span>'; };
+                img.onload = () => {
+                    img.style.opacity = '1';
+                    div.firstChild.textContent = "RENDER COMPLETE";
+                };
+                img.onerror = () => { 
+                    wrapper.innerHTML = '<span style="font-size:12px; opacity:0.4;">Connection timeout. Try a different prompt.</span>'; 
+                };
                 img.src = content;
                 wrapper.appendChild(img);
                 div.appendChild(wrapper);
@@ -232,8 +235,8 @@
 
             if (needsImage) {
                 const query = encodeURIComponent(text.replace(/draw|generate|image|picture|photo|art|make/gi, '').trim());
-                // Optimized URL for Vercel stability
-                const finalUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*1000000)}`;
+                // Most stable pollination endpoint for Vercel
+                const finalUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*999999)}`;
                 
                 setTimeout(() => {
                     body.classList.remove('thinking');
@@ -243,12 +246,13 @@
                 try {
                     const res = await fetch("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", {
                         method: "POST",
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ inputs: text })
                     });
                     const data = await res.json();
                     body.classList.remove('thinking');
                     
-                    const reply = data[0]?.generated_text || data.generated_text || "I'm here. What's the next move?";
+                    const reply = (Array.isArray(data) ? data[0]?.generated_text : data.generated_text) || "My neural link is flickering, but I'm still here. Ask me something else!";
                     addMessage(reply, 'ai');
                 } catch (e) {
                     body.classList.remove('thinking');
