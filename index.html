@@ -26,10 +26,8 @@
 
         .glow-bg {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 100vh;
+            top: 50%; left: 50%;
+            width: 100vw; height: 100vh;
             background: radial-gradient(circle at center, rgba(230, 187, 199, 0.06) 0%, transparent 70%);
             transform: translate(-50%, -50%);
             z-index: -1;
@@ -95,12 +93,7 @@
             justify-content: center;
         }
 
-        .ai img { 
-            width: 100%; 
-            height: auto; 
-            display: block; 
-            transition: opacity 0.8s ease; 
-        }
+        .ai img { width: 100%; height: auto; display: block; transition: opacity 0.8s ease; }
 
         .subtle-brand {
             text-align: center;
@@ -148,13 +141,10 @@
         button {
             background: var(--pink);
             border: none;
-            width: 48px;
-            height: 48px;
+            width: 48px; height: 48px;
             border-radius: 50%;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             transition: 0.3s;
         }
 
@@ -202,7 +192,7 @@
             div.className = `msg ${type}`;
             
             if (isImage) {
-                div.innerHTML = `<span style="opacity:0.5; font-size:11px; letter-spacing:1px;">GENESIS...</span>`;
+                div.innerHTML = `<span style="opacity:0.5; font-size:11px; letter-spacing:1px;">SYNTHESIZING...</span>`;
                 const wrapper = document.createElement('div');
                 wrapper.className = 'img-wrapper';
                 const img = new Image();
@@ -213,9 +203,7 @@
                     img.style.opacity = '1';
                     div.firstChild.textContent = "RENDER COMPLETE";
                 };
-                img.onerror = () => { 
-                    wrapper.innerHTML = '<span style="font-size:12px; opacity:0.4;">Connection timeout. Try a different prompt.</span>'; 
-                };
+                img.onerror = () => { wrapper.innerHTML = '<span style="font-size:12px; opacity:0.4;">Connection timeout. Try again.</span>'; };
                 img.src = content;
                 wrapper.appendChild(img);
                 div.appendChild(wrapper);
@@ -227,7 +215,8 @@
             chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
         }
 
-        async function handleAI(text) {
+        // The "Link Stabilizer": Retries the AI if it fails
+        async function handleAI(text, retries = 3) {
             body.classList.add('thinking');
             const lowerText = text.toLowerCase();
             const triggers = ['draw', 'generate', 'image', 'picture', 'photo', 'art', 'make'];
@@ -235,13 +224,11 @@
 
             if (needsImage) {
                 const query = encodeURIComponent(text.replace(/draw|generate|image|picture|photo|art|make/gi, '').trim());
-                // Most stable pollination endpoint for Vercel
                 const finalUrl = `https://image.pollinations.ai/prompt/${query}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*999999)}`;
-                
                 setTimeout(() => {
                     body.classList.remove('thinking');
                     addMessage(finalUrl, 'ai', true);
-                }, 1000);
+                }, 800);
             } else {
                 try {
                     const res = await fetch("https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill", {
@@ -249,14 +236,22 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ inputs: text })
                     });
+                    
+                    if (!res.ok && retries > 0) throw new Error("Retry");
+
                     const data = await res.json();
                     body.classList.remove('thinking');
                     
-                    const reply = (Array.isArray(data) ? data[0]?.generated_text : data.generated_text) || "My neural link is flickering, but I'm still here. Ask me something else!";
+                    const reply = (Array.isArray(data) ? data[0]?.generated_text : data.generated_text) || "Processing... say more?";
                     addMessage(reply, 'ai');
                 } catch (e) {
-                    body.classList.remove('thinking');
-                    addMessage("My neural link is flickering, but I'm still here. Ask me something else!", 'ai');
+                    if (retries > 0) {
+                        // Wait 1 second and try again
+                        setTimeout(() => handleAI(text, retries - 1), 1000);
+                    } else {
+                        body.classList.remove('thinking');
+                        addMessage("My neural link is flickering, but I'm still here. Ask me something else!", 'ai');
+                    }
                 }
             }
         }
