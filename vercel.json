@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/cdn/:path*",
+      "destination": "https://gen.pollinations.ai/:path*"
+    }
+  ]
+}
