@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Judah's Customs</title>
-    
-    <link rel="icon" type="image/png" href="assets/titleicon.png">
-    <link rel="apple-touch-icon" href="assets/titleicon.png">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -24,7 +20,7 @@
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.6); backdrop-filter: blur(40px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.4); backdrop-filter: blur(30px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         #mobile-menu.active { display: flex; opacity: 1; }
         .menu-link { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: rgba(255,255,255,0.4); transition: 0.4s; position: relative; }
         .menu-link:hover { color: white; text-shadow: 0 0 30px var(--brand-blue); transform: scale(1.1); }
@@ -36,10 +32,8 @@
         .active-page .work-item { opacity: 1; transform: translateY(0); }
         #contact-toast { position: fixed; top: 20px; right: 20px; z-index: 10001; padding: 16px 28px; border-radius: 20px; background: rgba(24, 124, 244, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(24, 124, 244, 0.4); transform: translateX(150%); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #contact-toast.show { transform: translateX(0); }
-        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); overflow-y: auto; padding: 40px 0; }
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         #lightbox.open { display: flex; }
-        #lightbox-content { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 90%; }
-        #lightbox-content img { max-width: 400px; width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
@@ -60,29 +54,28 @@
 
     <div class="noise-bg"></div>
     <div class="glow-sphere"></div>
-    
-    <div id="lightbox" onclick="closeLightbox()">
-        <div id="lightbox-content" onclick="event.stopPropagation()"></div>
-        <p class="mt-8 text-white/30 uppercase text-[10px] tracking-widest font-bold">Click background to close</p>
-    </div>
+    <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" class="max-w-[85%] max-h-[85%] rounded-xl transition-transform duration-500 scale-90" src=""></div>
 
     <nav class="flex justify-between items-center px-6 md:px-10 py-8 max-w-7xl mx-auto relative z-10">
         <div class="text-2xl font-extrabold tracking-tighter cursor-pointer" onclick="showPage('home')">JUDAH<span class="text-[#187cf4]">.</span></div>
+        
         <div class="hidden lg:flex space-x-10 text-[11px] uppercase tracking-[0.3em] font-bold text-gray-400">
             <button onclick="showPage('home')" class="hover:text-white transition">HOME</button>
             <button onclick="showPage('work')" class="hover:text-white transition">WORK</button>
             <button onclick="showPage('courses')" class="hover:text-white transition">COURSES</button>
             <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition">DISCORD</a>
         </div>
+
         <div class="flex items-center gap-4">
             <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] transition-all">Contact</button>
-            <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl p-2"><i class="fas fa-bars-staggered"></i></button>
+            <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl p-2burger-glow"><i class="fas fa-bars-staggered"></i></button>
         </div>
     </nav>
 
     <main id="home-page" class="page active-page container mx-auto px-6">
         <section class="text-center pt-12 md:pt-24 pb-20 flex flex-col items-center">
-            <h1 class="text-5xl md:text-8xl font-extrabold mb-12 tracking-tighter leading-tight uppercase">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
+            <h1 class="text-5xl md:text-8xl font-extrabold mb-12 tracking-tighter leading-tight">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
+            
             <a href="https://discord.gg/judah" target="_blank" class="discord-glass-widget group p-6 rounded-[2.5rem] w-full max-w-md flex flex-col gap-6 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden" data-tilt>
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full"></div>
                 <div class="flex items-center justify-between relative z-10">
@@ -111,7 +104,8 @@
                     </div>
                 </div>
             </a>
-            <button onclick="showPage('work')" class="mt-8 text-gray-500 text-xs font-bold uppercase tracking-[0.3em] hover:text-white transition">PROFESSIONAL WORK <i class="fas fa-arrow-right ml-2 text-[10px]"></i></button>
+            
+            <button onclick="showPage('work')" class="mt-8 text-gray-500 text-xs font-bold uppercase tracking-[0.3em] hover:text-white transition">Explore Assets <i class="fas fa-arrow-right ml-2 text-[10px]"></i></button>
         </section>
 
         <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20 relative z-10">
@@ -130,29 +124,44 @@
                 <h3 class="font-bold text-xl mb-2">Liveries</h3>
                 <p class="text-gray-500 text-sm leading-relaxed">Elite ER:LC department skins. Clean lines and professional aesthetics for your fleet.</p>
             </div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fas fa-lightbulb text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">ELS</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Realistic Emergency Lighting Systems for ER:LC. Synchronized patterns for response immersion.</p>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fas fa-camera text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Photography</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Cinematic in-game captures using advanced lighting techniques for promotional masterpieces.</p>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fab fa-discord text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Discord</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Professional server architecture and automation. Security bots and custom embed systems.</p>
+            </div>
         </section>
     </main>
 
     <main id="work-page" class="page container mx-auto px-6 pt-10">
         <h2 class="text-4xl font-black mb-12 uppercase">Work<span class="text-[#187cf4]">.</span></h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            <div class="work-item"><img src="assets/design1.png" class="work-img" onclick="openLightbox(['assets/design1.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design2.png" class="work-img" onclick="openLightbox(['assets/design2.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design3.png" class="work-img" onclick="openLightbox(['assets/design3.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design4.png" class="work-img" onclick="openLightbox(['assets/design4.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design5.png" class="work-img" onclick="openLightbox(['assets/design5.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design6.png" class="work-img" onclick="openLightbox(['assets/design6.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design7.png" class="work-img" onclick="openLightbox(['assets/design7.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design8.png" class="work-img" onclick="openLightbox(['assets/design8.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design9.png" class="work-img" onclick="openLightbox(['assets/design9.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design10.png" class="work-img" onclick="openLightbox(['assets/design10.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design11.png" class="work-img" onclick="openLightbox(['assets/design11.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design12.png" class="work-img" onclick="openLightbox(['assets/design12.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design13.png" class="work-img" onclick="openLightbox(['assets/design13.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design14.png" class="work-img" onclick="openLightbox(['assets/design14.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design15.png" class="work-img" onclick="openLightbox(['assets/design15.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design16.png" class="work-img" onclick="openLightbox(['assets/design16.png'])" data-tilt></div>
-            <div class="work-item"><img src="assets/design17.png" class="work-img" onclick="openLightbox(['assets/design17.png'])" data-tilt></div>
+            <div class="work-item"><img src="assets/design1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design3.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design4.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design5.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design6.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design7.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design8.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design9.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design10.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design11.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design12.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design13.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design14.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design15.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design16.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design17.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
         </div>
     </main>
 
@@ -162,34 +171,22 @@
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Simple Logo Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and 24/7 support.</p>
-                <div class="flex gap-2">
-                    <button onclick="openLightbox(['assets/simpleshowcase1.png', 'assets/simpleshowcase2.png', 'assets/simpleshowcase3.png'])" class="bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-                </div>
+                <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Banner Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and backgrounds.</p>
-                <div class="flex gap-2">
-                    <button onclick="openLightbox(['assets/bannershow1.png', 'assets/bannershow2.png', 'assets/bannershow3.png'])" class="bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-                </div>
+                <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Vectorized Logo</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos, assets, and resource links.</p>
-                <div class="flex gap-2">
-                    <button onclick="openLightbox(['assets/vecshow1.png', 'assets/vecshow2.png', 'assets/vecshow3.png'])" class="bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-                </div>
+                <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Clothing Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes 100+ assets, tutorials, and tutorial levels.</p>
-                <div class="flex gap-2">
-                    <button onclick="openLightbox(['assets/clotheshow1.png', 'assets/clotheshow2.png', 'assets/clotheshow3.png'])" class="bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-                </div>
+                <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Leadership</h3>
@@ -199,10 +196,7 @@
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Livery Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs, many assets, and industry website resources.</p>
-                <div class="flex gap-2">
-                    <button onclick="openLightbox(['assets/livshow1.png', 'assets/livshow2.png', 'assets/livshow3.png'])" class="bg-white/5 border border-white/10 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-                </div>
+                <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
         </div>
     </main>
@@ -237,8 +231,13 @@
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
-            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
-            setTimeout(() => menu.classList.toggle('active'), 10);
+            if (menu.style.display === 'flex') {
+                menu.style.opacity = '0';
+                setTimeout(() => menu.style.display = 'none', 500);
+            } else {
+                menu.style.display = 'flex';
+                setTimeout(() => menu.style.opacity = '1', 10);
+            }
         }
 
         function handleContact() {
@@ -258,21 +257,8 @@
         }
 
         function navTo(pageId) { toggleMobileMenu(); showPage(pageId); }
-        
-        function openLightbox(srcArray) {
-            const container = document.getElementById('lightbox-content');
-            container.innerHTML = '';
-            srcArray.forEach(src => {
-                const img = document.createElement('img');
-                img.src = src;
-                container.appendChild(img);
-            });
-            document.getElementById('lightbox').classList.add('open');
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox').classList.remove('open');
-        }
+        function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); }
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
     </script>
