@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judah's Customs | Vision to Life</title>
+    <title>Judah's Customs</title>
     
     <link rel="icon" type="image/png" href="assets/titleicon.png">
     <link rel="apple-touch-icon" href="assets/titleicon.png">
@@ -25,7 +25,7 @@
             scroll-behavior: smooth;
         }
 
-        /* Background Texture & Depth */
+        /* Background Texture & Pulse */
         .noise-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 50; }
         .glow-sphere { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(24, 124, 244, 0.12) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: pulse 12s infinite alternate; }
         @keyframes pulse { 0% { transform: translate(-10%, -10%) scale(1); } 100% { transform: translate(20%, 20%) scale(1.1); } }
@@ -33,25 +33,31 @@
         /* Custom Cursor */
         #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transition: transform 0.1s ease; transform: translate(-50%, -50%); }
 
-        /* Glassmorphism Effect */
+        /* UI Elements */
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.2); }
 
-        /* Page Transitions */
+        /* Page Logic */
         .page { display: none; opacity: 0; }
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Work Section Staggering */
+        /* Work Section & Custom Glows */
         .work-item { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
         .active-page .work-item { opacity: 1; transform: translateY(0); }
-
+        
         .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s; border: 1px solid rgba(255,255,255,0.05); background: #111; }
-        .work-img:hover { filter: drop-shadow(0 0 20px var(--brand-blue)); transform: scale(1.02); }
+        .work-img:hover { transform: scale(1.02); }
 
-        /* Lightbox Overlay */
+        /* Custom Work Glows */
+        .glow-dubai1:hover { filter: drop-shadow(0 0 25px #4a1b1f); border-color: #4a1b1f; }
+        .glow-dubai2:hover { filter: drop-shadow(0 0 25px #5c2a40); border-color: #5c2a40; }
+        .glow-judah1:hover { filter: drop-shadow(0 0 25px #d42a40); border-color: #d42a40; }
+        .glow-judah2:hover { filter: drop-shadow(0 0 25px #232323); border-color: #232323; }
+
+        /* Lightbox */
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: zoom-out; }
-        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 1px solid rgba(24, 124, 244, 0.3); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #lightbox.open { display: flex; }
         #lightbox.open img { transform: scale(1); }
     </style>
@@ -86,7 +92,7 @@
                     Join Discord
                 </a>
                 <button onclick="showPage('work')" class="glass-card px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest">
-                    Explore Assets
+                    Professional Work
                 </button>
             </div>
         </section>
@@ -124,10 +130,18 @@
         <section class="max-w-7xl mx-auto px-10 py-10">
             <h2 class="text-4xl font-black mb-12 tracking-tight">Showcase<span class="text-[#187cf4]">.</span></h2>
             <div class="grid md:grid-cols-2 gap-10">
-                <div class="work-item" style="transition-delay: 0.1s"><img src="assets/judahwork1.png" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.2s"><img src="assets/judahwork2.png" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.3s"><img src="assets/dubaiwork1.png" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.4s"><img src="assets/dubaiwork2.png" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
+                <div class="work-item" style="transition-delay: 0.1s">
+                    <img src="assets/dubaiwork1.png" class="work-img glow-dubai1" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.2s">
+                    <img src="assets/dubaiwork2.png" class="work-img glow-dubai2" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.3s">
+                    <img src="assets/judahwork1.png" class="work-img glow-judah1" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.4s">
+                    <img src="assets/judahwork2.png" class="work-img glow-judah2" data-tilt onclick="openLightbox(this.src)">
+                </div>
             </div>
             <div class="text-center mt-20">
                 <button onclick="showPage('home')" class="glass-card px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest">Back Home</button>
@@ -140,14 +154,12 @@
     </footer>
 
     <script>
-        // Smooth Cursor Movement
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Hover Effect Logic
         function setupHovers() {
             document.querySelectorAll('a, button, .glass-card, .work-img').forEach(el => {
                 el.onmouseenter = () => { 
@@ -163,7 +175,6 @@
             });
         }
 
-        // SPA Navigation Logic
         function showPage(pageId) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
@@ -175,7 +186,6 @@
             }, 100);
         }
 
-        // Lightbox Logic
         function openLightbox(src) {
             const lb = document.getElementById('lightbox');
             document.getElementById('lightbox-img').src = src;
@@ -190,7 +200,6 @@
             setTimeout(() => { lb.style.display = 'none'; cursor.style.opacity = '1'; }, 300);
         }
 
-        // Initial Initialization
         setupHovers();
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
     </script>
