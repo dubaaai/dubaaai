@@ -5,179 +5,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dubaaai | pilot client</title>
     <style>
-        :root { --pink: #e6bbc7; --glow: rgba(230, 187, 199, 0.3); --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { background: #050505; color: white; height: 100vh; display: flex; overflow: hidden; }
+        :root {
+            --pink: #e6bbc7;
+            --glow: rgba(230, 187, 199, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --bg: #050505;
+        }
 
-        /* Login Overlay */
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .login-card { background: var(--glass); border: 1px solid var(--border); padding: 50px; border-radius: 40px; text-align: center; width: 400px; }
-        
-        /* Main Client Layout */
-        #client { display: none; width: 100%; height: 100%; display: flex; opacity: 0; }
-        #client.active { display: flex; opacity: 1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; }
 
-        /* Sidebar: Servers & Channels */
-        .sidebar { width: 300px; background: rgba(255,255,255,0.02); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(20px); }
-        .sidebar-header { padding: 30px 20px; border-bottom: 1px solid var(--border); }
-        .brand { font-size: 10px; letter-spacing: 4px; color: var(--pink); text-transform: uppercase; margin-bottom: 5px; display: block; }
-        
-        .list-container { flex: 1; overflow-y: auto; padding: 10px; scrollbar-width: none; }
-        .item { padding: 12px 15px; border-radius: 12px; cursor: pointer; margin-bottom: 5px; font-size: 13px; color: #888; display: flex; align-items: center; }
+        /* Login Screen */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.8s ease;
+        }
+
+        .glass-card {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 40px; border-radius: 30px; text-align: center; width: 400px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        /* Sidebar & Main Layout */
+        #client-ui { display: none; width: 100%; height: 100%; display: flex; opacity: 0; transition: 1s; }
+        .sidebar { 
+            width: 280px; background: rgba(255,255,255,0.01); 
+            border-right: 1px solid var(--border); backdrop-filter: blur(30px);
+            display: flex; flex-direction: column;
+        }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at top right, #110a0c, #050505); }
+
+        /* Typography & Components */
+        .brand { font-size: 10px; letter-spacing: 5px; color: var(--pink); text-transform: uppercase; padding: 25px; opacity: 0.6; }
+        .scroll-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .item { 
+            padding: 12px 15px; border-radius: 12px; cursor: pointer; margin-bottom: 5px; 
+            font-size: 13px; color: #777; transition: 0.2s; border: 1px solid transparent;
+        }
         .item:hover { background: rgba(255,255,255,0.05); color: var(--pink); }
-        .item.active { background: rgba(230, 187, 199, 0.1); color: var(--pink); border: 1px solid var(--border); }
-        .item-icon { width: 30px; height: 30px; border-radius: 8px; background: var(--border); margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 10px; overflow: hidden; }
+        .item.active { background: rgba(230, 187, 199, 0.1); border-color: var(--border); color: var(--pink); }
 
-        /* Main View: Chat */
-        .main-view { flex: 1; display: flex; flex-direction: column; position: relative; }
-        .chat-header { padding: 30px 40px; border-bottom: 1px solid var(--border); }
-        .chat-input-area { padding: 40px; background: linear-gradient(0deg, #050505 0%, transparent 100%); }
-        
-        textarea { 
-            width: 100%; background: var(--glass); border: 1px solid var(--border); 
-            border-radius: 25px; padding: 25px; color: white; outline: none; 
-            resize: none; font-size: 15px; backdrop-filter: blur(10px);
+        input, textarea {
+            width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+            border-radius: 15px; padding: 15px; color: white; outline: none; transition: 0.3s;
         }
-        textarea:focus { border-color: var(--pink); box-shadow: 0 0 30px var(--glow); }
+        input:focus, textarea:focus { border-color: var(--pink); box-shadow: 0 0 15px var(--glow); }
 
-        .btn { 
-            background: var(--pink); color: black; border: none; padding: 15px 30px; 
-            border-radius: 100px; font-weight: bold; cursor: pointer; margin-top: 15px; 
-            width: 100%; text-transform: uppercase; letter-spacing: 1px; font-size: 12px;
+        .btn {
+            width: 100%; background: var(--pink); color: black; border: none; padding: 15px;
+            border-radius: 50px; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            font-size: 11px; letter-spacing: 1px; transition: 0.3s;
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--glow); }
+        .btn:hover { box-shadow: 0 0 20px var(--glow); transform: translateY(-2px); }
 
-        .loading-ring { width: 20px; height: 20px; border: 2px solid var(--pink); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Animation */
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        .loading { animation: pulse 1.5s infinite; color: var(--pink); font-size: 12px; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-card">
-            <span class="brand">Terminal Link</span>
-            <h2 style="font-weight: 200; margin-bottom: 30px;">Insert Token</h2>
-            <input type="password" id="token-input" placeholder="Bot Token..." 
-                   style="width: 100%; padding: 15px; border-radius: 15px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; margin-bottom: 20px; text-align: center;">
-            <button class="btn" onclick="connect()">Initialize Client</button>
-            <p id="auth-status" style="margin-top: 15px; font-size: 11px; color: #fb7185;"></p>
+        <div class="glass-card">
+            <span class="brand">Access Terminal</span>
+            <h2 style="font-weight: 200; margin-bottom: 25px;">Pilot Login</h2>
+            <input type="password" id="token-input" placeholder="Insert Bot Token" style="text-align: center; margin-bottom: 20px;">
+            <button class="btn" onclick="initialize()">Connect to Grid</button>
+            <p id="auth-msg" style="font-size: 11px; margin-top: 15px; min-height: 15px;"></p>
         </div>
     </div>
 
-    <div id="client">
+    <div id="client-ui">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <span class="brand">Servers</span>
-                <h4 id="bot-tag" style="font-weight: 300;">Not connected</h4>
-            </div>
-            <div id="guild-list" class="list-container"></div>
-            
-            <div class="sidebar-header" style="border-top: 1px solid var(--border);">
-                <span class="brand">Channels</span>
-            </div>
-            <div id="channel-list" class="list-container"></div>
+            <span class="brand">Guilds</span>
+            <div id="guild-list" class="scroll-list"></div>
+            <span class="brand" style="border-top: 1px solid var(--border)">Channels</span>
+            <div id="channel-list" class="scroll-list"></div>
         </div>
-
-        <div class="main-view">
-            <div class="chat-header">
-                <span class="brand" id="active-server-name">Select a target</span>
-                <h2 id="active-channel-name" style="font-weight: 200;">Remote Interface</h2>
+        <div class="main-content">
+            <div style="padding: 40px; border-bottom: 1px solid var(--border);">
+                <span id="target-path" class="brand" style="padding: 0;">Select Target</span>
+                <h2 id="channel-name" style="font-weight: 200; margin-top: 10px;">Transmission Console</h2>
             </div>
-            
-            <div style="flex: 1; display: flex; align-items: center; justify-content: center; opacity: 0.1;">
-                <h1 style="font-size: 80px; letter-spacing: -5px;">dubaaai</h1>
-            </div>
-
-            <div class="chat-input-area">
-                <textarea id="msg-input" rows="3" placeholder="Type transmission..."></textarea>
-                <button class="btn" id="send-btn" onclick="send()">Execute Send</button>
-                <div id="send-status" style="text-align: center; margin-top: 15px; font-size: 11px;"></div>
+            <div style="flex: 1;"></div>
+            <div style="padding: 40px;">
+                <textarea id="msg-input" rows="4" placeholder="Type transmission..."></textarea>
+                <button class="btn" style="margin-top: 20px;" onclick="send()">Execute Send</button>
+                <div id="status" style="text-align: center; margin-top: 15px; font-size: 11px;"></div>
             </div>
         </div>
     </div>
 
     <script>
-        let token = "";
-        let selectedChannel = null;
+        let botToken = "";
+        let activeChannel = null;
+        // Using a CORS proxy to bypass Discord's browser block
+        const PROXY = "https://corsproxy.io/?"; 
+        const API = "https://discord.com/api/v10";
 
-        async function connect() {
-            token = document.getElementById('token-input').value.trim();
-            const status = document.getElementById('auth-status');
+        async function request(endpoint, method = "GET", body = null) {
+            const headers = { "Authorization": `Bot ${botToken}`, "Content-Type": "application/json" };
+            const options = { method, headers };
+            if (body) options.body = JSON.stringify(body);
             
-            try {
-                const res = await fetch('https://discord.com/api/v10/users/@me', {
-                    headers: { 'Authorization': `Bot ${token}` }
-                });
-                if (!res.ok) throw new Error();
-                
-                const data = await res.json();
-                document.getElementById('bot-tag').innerText = `${data.username}#${data.discriminator}`;
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('client').classList.add('active');
-                fetchGuilds();
-            } catch { status.innerText = "ACCESS DENIED: INVALID TOKEN"; }
+            const response = await fetch(PROXY + encodeURIComponent(`${API}${endpoint}`), options);
+            return response;
         }
 
-        async function fetchGuilds() {
-            const res = await fetch('https://discord.com/api/v10/users/@me/guilds', {
-                headers: { 'Authorization': `Bot ${token}` }
-            });
+        async function initialize() {
+            const input = document.getElementById('token-input');
+            const msg = document.getElementById('auth-msg');
+            botToken = input.value.trim();
+            
+            if(!botToken) return;
+            msg.innerText = "LINKING...";
+
+            try {
+                const res = await request("/users/@me");
+                if(res.ok) {
+                    const data = await res.json();
+                    document.getElementById('login-screen').classList.add('hidden');
+                    const ui = document.getElementById('client-ui');
+                    ui.style.display = 'flex';
+                    setTimeout(() => ui.style.opacity = '1', 50);
+                    loadGuilds();
+                } else {
+                    msg.innerText = "INVALID TOKEN";
+                    msg.style.color = "#fb7185";
+                }
+            } catch (e) {
+                msg.innerText = "CONNECTION BLOCKED";
+            }
+        }
+
+        async function loadGuilds() {
+            const res = await request("/users/@me/guilds");
             const guilds = await res.json();
             const list = document.getElementById('guild-list');
             list.innerHTML = guilds.map(g => `
-                <div class="item" onclick="fetchChannels('${g.id}', '${g.name}')">
-                    <div class="item-icon">${g.name.substring(0,1)}</div>
-                    ${g.name}
-                </div>
+                <div class="item" onclick="loadChannels('${g.id}', '${g.name}')">${g.name}</div>
             `).join('');
         }
 
-        async function fetchChannels(guildId, guildName) {
-            document.getElementById('active-server-name').innerText = guildName.toUpperCase();
-            const res = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
-                headers: { 'Authorization': `Bot ${token}` }
-            });
+        async function loadChannels(gid, gname) {
+            document.getElementById('target-path').innerText = gname.toUpperCase();
+            const res = await request(`/guilds/${gid}/channels`);
             const channels = await res.json();
             const list = document.getElementById('channel-list');
-            // Filter only text channels
             list.innerHTML = channels.filter(c => c.type === 0).map(c => `
-                <div class="item" onclick="selectChannel('${c.id}', '${c.name}')">
-                    <div style="margin-right: 10px; opacity: 0.5;">#</div>
-                    ${c.name}
-                </div>
+                <div class="item" onclick="setChannel('${c.id}', '${c.name}')"># ${c.name}</div>
             `).join('');
         }
 
-        function selectChannel(id, name) {
-            selectedChannel = id;
-            document.getElementById('active-channel-name').innerText = `#${name}`;
-            document.querySelectorAll('#channel-list .item').forEach(i => i.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        function setChannel(id, name) {
+            activeChannel = id;
+            document.getElementById('channel-name').innerText = "#" + name;
         }
 
         async function send() {
-            if (!selectedChannel) return;
+            if(!activeChannel) return;
             const input = document.getElementById('msg-input');
-            const status = document.getElementById('send-status');
-            const btn = document.getElementById('send-btn');
-            const content = input.value.trim();
+            const status = document.getElementById('status');
+            const text = input.value.trim();
+            if(!text) return;
 
-            if (!content) return;
-            btn.innerText = "TRANSMITTING...";
-
-            const res = await fetch(`https://discord.com/api/v10/channels/${selectedChannel}/messages`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bot ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content })
-            });
-
-            if (res.ok) {
-                status.innerText = "SUCCESS"; status.style.color = var(--pink);
+            status.innerText = "SENDING...";
+            const res = await request(`/channels/${activeChannel}/messages`, "POST", { content: text });
+            
+            if(res.ok) {
+                status.innerText = "SUCCESS";
+                status.style.color = "var(--pink)";
                 input.value = "";
             } else {
-                status.innerText = "FAILED"; status.style.color = "#fb7185";
+                status.innerText = "FAILED";
+                status.style.color = "#fb7185";
             }
-            btn.innerText = "EXECUTE SEND";
         }
     </script>
 </body>
