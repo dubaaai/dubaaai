@@ -20,7 +20,7 @@
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.4); backdrop-filter: blur(30px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.6); backdrop-filter: blur(40px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         #mobile-menu.active { display: flex; opacity: 1; }
         .menu-link { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: rgba(255,255,255,0.4); transition: 0.4s; position: relative; }
         .menu-link:hover { color: white; text-shadow: 0 0 30px var(--brand-blue); transform: scale(1.1); }
@@ -68,13 +68,13 @@
 
         <div class="flex items-center gap-4">
             <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] transition-all">Contact</button>
-            <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl p-2burger-glow"><i class="fas fa-bars-staggered"></i></button>
+            <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl p-2"><i class="fas fa-bars-staggered"></i></button>
         </div>
     </nav>
 
     <main id="home-page" class="page active-page container mx-auto px-6">
         <section class="text-center pt-12 md:pt-24 pb-20 flex flex-col items-center">
-            <h1 class="text-5xl md:text-8xl font-extrabold mb-12 tracking-tighter leading-tight">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
+            <h1 class="text-5xl md:text-8xl font-extrabold mb-12 tracking-tighter leading-tight uppercase">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
             
             <a href="https://discord.gg/judah" target="_blank" class="discord-glass-widget group p-6 rounded-[2.5rem] w-full max-w-md flex flex-col gap-6 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden" data-tilt>
                 <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full"></div>
@@ -105,7 +105,7 @@
                 </div>
             </a>
             
-            <button onclick="showPage('work')" class="mt-8 text-gray-500 text-xs font-bold uppercase tracking-[0.3em] hover:text-white transition">Explore Assets <i class="fas fa-arrow-right ml-2 text-[10px]"></i></button>
+            <button onclick="showPage('work')" class="mt-8 text-gray-500 text-xs font-bold uppercase tracking-[0.3em] hover:text-white transition">PROFESSIONAL WORK <i class="fas fa-arrow-right ml-2 text-[10px]"></i></button>
         </section>
 
         <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20 relative z-10">
@@ -145,10 +145,6 @@
     <main id="work-page" class="page container mx-auto px-6 pt-10">
         <h2 class="text-4xl font-black mb-12 uppercase">Work<span class="text-[#187cf4]">.</span></h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            <div class="work-item"><img src="assets/dubaiwork1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/dubaiwork2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/judahwork1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/judahwork2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
             <div class="work-item"><img src="assets/design1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
             <div class="work-item"><img src="assets/design2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
             <div class="work-item"><img src="assets/design3.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
@@ -183,9 +179,24 @@
                 <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
+                <h3 class="text-xl font-bold mb-2">Vectorized Logo</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos, assets, and resource links.</p>
+                <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Clothing Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes 100+ assets, tutorials, and tutorial levels.</p>
                 <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem] flex flex-col">
+                <h3 class="text-xl font-bold mb-2">Leadership</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Master management with elite tips and server architecture.</p>
+                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem] flex flex-col">
+                <h3 class="text-xl font-bold mb-2">Livery Course</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs, many assets, and industry website resources.</p>
+                <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
         </div>
     </main>
@@ -220,13 +231,8 @@
 
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
-            if (menu.style.display === 'flex') {
-                menu.style.opacity = '0';
-                setTimeout(() => menu.style.display = 'none', 500);
-            } else {
-                menu.style.display = 'flex';
-                setTimeout(() => menu.style.opacity = '1', 10);
-            }
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+            setTimeout(() => menu.classList.toggle('active'), 10);
         }
 
         function handleContact() {
