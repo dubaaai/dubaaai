@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai | svg-to-gif</title>
+    <title>dubaaai | render-lab</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <style>
         :root {
@@ -17,51 +17,44 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-        /* Background Vibe */
         .orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 187, 199, 0.1) 0%, transparent 70%); filter: blur(80px); border-radius: 50%; z-index: -1; animation: float 20s infinite alternate ease-in-out; }
         @keyframes float { 0% { transform: translate(-5%, -5%); } 100% { transform: translate(5%, 10%); } }
 
-        /* The Glass Studio */
         .studio-card {
-            background: var(--glass); backdrop-filter: blur(40px);
+            background: var(--glass); backdrop-filter: blur(50px);
             border: 1px solid var(--border); padding: 50px;
-            border-radius: 40px; width: 90%; max-width: 800px;
+            border-radius: 40px; width: 90%; max-width: 900px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; gap: 25px;
         }
 
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid rgba(230, 187, 199, 0.2); }
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
 
-        .editor-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid rgba(230, 187, 199, 0.2); display: inline-block; }
 
         textarea {
-            width: 100%; height: 300px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border); border-radius: 20px;
-            padding: 20px; color: #aaa; font-family: 'Courier New', monospace;
-            font-size: 13px; outline: none; transition: 0.3s; resize: none;
+            width: 100%; height: 350px; background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border); border-radius: 25px;
+            padding: 20px; color: #888; font-family: 'monospace';
+            font-size: 12px; outline: none; transition: 0.3s; resize: none;
         }
         textarea:focus { border-color: var(--pink); color: white; box-shadow: 0 0 20px var(--pink-glow); }
 
-        .preview-box {
-            width: 100%; height: 300px; background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border); border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; position: relative;
+        .output-container {
+            width: 100%; height: 350px; background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border); border-radius: 25px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
         }
 
-        #svg-render-container svg { max-width: 100%; max-height: 100%; }
+        #final-image { max-width: 80%; max-height: 80%; display: none; cursor: context-menu; transition: 0.5s; }
+        #final-image.visible { display: block; animation: fadeInUp 0.8s ease; }
 
-        .btn-prime {
-            width: 100%; background: var(--pink); color: #000; border: none;
-            padding: 18px; border-radius: 100px; font-weight: 700;
-            font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; transition: 0.4s;
-        }
-        .btn-prime:hover { transform: translateY(-3px); box-shadow: 0 10px 30px var(--pink-glow); }
-        .btn-prime:disabled { opacity: 0.3; cursor: not-allowed; }
+        .hint-text { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        #status { text-align: center; font-size: 11px; letter-spacing: 1px; color: var(--pink); opacity: 0.8; }
+        #loader { display: none; border: 2px solid transparent; border-top: 2px solid var(--pink); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -69,93 +62,89 @@
     <div class="orb"></div>
     
     <div class="studio-card">
-        <div class="header">
-            <div>
-                <div class="brand-pill">Asset Processor</div>
-                <h1 style="font-weight: 200; margin-top: 10px;">SVG to GIF</h1>
-            </div>
-            <div id="status">IDLE</div>
-        </div>
+        <div class="brand-pill">Asset Engine</div>
+        <h1 style="font-weight: 200; margin-top: 10px; font-size: 32px;">Render Lab</h1>
+        <p style="font-size: 12px; color: #666; margin-top: 5px;">Paste code. The image below will live-update to a savable GIF.</p>
 
-        <div class="editor-zone">
-            <textarea id="svg-input" placeholder="Paste <svg> code here..." oninput="updatePreview()"></textarea>
-            <div class="preview-box" id="svg-render-container">
-                <span style="color: #444; font-size: 12px;">PREVIEW</span>
+        <div class="layout">
+            <textarea id="svg-input" placeholder="Paste <svg> markup..." oninput="process()"></textarea>
+            
+            <div class="output-container">
+                <div id="loader"></div>
+                <img id="final-image" alt="Rendered Output">
+                <div id="hint" class="hint-text">Awaiting Input</div>
             </div>
         </div>
-
-        <button class="btn-prime" id="export-btn" onclick="generateGif()">Export as .GIF</button>
     </div>
 
-    <canvas id="proc-canvas" style="display: none;"></canvas>
+    <canvas id="canvas" style="display:none"></canvas>
 
     <script>
-        const input = document.getElementById('svg-input');
-        const container = document.getElementById('svg-render-container');
-        const status = document.getElementById('status');
-        const canvas = document.getElementById('proc-canvas');
-        const ctx = canvas.getContext('2d');
+        let debounceTimer;
 
-        function updatePreview() {
-            const raw = input.value.trim();
-            if (raw.startsWith('<svg')) {
-                container.innerHTML = raw;
-            }
+        function process() {
+            clearTimeout(debounceTimer);
+            const input = document.getElementById('svg-input').value;
+            const hint = document.getElementById('hint');
+            const img = document.getElementById('final-image');
+            const loader = document.getElementById('loader');
+
+            if (!input.includes('<svg')) return;
+
+            // Debounce so we don't fry the CPU while typing
+            debounceTimer = setTimeout(async () => {
+                hint.innerText = "RENDERING...";
+                img.classList.remove('visible');
+                loader.style.display = 'block';
+
+                try {
+                    const gifUrl = await convertToGif(input);
+                    img.src = gifUrl;
+                    img.classList.add('visible');
+                    loader.style.display = 'none';
+                    hint.innerText = "Right Click -> Save Image As";
+                } catch (e) {
+                    hint.innerText = "INVALID SVG CODE";
+                    loader.style.display = 'none';
+                }
+            }, 800);
         }
 
-        async function generateGif() {
-            const svgElement = container.querySelector('svg');
-            if (!svgElement) return alert("Please paste valid SVG code first.");
-
-            status.innerText = "PROCESSING...";
-            const btn = document.getElementById('export-btn');
-            btn.disabled = true;
-
-            // Get SVG dimensions
-            const width = svgElement.viewBox.baseVal.width || svgElement.width.baseVal.value || 500;
-            const height = svgElement.viewBox.baseVal.height || svgElement.height.baseVal.value || 500;
-            
-            canvas.width = width;
-            canvas.height = height;
-
-            // Prepare GIF.js
-            const gif = new GIF({
-                workers: 2,
-                quality: 1, // Highest quality
-                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
-            });
-
-            // Convert SVG to Image for Canvas drawing
-            const svgData = new XMLSerializer().serializeToString(svgElement);
-            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-            const url = URL.createObjectURL(svgBlob);
-            const img = new Image();
-
-            img.onload = () => {
-                // Clear and draw
-                ctx.clearRect(0, 0, width, height);
-                ctx.drawImage(img, 0, 0);
+        async function convertToGif(svgMarkup) {
+            return new Promise((resolve, reject) => {
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
                 
-                // Add frames (GIF needs frames, we add two identical ones for a high-quality static GIF)
-                gif.addFrame(ctx, {copy: true, delay: 500});
-                gif.addFrame(ctx, {copy: true, delay: 500});
+                const img = new Image();
+                const svgBlob = new Blob([svgMarkup], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
 
-                gif.on('finished', (blob) => {
-                    const downloadUrl = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = downloadUrl;
-                    link.download = `dubaaai_asset.gif`;
-                    link.click();
-                    
-                    status.innerText = "EXPORTED";
-                    btn.disabled = false;
-                    setTimeout(() => status.innerText = "IDLE", 3000);
-                });
+                img.onload = () => {
+                    canvas.width = img.width || 500;
+                    canvas.height = img.height || 500;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
 
-                gif.render();
-            };
+                    const gif = new GIF({
+                        workers: 2,
+                        quality: 1,
+                        workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+                    });
 
-            img.src = url;
+                    // Add two frames for a valid GIF file
+                    gif.addFrame(ctx, {copy: true, delay: 500});
+                    gif.addFrame(ctx, {copy: true, delay: 500});
+
+                    gif.on('finished', (blob) => {
+                        resolve(URL.createObjectURL(blob));
+                    });
+
+                    gif.render();
+                    URL.revokeObjectURL(url);
+                };
+                img.onerror = reject;
+                img.src = url;
+            });
         }
     </script>
 </body>
