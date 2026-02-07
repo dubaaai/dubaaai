@@ -6,90 +6,111 @@
 <title>Judah's Customs</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-  /* basic resets */
-  * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-  body { font-family: 'Share Tech Mono', monospace; background: #0a0a0a; color: #fff; }
+  /* RESET & BASE */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Share Tech Mono', monospace; background: #0a0a0a; color: #f0f0f0; overflow-x: hidden; }
   a { color: inherit; text-decoration: none; }
+  html { scroll-behavior: smooth; }
 
-  /* sections */
-  section { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; transition: opacity 1s ease, transform 1s ease; opacity: 0; transform: translateY(50px); }
-  section.visible { opacity: 1; transform: translateY(0); }
+  /* CURSOR */
+  body { cursor: none; }
+  .cursor { width: 20px; height: 20px; border: 2px solid #f0c674; border-radius: 50%; position: fixed; transform: translate(-50%, -50%); pointer-events: none; transition: 0.1s ease; mix-blend-mode: difference; z-index: 9999; }
 
-  /* hero */
-  #hero { background: linear-gradient(135deg, #111 0%, #222 100%); text-align: center; }
-  #hero h1 { font-size: 4rem; color: #f0c674; margin-bottom: 1rem; }
-  #hero p { font-size: 1.2rem; margin-bottom: 2rem; color: #aaa; }
-  #hero a { padding: 0.8rem 2rem; border: 1px solid #f0c674; border-radius: 5px; transition: all 0.3s; }
+  /* SECTIONS */
+  section { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; padding: 2rem; }
+  section h1, section h2 { color: #f0c674; }
+  section p { color: #ccc; max-width: 700px; margin: 1rem auto; line-height: 1.5rem; }
+
+  /* HERO */
+  #hero { display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg,#111,#222); overflow: hidden; }
+  #hero h1 { font-size: 4rem; margin-bottom: 1rem; }
+  #hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+  #hero a { border: 1px solid #f0c674; padding: 0.8rem 2rem; border-radius: 5px; transition: all 0.3s; }
   #hero a:hover { background: #f0c674; color: #000; }
 
-  /* about */
-  #about { max-width: 800px; text-align: center; }
-  #about p { font-size: 1.1rem; line-height: 1.6; color: #ccc; }
+  /* ABOUT */
+  #about { background: #0a0a0a; }
+  #about h2 { font-size: 3rem; margin-bottom: 1rem; }
+  #about p { font-size: 1.1rem; }
 
-  /* gallery */
-  #gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1200px; padding: 2rem; }
-  #gallery img { width: 100%; border-radius: 8px; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+  /* GALLERY */
+  #gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; width: 90%; max-width: 1200px; }
+  #gallery img { width: 100%; border-radius: 8px; transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; }
   #gallery img:hover { transform: scale(1.05); box-shadow: 0 0 20px #f0c674; }
 
-  /* contact */
-  #contact { text-align: center; }
-  #contact a { margin: 0 1rem; padding: 0.5rem 1rem; border: 1px solid #f0c674; border-radius: 5px; transition: all 0.3s; display: inline-block; }
+  /* CONTACT */
+  #contact { display: flex; flex-direction: column; align-items: center; gap: 1rem; background: #0a0a0a; }
+  #contact a { border: 1px solid #f0c674; padding: 0.5rem 1.5rem; border-radius: 5px; transition: all 0.3s; }
   #contact a:hover { background: #f0c674; color: #000; }
 
-  /* footer */
-  footer { text-align: center; padding: 1rem; font-size: 0.9rem; color: #555; }
+  /* FOOTER */
+  footer { text-align: center; padding: 1rem; color: #555; font-size: 0.9rem; }
 
+  /* SCROLL ANIMATIONS */
+  section { opacity: 0; transform: translateY(50px); transition: all 1s ease; }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  /* NEON ACCENTS */
+  h1, h2 { text-shadow: 0 0 8px #f0c674, 0 0 16px #f0c674; }
 </style>
 </head>
 <body>
 
-<!-- hero -->
+<div class="cursor"></div>
+
+<!-- HERO -->
 <section id="hero" class="visible">
   <h1>Judah's Customs</h1>
   <p>Custom designs, built your way.</p>
   <a href="#gallery">See Work</a>
 </section>
 
-<!-- about -->
+<!-- ABOUT -->
 <section id="about">
   <h2>What we do</h2>
   <p>We craft custom designs with precision and style. From concept to creation, every piece is built to stand out.</p>
 </section>
 
-<!-- gallery -->
+<!-- GALLERY -->
 <section id="gallery">
-  <img src="https://media.discordapp.net/attachments/1302425103006564467/1468764172929208391/v3.png?ex=69872efb&is=6985dd7b&hm=eacaac5736a29ddb9cfc005f1c6fa1dcc76017dee584a05e189c4db557ec955f&=&format=webp&quality=lossless&width=1042&height=313" alt="work 1">
-  <img src="https://media.discordapp.net/attachments/1302425103006564467/1468763501144051732/ERLC_OA_Banners.png?ex=69872e5a&is=6985dcda&hm=97ef0e8152ab65925ef6dffe73c9df0625b8f37ffd24a7cc467ee9e3a19b1d64&=&format=webp&quality=lossless&width=1042&height=313" alt="work 2">
-  <img src="https://media.discordapp.net/attachments/1461546579159945321/1462135543390277643/image.png?ex=69877556&is=698623d6&hm=7f5698b0273c3c28da43ab57058e48bb37404d9ada06bbd9635da3b183e9b2ef&=&format=webp&quality=lossless&width=817&height=290" alt="work 3">
-  <img src="https://media.discordapp.net/attachments/1461546579159945321/1465610895072694365/image.png?ex=698793c3&is=69864243&hm=3507ab33d850f2518a1e68f201d1bb09ce28d49b00ce54252e1c0755c5c62ec5&=&format=webp&quality=lossless&width=876&height=340" alt="work 4">
+  <img src="https://media.discordapp.net/attachments/1302425103006564467/1468764172929208391/v3.png?width=1042&height=313" alt="work 1">
+  <img src="https://media.discordapp.net/attachments/1302425103006564467/1468763501144051732/ERLC_OA_Banners.png?width=1042&height=313" alt="work 2">
+  <img src="https://media.discordapp.net/attachments/1461546579159945321/1462135543390277643/image.png?width=817&height=290" alt="work 3">
+  <img src="https://media.discordapp.net/attachments/1461546579159945321/1465610895072694365/image.png?width=876&height=340" alt="work 4">
 </section>
 
-<!-- contact -->
+<!-- CONTACT -->
 <section id="contact">
   <h2>Get in touch</h2>
   <p>Contact us within Discord, or email us directly.</p>
-  <a href="mailto:contact@judahscustoms.com">email</a>
-  <a href="https://discord.com/users/1044686997194805280">judah</a>
-  <a href="https://discord.gg/judah">discord</a>
+  <div>
+    <a href="mailto:contact@judahscustoms.com">email</a>
+    <a href="https://discord.com/users/1044686997194805280">judah</a>
+    <a href="https://discord.gg/judah">discord</a>
+  </div>
 </section>
 
-<!-- footer -->
-<footer>
-  &copy; 2026 Judah's Customs
-</footer>
+<!-- FOOTER -->
+<footer>&copy; 2026 Judah's Customs</footer>
 
 <script>
-  // simple scroll reveal
+  // scroll reveal
   const sections = document.querySelectorAll('section');
   const revealOnScroll = () => {
     sections.forEach(sec => {
       const top = sec.getBoundingClientRect().top;
-      const screenHeight = window.innerHeight;
-      if(top < screenHeight - 100) sec.classList.add('visible');
+      if(top < window.innerHeight - 100) sec.classList.add('visible');
     });
   };
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll();
+
+  // custom cursor
+  const cursor = document.querySelector('.cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.top = e.clientY + 'px';
+    cursor.style.left = e.clientX + 'px';
+  });
 </script>
 
 </body>
