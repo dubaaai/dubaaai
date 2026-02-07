@@ -54,18 +54,18 @@
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
 
-        .img-container { position: relative; margin-top: 12px; width: 100%; max-width: 500px; }
-        .img-content { width: 100%; border-radius: 20px; border: 1px solid var(--border); display: block; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
-        
+        /* Image Styling inside Markdown */
+        .msg img { width: 100%; border-radius: 18px; margin-top: 12px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
         .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
         .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 22px; backdrop-filter: blur(var(--blur)); gap: 12px; }
         input { flex: 1; background: transparent; border: none; color: white; padding: 14px 0; outline: none; font-size: 15px; }
         
-        .send-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.3; transition: 0.3s; padding: 5px; }
+        .send-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.3; transition: 0.3s; }
         .send-btn.active { opacity: 1; filter: drop-shadow(0 0 8px var(--pink-glow)); }
 
         .thinking .brand { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.2; transform: scale(0.98); } }
+        @keyframes pulse { 50% { opacity: 0.2; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -109,17 +109,14 @@
             document.getElementById('send-trigger').classList.toggle('active', hasVal); 
         }
 
-        function addMessage(content, type, isImg = false) {
+        function addMessage(content, type) {
             const win = document.getElementById('chat-window'), div = document.createElement('div');
             div.className = `msg ${type}`;
             
-            if (isImg) {
-                const container = document.createElement('div'); container.className = 'img-container';
-                const img = document.createElement('img'); img.className = 'img-content'; img.src = content;
-                container.append(img); div.appendChild(container);
-            } else {
-                div.innerHTML = type === 'ai' ? marked.parse(content) : content.toLowerCase();
-            }
+            // Markdown for AI, lowercase text for User
+            div.innerHTML = type === 'ai' ? marked.parse(content) : content.toLowerCase();
+            if (type === 'ai') div.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            
             win.appendChild(div); win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
 
@@ -127,21 +124,17 @@
             const el = document.getElementById('user-input'), text = el.value.trim();
             if (!text) return;
             addMessage(text, 'user'); el.value = ''; checkInput();
-            document.getElementById('main-body').classList.add('thinking');
 
-            // Handle Images directly on the frontend to prevent "Bridge Failed"
+            // INSTANT CDN EMBED (No server involved)
             if (currentVer === "Image") {
                 const seed = Math.floor(Math.random() * 1000000);
-                const imgUrl = `https://pollinations.ai/p/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${seed}`;
-                
-                // Add a fake "thinking" delay for vibe
-                setTimeout(() => {
-                    addMessage(imgUrl, 'ai', true);
-                    document.getElementById('main-body').classList.remove('thinking');
-                }, 800);
+                const cdnLink = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${seed}`;
+                addMessage(`![gen](${cdnLink})`, 'ai');
                 return;
             }
-            
+
+            // TEXT BRIDGE
+            document.getElementById('main-body').classList.add('thinking');
             try {
                 const res = await fetch("/api/chat", { 
                     method: "POST", 
@@ -149,12 +142,12 @@
                     body: JSON.stringify({ messages: chatHistory, currentVer, text }) 
                 });
                 const data = await res.json();
-                document.getElementById('main-body').classList.remove('thinking');
                 addMessage(data.content, 'ai'); 
                 chatHistory.push({ role: "assistant", content: data.content });
             } catch (e) { 
-                addMessage("bridge error.", 'ai'); 
-                document.getElementById('main-body').classList.remove('thinking'); 
+                addMessage("bridge stall.", 'ai'); 
+            } finally {
+                document.getElementById('main-body').classList.remove('thinking');
             }
         }
 
