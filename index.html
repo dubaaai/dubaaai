@@ -58,6 +58,10 @@
         .form-input:focus { border-color: var(--brand-blue); background: rgba(24,124,244,0.05); }
         select.form-input { color: #aaa; }
         option { background: #111; color: white; }
+
+        #user-widget { display: none; animation: widgetIn 0.6s forwards; }
+        @keyframes widgetIn { from { transform: translate(-50%, -100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .role-tag { background: rgba(24, 124, 244, 0.15); border: 1px solid rgba(24, 124, 244, 0.3); color: #60a5fa; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -66,6 +70,17 @@
     <div id="contact-toast" class="flex items-center gap-4">
         <div class="bg-[#187cf4] rounded-full w-8 h-8 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
         <div><p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Copied</p><p class="text-sm font-bold">contact@jcustoms.org</p></div>
+    </div>
+
+    <div id="user-widget" class="fixed top-6 left-1/2 -translate-x-1/2 z-[10002] w-full max-w-sm px-4">
+        <div class="discord-glass-widget p-4 rounded-2xl flex items-center gap-4 border-white/10">
+            <img id="user-pfp" src="" class="w-12 h-12 rounded-xl border border-white/10">
+            <div class="flex-grow min-w-0">
+                <h4 id="user-name-widget" class="font-black text-sm uppercase tracking-tighter truncate leading-none mb-1">Username</h4>
+                <div id="user-roles-widget" class="flex flex-wrap gap-1"></div>
+            </div>
+            <button onclick="location.href='/'" class="text-white/20 hover:text-red-500 transition px-2"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
     </div>
 
     <div id="mobile-menu">
@@ -161,6 +176,11 @@
             <div id="active-forms-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"></div>
         </div>
 
+        <div id="forms-view" class="hidden max-w-2xl mx-auto pb-20">
+            <button onclick="showDashboard()" class="text-gray-500 hover:text-white mb-8 transition uppercase text-[10px] font-bold tracking-widest"><i class="fas fa-arrow-left mr-2"></i> Back to dashboard</button>
+            <div id="form-content"></div>
+        </div>
+
         <div id="forms-admin" class="hidden pb-20">
             <div class="flex items-center gap-4 mb-10">
                 <button onclick="showDashboard()" class="text-gray-500 hover:text-white transition"><i class="fas fa-arrow-left"></i></button>
@@ -182,7 +202,7 @@
                 </div>
                 <div class="glass-card p-8 rounded-[2rem]">
                     <h3 class="text-xl font-bold mb-6 uppercase tracking-wider">Submissions</h3>
-                    <div id="submissions-list" class="space-y-4"><p class="text-gray-500 text-sm">No submissions recorded.</p></div>
+                    <div id="submissions-list" class="space-y-4"></div>
                 </div>
             </div>
         </div>
@@ -288,42 +308,77 @@
             const params = new URLSearchParams(window.location.search);
             if (params.has('user')) {
                 const username = params.get('user');
+                const avatar = params.get('avatar');
+                const discordId = params.get('id');
                 const isAdmin = params.get('isAdmin') === 'true';
                 userRoles = params.get('roles') ? params.get('roles').split(',') : [];
                 
+                document.getElementById('user-widget').style.display = 'block';
+                document.getElementById('user-name-widget').innerText = username;
+                document.getElementById('user-pfp').src = avatar && avatar !== 'null' ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png` : 'assets/titleicon.png';
+                
+                const widgetRoles = document.getElementById('user-roles-widget');
+                widgetRoles.innerHTML = '';
+                userRoles.slice(0, 3).forEach(role => {
+                    const span = document.createElement('span');
+                    span.className = 'role-tag';
+                    span.innerText = role;
+                    widgetRoles.appendChild(span);
+                });
+
                 document.getElementById('forms-auth').classList.add('hidden');
                 document.getElementById('forms-dashboard').classList.remove('hidden');
                 document.getElementById('user-welcome').innerText = `Welcome back, ${username}`;
                 
                 if(isAdmin || userRoles.includes(ADMIN_ROLE_ID)) {
                     document.getElementById('admin-btn').classList.remove('hidden');
+                    renderSubmissions();
                 }
                 renderForms();
             }
         };
 
         function handleDiscordLogin() { window.location.href = '/api/auth'; }
-        function showAdmin() { 
-            document.getElementById('forms-dashboard').classList.add('hidden');
-            document.getElementById('forms-admin').classList.remove('hidden');
+        
+        function toggleOptions(select) {
+            const container = select.parentElement.nextElementSibling;
+            if (select.value === 'multiple') {
+                container.classList.remove('hidden');
+                if (container.querySelector('.opt-list').children.length === 0) addOption(container.querySelector('button'));
+            } else {
+                container.classList.add('hidden');
+            }
         }
-        function showDashboard() { 
-            document.getElementById('forms-admin').classList.add('hidden');
-            document.getElementById('forms-dashboard').classList.remove('hidden');
-            renderForms();
+
+        function addOption(btn) {
+            const list = btn.previousElementSibling;
+            const div = document.createElement('div');
+            div.className = "flex items-center gap-2 mb-2";
+            div.innerHTML = `
+                <input type="radio" name="correct-${Date.now()}" class="opt-correct">
+                <input type="text" placeholder="Choice text" class="form-input text-[10px] py-2 opt-text">
+                <button onclick="this.parentElement.remove()" class="text-white/20 hover:text-red-500"><i class="fas fa-times"></i></button>
+            `;
+            list.appendChild(div);
         }
 
         function addQuestion() {
             const list = document.getElementById('questions-list');
             const div = document.createElement('div');
-            div.className = "glass-card p-4 rounded-xl flex flex-col gap-2";
+            div.className = "glass-card p-4 rounded-xl flex flex-col gap-2 q-block";
             div.innerHTML = `
-                <input type="text" placeholder="Question Text" class="form-input text-xs q-text">
-                <select class="form-input text-xs q-type">
-                    <option value="short">Short Response</option>
-                    <option value="multiple">Multiple Choice</option>
-                    <option value="image">Image Submission</option>
-                </select>
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Question Text" class="form-input text-xs q-text">
+                    <select class="form-input text-xs q-type w-32" onchange="toggleOptions(this)">
+                        <option value="short">Short Response</option>
+                        <option value="multiple">Multiple Choice</option>
+                        <option value="image">Image Submission</option>
+                    </select>
+                </div>
+                <div class="options-container hidden space-y-2 pl-4 border-l border-white/10 mt-2">
+                    <div class="opt-list"></div>
+                    <button onclick="addOption(this)" class="text-[9px] text-blue-400 font-bold uppercase">+ Add Choice</button>
+                </div>
                 <button onclick="this.parentElement.remove()" class="text-[9px] text-red-500 uppercase font-bold text-right">Remove</button>
             `;
             list.appendChild(div);
@@ -334,35 +389,45 @@
             const time = document.getElementById('new-form-time').value;
             const role = document.getElementById('new-form-role').value;
             const questions = [];
-            document.querySelectorAll('#questions-list > div').forEach(el => {
-                questions.push({ text: el.querySelector('.q-text').value, type: el.querySelector('.q-type').value });
+            
+            document.querySelectorAll('.q-block').forEach(el => {
+                const type = el.querySelector('.q-type').value;
+                const questionData = { text: el.querySelector('.q-text').value, type: type };
+                if (type === 'multiple') {
+                    questionData.options = [];
+                    el.querySelectorAll('.opt-list > div').forEach(opt => {
+                        questionData.options.push({ text: opt.querySelector('.opt-text').value, isCorrect: opt.querySelector('.opt-correct').checked });
+                    });
+                }
+                questions.push(questionData);
             });
 
             if(!title) return alert("Title required");
-
             const response = await fetch('/api/forms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, time, role, questions })
             });
-
             if(response.ok) { alert("Form published!"); showDashboard(); }
         }
 
         async function renderForms() {
             const grid = document.getElementById('active-forms-grid');
-            grid.innerHTML = '<p class="text-gray-500 text-xs">Loading forms...</p>';
-            
+            grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">Loading forms...</p>';
             try {
                 const response = await fetch('/api/forms');
                 const forms = await response.json();
                 grid.innerHTML = '';
-                
+                if (!forms || forms.length === 0) {
+                    grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">No forms available</p>';
+                    return;
+                }
                 forms.forEach(form => {
                     const hasAccess = !form.role || userRoles.includes(form.role) || userRoles.includes(ADMIN_ROLE_ID);
                     if (hasAccess) {
                         const card = document.createElement('div');
                         card.className = "glass-card p-8 rounded-[2rem] flex flex-col hover:scale-[1.02] cursor-pointer";
+                        card.onclick = () => openForm(form._id || form.id);
                         card.innerHTML = `
                             <div class="flex justify-between items-start mb-4">
                                 <span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">${form.time || '5m'}</span>
@@ -377,7 +442,100 @@
                         grid.appendChild(card);
                     }
                 });
-            } catch(e) { grid.innerHTML = '<p class="text-red-500 text-xs">Failed to load forms.</p>'; }
+            } catch(e) { grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">No forms available</p>'; }
+        }
+
+        async function openForm(id) {
+            try {
+                const response = await fetch(`/api/forms/${id}`);
+                const form = await response.json();
+                document.getElementById('forms-dashboard').classList.add('hidden');
+                document.getElementById('forms-view').classList.remove('hidden');
+                const content = document.getElementById('form-content');
+                content.innerHTML = `
+                    <h2 class="text-4xl font-black uppercase mb-12">${form.title}<span class="text-[#187cf4]">.</span></h2>
+                    <div id="form-questions" class="space-y-6">
+                        ${form.questions.map((q, i) => `
+                            <div class="glass-card p-8 rounded-[2rem] q-entry" data-qtext="${q.text}" data-qtype="${q.type}">
+                                <p class="font-bold text-lg mb-4">${q.text}</p>
+                                ${renderInputType(q, i)}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button onclick="submitAnswers('${id}')" class="w-full bg-[#187cf4] py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] mt-10 hover:shadow-[0_0_40px_rgba(24,124,244,0.4)] transition-all">Submit Application</button>
+                `;
+            } catch(e) { alert("Error loading form."); }
+        }
+
+        function renderInputType(q, i) {
+            if(q.type === 'short' || q.type === 'image') return `<input type="text" class="form-input q-val" placeholder="Type your response...">`;
+            if(q.type === 'multiple') return q.options.map(o => `
+                <label class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 cursor-pointer transition mb-2">
+                    <input type="radio" name="q-${i}" value="${o.text}" class="q-val w-4 h-4 accent-[#187cf4]">
+                    <span class="text-sm font-medium opacity-80">${o.text}</span>
+                </label>
+            `).join('');
+        }
+
+        async function submitAnswers(formId) {
+            const params = new URLSearchParams(window.location.search);
+            const answers = [];
+            document.querySelectorAll('.q-entry').forEach(entry => {
+                const type = entry.dataset.qtype;
+                let answerVal = "";
+                if(type === 'multiple') {
+                    const checked = entry.querySelector('.q-val:checked');
+                    answerVal = checked ? checked.value : "No answer";
+                } else {
+                    answerVal = entry.querySelector('.q-val').value;
+                }
+                answers.push({ question: entry.dataset.qtext, answer: answerVal });
+            });
+
+            const payload = {
+                formId,
+                username: params.get('user'),
+                userId: params.get('id'),
+                userAvatar: params.get('avatar'),
+                answers: answers
+            };
+
+            const response = await fetch('/api/submissions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if(response.ok) {
+                alert("Form submitted successfully!");
+                showDashboard();
+            }
+        }
+
+        async function renderSubmissions() {
+            const list = document.getElementById('submissions-list');
+            try {
+                const response = await fetch('/api/submissions');
+                const subs = await response.json();
+                list.innerHTML = subs.length === 0 ? '<p class="text-gray-500 text-sm">No submissions recorded.</p>' : '';
+                subs.forEach(sub => {
+                    const div = document.createElement('div');
+                    div.className = "glass-card p-6 rounded-2xl mb-4";
+                    div.innerHTML = `
+                        <div class="flex items-center gap-4 mb-6 pb-4 border-b border-white/5">
+                            <img src="https://cdn.discordapp.com/avatars/${sub.userId}/${sub.userAvatar}.png" class="w-12 h-12 rounded-xl border border-white/10" onerror="this.src='assets/titleicon.png'">
+                            <div>
+                                <h4 class="font-black uppercase text-sm leading-none mb-1">${sub.username}</h4>
+                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-tighter opacity-60">ID: ${sub.userId}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            ${sub.answers.map(a => `<div><p class="text-[9px] uppercase font-black text-gray-500 mb-1">${a.question}</p><p class="text-xs opacity-90">${a.answer}</p></div>`).join('')}
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch(e) { list.innerHTML = '<p class="text-gray-500 text-sm">No submissions recorded.</p>'; }
         }
 
         async function fetchDiscord() {
@@ -417,6 +575,18 @@
             setTimeout(() => { VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 }); }, 100);
         }
 
+        function showAdmin() { 
+            document.getElementById('forms-dashboard').classList.add('hidden');
+            document.getElementById('forms-admin').classList.remove('hidden');
+            renderSubmissions();
+        }
+        function showDashboard() { 
+            document.getElementById('forms-admin').classList.add('hidden');
+            document.getElementById('forms-view').classList.add('hidden');
+            document.getElementById('forms-dashboard').classList.remove('hidden');
+            renderForms();
+        }
+
         function openShowcase(coursePrefix, title) {
             const grid = document.getElementById('showcase-grid');
             document.getElementById('showcase-title').innerHTML = `${title}<span class="text-[#187cf4]">.</span>`;
@@ -425,19 +595,24 @@
                 const img = document.createElement('img');
                 img.src = `assets/${coursePrefix}${i}.png`;
                 img.className = 'showcase-img w-full rounded-2xl border border-white/10 glass-card cursor-pointer';
-                img.onclick = function() { openLightbox(this.src); };
+                img.onclick = () => openLightbox(img.src);
                 grid.appendChild(img);
-                setTimeout(() => img.classList.add('visible'), i * 300);
+                setTimeout(() => img.classList.add('visible'), i * 200);
             }
             showPage('showcase');
         }
 
-        function navTo(pageId) { toggleMobileMenu(); showPage(pageId); }
-        function openLightbox(src) { 
-            document.getElementById('lightbox-img').src = src; 
-            document.getElementById('lightbox').classList.add('open'); 
+        function openLightbox(src) {
+            const lb = document.getElementById('lightbox');
+            document.getElementById('lightbox-img').src = src;
+            lb.classList.add('open');
+            setTimeout(() => document.getElementById('lightbox-img').style.transform = 'scale(1)', 10);
         }
-        function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-img').style.transform = 'scale(0.9)';
+            setTimeout(() => document.getElementById('lightbox').classList.remove('open'), 300);
+        }
 
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
     </script>
