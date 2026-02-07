@@ -36,16 +36,16 @@
         pre { background: #0d0d0d !important; padding: 16px; border-radius: 12px; overflow-x: auto; margin: 12px 0; border: 1px solid var(--border); }
         code { font-family: 'Fira Code', monospace !important; font-size: 13px !important; }
         .img-content { width: 100%; max-width: 400px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); cursor: zoom-in; transition: 0.3s; display: block; }
-        .img-content.zoomed { transform: scale(1.2); cursor: zoom-out; position: relative; z-index: 50; }
+        .img-content.zoomed { transform: scale(1.1); cursor: zoom-out; position: relative; z-index: 50; }
 
         .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
         #preview-box { display: none; padding: 10px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 10px; }
         #preview-box img { max-height: 80px; border-radius: 10px; }
-        .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); transition: 0.3s; }
+        .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); }
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 15px; }
         
         .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; opacity: 0.4; }
-        .icon-btn svg { width: 22px; height: 22px; fill: var(--pink); filter: drop-shadow(0 0 0px var(--pink-glow)); transition: 0.3s; }
+        .icon-btn svg { width: 22px; height: 22px; fill: var(--pink); filter: drop-shadow(0 0 0px var(--pink-glow)); }
         .icon-btn.active { opacity: 1; transform: scale(1.1); }
         .icon-btn.active svg { filter: drop-shadow(0 0 8px var(--pink-glow)); }
 
@@ -120,7 +120,7 @@
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
             div.className = `msg ${type}`;
-            if (isImg) {
+            if (isImg || (typeof content === 'string' && content.startsWith('http') && !content.includes(' '))) {
                 const img = document.createElement('img');
                 img.src = content;
                 img.className = 'img-content';
@@ -141,30 +141,28 @@
             const body = document.getElementById('main-body');
             const input = document.getElementById('user-input');
             const text = input.value.trim();
-            const imageToSend = pendingImgData;
-
-            if (!text && !imageToSend) return;
+            if (!text && !pendingImgData) return;
 
             if (text) addMessage(text, 'user', false);
-            if (imageToSend) addMessage(imageToSend, 'user', true);
+            if (pendingImgData) addMessage(pendingImgData, 'user', true);
 
             chatHistory.push({ role: "user", content: text || "sent an image" });
+            const userText = text;
             input.value = '';
             pendingImgData = null;
             document.getElementById('preview-box').style.display = 'none';
             toggleGlow();
             body.classList.add('thinking');
 
-            const payload = { 
-                messages: [{ role: "system", content: "your name is dubaaai. chill. lowercase. use triple backticks for code." }, ...chatHistory.slice(-10)],
-                currentVer: currentVer,
-                text: text 
-            };
-
             try {
                 const response = await fetch("/api/chat", {
                     method: "POST",
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        messages: [{ role: "system", content: "your name is dubaaai. chill. lowercase." }, ...chatHistory.slice(-10)],
+                        currentVer,
+                        text: userText 
+                    })
                 });
                 const data = await response.json();
                 body.classList.remove('thinking');
@@ -178,7 +176,7 @@
                 }
             } catch (e) {
                 body.classList.remove('thinking');
-                addMessage("error connecting.", 'ai');
+                addMessage("error: check your discord env vars.", 'ai');
             }
         }
 
