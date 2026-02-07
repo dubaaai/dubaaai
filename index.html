@@ -3,144 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai</title>
+    <title>dubaaai | logic</title>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <style>
-        :root {
-            --pink: #e6bbc7;
-            --pink-glow: rgba(230, 187, 199, 0.6);
-            --black: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --blur: 24px;
-        }
-
+        :root { --pink: #e6bbc7; --glow: rgba(230, 187, 199, 0.4); --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.1); }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
-        body {
-            background-color: var(--black);
-            color: #ffffff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        body { background: #050505; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        .bg-canvas {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 30%, #1a1214 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, #0f1116 0%, transparent 40%);
-            filter: blur(80px);
-        }
+        .header { padding: 20px; text-align: center; z-index: 10; }
+        .nav { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .nav-btn { background: var(--glass); border: 1px solid var(--border); color: #666; padding: 8px 20px; border-radius: 100px; cursor: pointer; transition: 0.3s; font-size: 12px; }
+        .nav-btn.active { color: var(--pink); border-color: var(--pink); box-shadow: 0 0 15px var(--glow); }
 
-        .header { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 10; }
-        .brand { font-size: 13px; letter-spacing: 7px; text-transform: uppercase; color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300; }
-        
-        .version-bar { display: flex; gap: 6px; background: var(--glass); padding: 5px; border-radius: 100px; border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); }
-        .ver-btn { background: transparent; border: none; color: rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 100px; font-size: 11px; cursor: pointer; transition: 0.4s; }
-        .ver-btn.active { background: rgba(230, 187, 199, 0.15); color: var(--pink); border: 1px solid var(--pink); }
+        #calc-view, #ask-view { flex: 1; display: none; padding: 20px; overflow-y: auto; max-width: 1000px; margin: 0 auto; width: 100%; }
+        .active-view { display: flex !important; flex-direction: column; gap: 20px; }
 
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; max-width: 900px; margin: 0 auto; width: 100%; scrollbar-width: none; }
-        
-        .msg {
-            max-width: 85%; padding: 18px 24px; border-radius: 26px; line-height: 1.6; font-size: 15px;
-            backdrop-filter: blur(var(--blur)); border: 1px solid var(--border);
-            animation: slideUp 0.3s ease forwards;
-        }
-        .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
-        .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
+        .calc-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
+        .calc-main { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; }
+        #display { font-size: 24px; text-align: right; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 20px; color: var(--pink); min-height: 80px; }
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .key { background: var(--glass); border: 1px solid var(--border); padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .key:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .key:active { transform: scale(0.95); box-shadow: 0 0 10px var(--pink); }
+        .fn-key { color: var(--pink); font-weight: bold; }
 
-        /* Smooth Image Rendering */
-        .msg img { width: 100%; border-radius: 20px; margin-top: 12px; border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        .graph-area { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 20px; }
+        canvas { width: 100% !important; height: 300px !important; }
 
-        .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 22px; backdrop-filter: blur(var(--blur)); gap: 12px; }
-        input { flex: 1; background: transparent; border: none; color: white; padding: 14px 0; outline: none; font-size: 15px; }
-        
-        .send-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.3; transition: 0.3s; }
-        .send-btn.active { opacity: 1; filter: drop-shadow(0 0 8px var(--pink-glow)); }
+        #chat-history { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .msg { padding: 15px 20px; border-radius: 20px; max-width: 85%; border: 1px solid var(--border); }
+        .user { align-self: flex-end; background: rgba(230,187,199,0.1); color: var(--pink); }
+        .ai { align-self: flex-start; background: var(--glass); }
+        .input-box { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; padding: 15px 25px; color: white; outline: none; width: 100%; margin-top: 10px; }
 
-        .thinking .brand { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 50% { opacity: 0.2; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 50% { opacity: 0.4; } }
+        .thinking { animation: pulse 1s infinite; color: var(--pink); }
     </style>
 </head>
-<body id="main-body">
-
-    <div class="bg-canvas"></div>
+<body>
 
     <div class="header">
-        <div class="brand">dubaaai</div>
-        <div class="version-bar">
-            <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
-            <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
+        <div style="letter-spacing: 5px; font-size: 12px; color: var(--pink)">DUBAAAI LOGIC</div>
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchView('calc', this)">CALCULATE</button>
+            <button class="nav-btn" onclick="switchView('ask', this)">ASK</button>
         </div>
     </div>
 
-    <div id="chat-window"></div>
-
-    <div class="input-area">
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="say sum..." oninput="checkInput()" autocomplete="off">
-            <button class="send-btn" id="send-trigger" onclick="send()">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
+    <div id="calc-view" class="active-view">
+        <div class="calc-grid">
+            <div class="calc-main">
+                <div id="display">0</div>
+                <div class="keypad">
+                    <button class="key fn-key" onclick="press('AC')">AC</button>
+                    <button class="key fn-key" onclick="press('graph')">PLOT</button>
+                    <button class="key fn-key" onclick="press('sin(')">sin</button>
+                    <button class="key fn-key" onclick="press('/')">/</button>
+                    <button class="key" onclick="press('7')">7</button>
+                    <button class="key" onclick="press('8')">8</button>
+                    <button class="key" onclick="press('9')">9</button>
+                    <button class="key fn-key" onclick="press('*')">*</button>
+                    <button class="key" onclick="press('4')">4</button>
+                    <button class="key" onclick="press('5')">5</button>
+                    <button class="key" onclick="press('6')">6</button>
+                    <button class="key fn-key" onclick="press('-')">-</button>
+                    <button class="key" onclick="press('1')">1</button>
+                    <button class="key" onclick="press('2')">2</button>
+                    <button class="key" onclick="press('3')">3</button>
+                    <button class="key fn-key" onclick="press('+')">+</button>
+                    <button class="key" onclick="press('0')">0</button>
+                    <button class="key" onclick="press('.')">.</button>
+                    <button class="key" onclick="press('x')">x</button>
+                    <button class="key fn-key" style="background: var(--pink); color: black;" onclick="press('=')">=</button>
+                </div>
+            </div>
+            <div class="graph-area">
+                <div style="font-size: 10px; margin-bottom: 10px; color: #666;">GRAPHING SYSTEM v1.0</div>
+                <canvas id="myChart"></canvas>
+            </div>
         </div>
+    </div>
+
+    <div id="ask-view">
+        <div id="chat-history"></div>
+        <input type="text" id="ai-input" class="input-box" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')askAI()">
     </div>
 
     <script>
-        let currentVer = "Fast", chatHistory = [];
-        const starts = { Fast: "hey. i'm dubaaai.", Image: "visuals on." };
+        let currentExpr = "";
+        let chart = null;
 
-        function setVer(v, btn) {
-            currentVer = v; chatHistory = []; document.getElementById('chat-window').innerHTML = '';
-            document.querySelectorAll('.ver-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active'); addMessage(starts[v], 'ai');
+        function switchView(view, btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('calc-view').classList.toggle('active-view', view === 'calc');
+            document.getElementById('ask-view').classList.toggle('active-view', view === 'ask');
         }
 
-        function checkInput() { 
-            const hasVal = document.getElementById('user-input').value.trim().length > 0;
-            document.getElementById('send-trigger').classList.toggle('active', hasVal); 
-        }
-
-        function addMessage(content, type) {
-            const win = document.getElementById('chat-window'), div = document.createElement('div');
-            div.className = `msg ${type}`;
-            div.innerHTML = type === 'ai' ? marked.parse(content) : content.toLowerCase();
-            win.appendChild(div); win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
-        }
-
-        async function send() {
-            const el = document.getElementById('user-input'), text = el.value.trim();
-            if (!text) return;
-            addMessage(text, 'user'); el.value = ''; checkInput();
-
-            if (currentVer === "Image") {
-                const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${Math.random()}`;
-                addMessage(`![gen](${url})`, 'ai');
-                return;
+        function press(key) {
+            const display = document.getElementById('display');
+            if (key === 'AC') { currentExpr = ""; display.innerText = "0"; }
+            else if (key === '=') {
+                try {
+                    currentExpr = math.evaluate(currentExpr).toString();
+                    display.innerText = currentExpr;
+                } catch { display.innerText = "Error"; }
             }
+            else if (key === 'graph') { plotGraph(); }
+            else {
+                currentExpr += key;
+                display.innerText = currentExpr;
+            }
+        }
 
-            document.getElementById('main-body').classList.add('thinking');
+        function plotGraph() {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const xValues = math.range(-10, 10, 0.5).toArray();
+            const yValues = xValues.map(x => {
+                try { return math.evaluate(currentExpr, {x: x}); } 
+                catch { return 0; }
+            });
+
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'f(x) = ' + currentExpr,
+                        data: yValues,
+                        borderColor: '#e6bbc7',
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+        }
+
+        async function askAI() {
+            const input = document.getElementById('ai-input');
+            const history = document.getElementById('chat-history');
+            const val = input.value.trim();
+            if(!val) return;
+
+            const userDiv = document.createElement('div');
+            userDiv.className = "msg user";
+            userDiv.innerText = val;
+            history.appendChild(userDiv);
+            input.value = "";
+
+            const aiDiv = document.createElement('div');
+            aiDiv.className = "msg ai thinking";
+            aiDiv.innerText = "processing logic...";
+            history.appendChild(aiDiv);
+
             try {
-                const res = await fetch("/api/chat", { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" }, 
-                    body: JSON.stringify({ messages: chatHistory, text }) 
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ text: val })
                 });
                 const data = await res.json();
-                addMessage(data.content, 'ai'); 
-                chatHistory.push({ role: "assistant", content: data.content });
-            } catch (e) { addMessage("bridge dry.", 'ai'); }
-            finally { document.getElementById('main-body').classList.remove('thinking'); }
+                aiDiv.classList.remove('thinking');
+                aiDiv.innerHTML = marked.parse(data.content);
+            } catch { aiDiv.innerText = "stall."; }
+            history.scrollTop = history.scrollHeight;
         }
 
-        window.onload = () => addMessage(starts.Fast, 'ai');
-        document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
+        window.onload = () => {
+            currentExpr = "sin(x)";
+            plotGraph();
+        };
     </script>
 </body>
 </html>
