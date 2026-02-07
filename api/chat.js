@@ -7,27 +7,21 @@ export default async function handler(req, res) {
         if (currentVer === "Image") {
             const tempUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
             
-            const imageFetch = await fetch(tempUrl);
-            const arrayBuffer = await imageFetch.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            const formData = new FormData();
-            formData.append('content', `**gen:** ${text}`);
-            formData.append('file', new Blob([buffer]), 'gen.png');
-
             const discordRes = await fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
+                    'Content-Type': 'application/json',
                 },
-                body: formData
+                body: JSON.stringify({
+                    content: `**gen:** ${text}`,
+                    embeds: [{ image: { url: tempUrl } }]
+                })
             });
 
             const discordData = await discordRes.json();
             
-            if (!discordRes.ok) throw new Error(discordData.message || "Discord failed");
-
-            const finalUrl = discordData.attachments[0].url;
+            const finalUrl = discordData.embeds?.[0]?.image?.url || tempUrl;
             return res.status(200).json({ isImage: true, url: finalUrl });
         }
 
@@ -45,10 +39,12 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
+        if (!data.choices) throw new Error("Groq API error");
+        
         res.status(200).json({ isImage: false, content: data.choices[0].message.content });
 
     } catch (error) {
         console.error("Bridge Error:", error);
-        res.status(500).json({ error: "bridge error", details: error.message });
+        res.status(200).json({ isImage: false, content: "bridge is acting up. check your environment variables." });
     }
 }
