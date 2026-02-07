@@ -16,170 +16,143 @@
         :root { --brand-blue: #187cf4; --bg-dark: #030303; }
         body { background-color: var(--bg-dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; cursor: none; scroll-behavior: smooth; }
 
-        /* Background Effects */
         .noise-bg { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 50; }
-        .glow-sphere { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(24, 124, 244, 0.12) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: pulse 12s infinite alternate; }
+        .glow-sphere { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(24, 124, 244, 0.1) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: pulse 12s infinite alternate; }
         @keyframes pulse { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* Cursor */
-        #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transition: transform 0.1s ease; transform: translate(-50%, -50%); }
+        #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transform: translate(-50%, -50%); transition: transform 0.1s ease; }
 
-        /* Page System */
         .page { display: none; opacity: 0; }
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Glass Cards */
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.2); }
+        .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.15); }
 
-        /* Work Items & Glows */
-        .work-item { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        .work-item { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
         .active-page .work-item { opacity: 1; transform: translateY(0); }
-        .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s; border: 1px solid rgba(255,255,255,0.05); }
-        .work-img:hover { transform: scale(1.02); }
+        .work-img { width: 100%; border-radius: 12px; cursor: pointer; transition: 0.4s; border: 1px solid rgba(255,255,255,0.05); }
+        .work-img:hover { transform: scale(1.03); z-index: 10; }
 
-        .glow-dubai1:hover { filter: drop-shadow(0 0 25px #4a1b1f); border-color: #4a1b1f; }
-        .glow-dubai2:hover { filter: drop-shadow(0 0 25px #5c2a40); border-color: #5c2a40; }
-        .glow-judah1:hover { filter: drop-shadow(0 0 25px #d42a40); border-color: #d42a40; }
-        .glow-judah2:hover { filter: drop-shadow(0 0 25px #232323); border-color: #232323; }
+        .glow-dubai1:hover { filter: drop-shadow(0 0 20px #4a1b1f); }
+        .glow-dubai2:hover { filter: drop-shadow(0 0 20px #5c2a40); }
+        .glow-judah1:hover { filter: drop-shadow(0 0 20px #d42a40); }
+        .glow-judah2:hover { filter: drop-shadow(0 0 20px #232323); }
 
-        /* Custom Notification (Toast) */
-        #contact-toast { 
-            position: fixed; 
-            top: 40px; 
-            right: 40px; 
-            z-index: 10001; 
-            padding: 16px 28px; 
-            border-radius: 20px; 
-            background: rgba(24, 124, 244, 0.1); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(24, 124, 244, 0.4); 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(24, 124, 244, 0.2);
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateX(120%);
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        #contact-toast { position: fixed; top: 40px; right: 40px; z-index: 10001; padding: 16px 28px; border-radius: 20px; background: rgba(24, 124, 244, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(24, 124, 244, 0.4); transform: translateX(150%); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #contact-toast.show { transform: translateX(0); }
-
-        /* Lightbox */
-        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: zoom-out; }
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         #lightbox.open { display: flex; }
-        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #lightbox.open img { transform: scale(1); }
     </style>
 </head>
 <body>
 
     <div id="cursor"></div>
-
-    <div id="contact-toast">
-        <div class="bg-[#187cf4] rounded-full w-8 h-8 flex items-center justify-center">
-            <i class="fas fa-check text-xs"></i>
-        </div>
-        <div>
-            <p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Email Copied</p>
-            <p class="text-sm font-bold">contact@jcustoms.org</p>
-        </div>
+    <div id="contact-toast" class="flex items-center gap-4">
+        <div class="bg-[#187cf4] rounded-full w-8 h-8 flex items-center justify-center"><i class="fas fa-check text-xs"></i></div>
+        <div><p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Copied</p><p class="text-sm font-bold">contact@jcustoms.org</p></div>
     </div>
 
     <div class="noise-bg"></div>
-    <div class="glow-sphere" style="top: -10%; left: -10%;"></div>
+    <div class="glow-sphere"></div>
     
-    <div id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="">
-    </div>
+    <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" class="max-w-[85%] max-h-[85%] rounded-xl transition-transform duration-500 scale-90" src=""></div>
 
     <nav class="flex justify-between items-center px-10 py-8 max-w-7xl mx-auto relative z-10">
         <div class="text-2xl font-extrabold tracking-tighter cursor-pointer" onclick="showPage('home')">JUDAH<span class="text-[#187cf4]">.</span></div>
         <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.3em] font-bold text-gray-400">
-            <button onclick="showPage('home')" class="hover:text-white transition uppercase">Home</button>
-            <button onclick="showPage('work')" class="hover:text-white transition uppercase">Work</button>
-            <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition uppercase">Discord</a>
+            <button onclick="showPage('home')" class="hover:text-white transition">Home</button>
+            <button onclick="showPage('work')" class="hover:text-white transition">Work</button>
+            <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition">Discord</a>
         </div>
-        <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] hover:text-white transition-all">
-            Contact
-        </button>
+        <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] transition-all">Contact</button>
     </nav>
 
-    <main id="home-page" class="page active-page">
-        <section class="relative z-10 flex flex-col items-center justify-center text-center pt-24 pb-20 px-4">
-            <h1 class="text-6xl md:text-8xl font-extrabold mb-8 tracking-tighter leading-tight">
-                Bringing your <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.
-            </h1>
-            <div class="flex flex-wrap justify-center gap-6">
-                <a href="https://discord.gg/judah" target="_blank" class="bg-[#187cf4] shadow-[0_0_30px_rgba(24,124,244,0.4)] px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition">
-                    Join Discord
-                </a>
-                <button onclick="showPage('work')" class="glass-card px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest">
-                    Explore Assets
-                </button>
+    <main id="home-page" class="page active-page container mx-auto">
+        <section class="text-center pt-24 pb-20 px-4">
+            <h1 class="text-6xl md:text-8xl font-extrabold mb-8 tracking-tighter leading-tight">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
+            <div class="flex justify-center gap-6">
+                <a href="https://discord.gg/judah" target="_blank" class="bg-[#187cf4] px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition">Join Discord</a>
+                <button onclick="showPage('work')" class="glass-card px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest">Professional Work</button>
             </div>
         </section>
 
-        <section class="max-w-7xl mx-auto px-10 py-20 grid md:grid-cols-3 gap-6 relative z-10">
+        <section class="grid md:grid-cols-3 gap-6 px-10 pb-20 relative z-10">
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-pen-nib text-[#187cf4] text-3xl mb-6"></i>
-                <h3 class="text-xl font-bold mb-3">Graphics</h3>
-                <p class="text-gray-500 text-sm">High-quality graphics tailored to your design needs.</p>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-tshirt text-[#187cf4] text-3xl mb-6"></i>
-                <h3 class="text-xl font-bold mb-3">Clothing</h3>
-                <p class="text-gray-500 text-sm">Premium quality Roblox clothing with modern fits.</p>
+                <i class="fas fa-pen-nib text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Graphics</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">High-fidelity visual design tailored for your brand identity. We craft banners, logos, and UI elements that dominate the competition.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-car text-[#187cf4] text-3xl mb-6"></i>
-                <h3 class="text-xl font-bold mb-3">Liveries</h3>
-                <p class="text-gray-500 text-sm">High quality ER:LC liveries for professional roleplay.</p>
+                <i class="fas fa-tshirt text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Clothing</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Premium Roblox attire with hyper-realistic textures. Our garments are engineered to fit perfectly and showcase unrivaled detail.</p>
             </div>
-        </section>
-    </main>
-
-    <main id="work-page" class="page">
-        <section class="max-w-7xl mx-auto px-10 py-10">
-            <h2 class="text-4xl font-black mb-12 tracking-tight">Showcase<span class="text-[#187cf4]">.</span></h2>
-            <div class="grid md:grid-cols-2 gap-10">
-                <div class="work-item" style="transition-delay: 0.1s"><img src="assets/dubaiwork1.png" class="work-img glow-dubai1" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.2s"><img src="assets/dubaiwork2.png" class="work-img glow-dubai2" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.3s"><img src="assets/judahwork1.png" class="work-img glow-judah1" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.4s"><img src="assets/judahwork2.png" class="work-img glow-judah2" data-tilt onclick="openLightbox(this.src)"></div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fas fa-car text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Liveries</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Elite ER:LC department skins. We focus on clean lines, accurate terminology, and professional aesthetics for your fleet.</p>
             </div>
-            <div class="text-center mt-20">
-                <button onclick="showPage('home')" class="glass-card px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest">Back Home</button>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fas fa-lightbulb text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">ELS</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Realistic Emergency Lighting Systems for ER:LC. We synchronize patterns and intensities to provide the most immersive response experience available.</p>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fas fa-camera text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Photography</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Cinematic in-game captures. We utilize advanced lighting techniques to turn your RP moments into promotional masterpieces.</p>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
+                <i class="fab fa-discord text-[#187cf4] text-3xl mb-4"></i>
+                <h3 class="font-bold text-xl mb-2">Discord</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Professional server architecture and automation. From security bots to custom embed systems, we build communities that last.</p>
             </div>
         </section>
     </main>
 
-    <footer class="text-center py-20 relative z-10 border-t border-white/5">
-        <p class="text-gray-600 text-[10px] uppercase tracking-[0.5em]">&copy; 2026 Judah's Customs | contact@jcustoms.org</p>
-    </footer>
+    <main id="work-page" class="page container mx-auto px-10 pt-10">
+        <h2 class="text-4xl font-black mb-12">Showcase<span class="text-[#187cf4]">.</span></h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="work-item"><img src="assets/dubaiwork1.png" class="work-img glow-dubai1" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/dubaiwork2.png" class="work-img glow-dubai2" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/judahwork1.png" class="work-img glow-judah1" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/judahwork2.png" class="work-img glow-judah2" onclick="openLightbox(this.src)" data-tilt></div>
+            
+            <div class="work-item"><img src="assets/design1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design3.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design4.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design5.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design6.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design7.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design8.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design9.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design10.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design11.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design12.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design13.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design14.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design15.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design16.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+            <div class="work-item"><img src="assets/design17.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
+        </div>
+
+        <div class="text-center py-24"><button onclick="showPage('home')" class="glass-card px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest">Back Home</button></div>
+    </main>
+
+    <footer class="text-center py-10 opacity-30 text-[10px] uppercase tracking-[0.5em]">&copy; 2026 Judah's Customs</footer>
 
     <script>
         const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
         function handleContact() {
-            // Copy Logic
             navigator.clipboard.writeText('contact@jcustoms.org');
-            
-            // UI Feedback
             const toast = document.getElementById('contact-toast');
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        function setupHovers() {
-            document.querySelectorAll('a, button, .glass-card, .work-img').forEach(el => {
-                el.onmouseenter = () => { cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; cursor.style.background = 'white'; cursor.style.mixBlendMode = 'difference'; };
-                el.onmouseleave = () => { cursor.style.transform = 'translate(-50%, -50%) scale(1)'; cursor.style.background = '#187cf4'; cursor.style.mixBlendMode = 'normal'; };
-            });
         }
 
         function showPage(pageId) {
@@ -187,26 +160,36 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(pageId + '-page').classList.add('active-page');
             setTimeout(() => {
-                VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 8, speed: 400, glare: true, "max-glare": 0.1 });
+                VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
                 setupHovers();
             }, 100);
         }
 
+        function setupHovers() {
+            document.querySelectorAll('a, button, .work-img, .glass-card').forEach(el => {
+                el.onmouseenter = () => { cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; cursor.style.background = 'white'; cursor.style.mixBlendMode = 'difference'; };
+                el.onmouseleave = () => { cursor.style.transform = 'translate(-50%, -50%) scale(1)'; cursor.style.background = '#187cf4'; cursor.style.mixBlendMode = 'normal'; };
+            });
+        }
+
         function openLightbox(src) {
             const lb = document.getElementById('lightbox');
-            document.getElementById('lightbox-img').src = src;
+            const img = document.getElementById('lightbox-img');
+            img.src = src;
             lb.classList.add('open');
+            setTimeout(() => img.style.transform = 'scale(1)', 10);
             cursor.style.opacity = '0';
         }
 
         function closeLightbox() {
             const lb = document.getElementById('lightbox');
-            lb.classList.remove('open');
-            setTimeout(() => cursor.style.opacity = '1', 300);
+            const img = document.getElementById('lightbox-img');
+            img.style.transform = 'scale(0.9)';
+            setTimeout(() => { lb.classList.remove('open'); cursor.style.opacity = '1'; }, 300);
         }
 
         setupHovers();
-        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 8, speed: 400, glare: true, "max-glare": 0.1 });
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
     </script>
 </body>
 </html>
