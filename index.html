@@ -13,63 +13,84 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-
         :root { --brand-blue: #187cf4; --bg-dark: #030303; }
-        
-        body { 
-            background-color: var(--bg-dark); 
-            color: white; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            overflow-x: hidden; 
-            cursor: none; 
-            scroll-behavior: smooth;
-        }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; cursor: none; scroll-behavior: smooth; }
 
-        /* Background Texture & Pulse */
-        .noise-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 50; }
+        /* Background Effects */
+        .noise-bg { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 50; }
         .glow-sphere { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(24, 124, 244, 0.12) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: pulse 12s infinite alternate; }
-        @keyframes pulse { 0% { transform: translate(-10%, -10%) scale(1); } 100% { transform: translate(20%, 20%) scale(1.1); } }
+        @keyframes pulse { from { transform: translate(-10%, -10%); } to { transform: translate(15%, 15%); } }
 
-        /* Custom Cursor */
+        /* Cursor */
         #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transition: transform 0.1s ease; transform: translate(-50%, -50%); }
 
-        /* UI Elements */
-        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.2); }
-
-        /* Page Logic */
+        /* Page System */
         .page { display: none; opacity: 0; }
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Work Section & Custom Glows */
+        /* Glass Cards */
+        .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.2); }
+
+        /* Work Items & Glows */
         .work-item { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
         .active-page .work-item { opacity: 1; transform: translateY(0); }
-        
-        .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s; border: 1px solid rgba(255,255,255,0.05); background: #111; }
+        .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s; border: 1px solid rgba(255,255,255,0.05); }
         .work-img:hover { transform: scale(1.02); }
 
-        /* Custom Work Glows */
         .glow-dubai1:hover { filter: drop-shadow(0 0 25px #4a1b1f); border-color: #4a1b1f; }
         .glow-dubai2:hover { filter: drop-shadow(0 0 25px #5c2a40); border-color: #5c2a40; }
         .glow-judah1:hover { filter: drop-shadow(0 0 25px #d42a40); border-color: #d42a40; }
         .glow-judah2:hover { filter: drop-shadow(0 0 25px #232323); border-color: #232323; }
 
+        /* Custom Notification (Toast) */
+        #contact-toast { 
+            position: fixed; 
+            top: 40px; 
+            right: 40px; 
+            z-index: 10001; 
+            padding: 16px 28px; 
+            border-radius: 20px; 
+            background: rgba(24, 124, 244, 0.1); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(24, 124, 244, 0.4); 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(24, 124, 244, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #contact-toast.show { transform: translateX(0); }
+
         /* Lightbox */
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: zoom-out; }
-        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #lightbox.open { display: flex; }
+        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #lightbox.open img { transform: scale(1); }
     </style>
 </head>
 <body>
 
     <div id="cursor"></div>
+
+    <div id="contact-toast">
+        <div class="bg-[#187cf4] rounded-full w-8 h-8 flex items-center justify-center">
+            <i class="fas fa-check text-xs"></i>
+        </div>
+        <div>
+            <p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Email Copied</p>
+            <p class="text-sm font-bold">contact@jcustoms.org</p>
+        </div>
+    </div>
+
     <div class="noise-bg"></div>
     <div class="glow-sphere" style="top: -10%; left: -10%;"></div>
     
     <div id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="Showcase Preview">
+        <img id="lightbox-img" src="">
     </div>
 
     <nav class="flex justify-between items-center px-10 py-8 max-w-7xl mx-auto relative z-10">
@@ -77,9 +98,11 @@
         <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.3em] font-bold text-gray-400">
             <button onclick="showPage('home')" class="hover:text-white transition uppercase">Home</button>
             <button onclick="showPage('work')" class="hover:text-white transition uppercase">Work</button>
-            <a href="https://discord.gg/judah" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">Discord</a>
+            <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition uppercase">Discord</a>
         </div>
-        <a href="mailto:contact@jcustoms.org" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] hover:text-white transition-all">Contact</a>
+        <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] hover:text-white transition-all">
+            Contact
+        </button>
     </nav>
 
     <main id="home-page" class="page active-page">
@@ -88,11 +111,11 @@
                 Bringing your <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.
             </h1>
             <div class="flex flex-wrap justify-center gap-6">
-                <a href="https://discord.gg/judah" target="_blank" rel="noopener noreferrer" class="bg-[#187cf4] shadow-[0_0_30px_rgba(24,124,244,0.4)] px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition-transform">
+                <a href="https://discord.gg/judah" target="_blank" class="bg-[#187cf4] shadow-[0_0_30px_rgba(24,124,244,0.4)] px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:scale-105 transition">
                     Join Discord
                 </a>
                 <button onclick="showPage('work')" class="glass-card px-10 py-4 rounded-full font-bold text-sm uppercase tracking-widest">
-                    Professional Work
+                    Explore Assets
                 </button>
             </div>
         </section>
@@ -101,27 +124,17 @@
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-pen-nib text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Graphics</h3>
-                <p class="text-gray-500 text-sm">High-quality graphics tailored to your design needs. We craft visuals that command attention and define your identity across all platforms.</p>
+                <p class="text-gray-500 text-sm">High-quality graphics tailored to your design needs.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-tshirt text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Clothing</h3>
-                <p class="text-gray-500 text-sm">Roblox clothing that comes in premium quality and fits your needs perfectly. Detailed textures and modern fits designed for the discerning avatar.</p>
+                <p class="text-gray-500 text-sm">Premium quality Roblox clothing with modern fits.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-car text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Liveries</h3>
-                <p class="text-gray-500 text-sm">High quality ER:LC liveries that fit the standard of your server. Sharp lines and realistic department designs for maximum roleplay immersion.</p>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-camera text-[#187cf4] text-3xl mb-6"></i>
-                <h3 class="text-xl font-bold mb-3">Photography</h3>
-                <p class="text-gray-500 text-sm">Capturing the immersive roleplay experience within your ER:LC server. Cinematic shots that showcase your community's best moments in high definition.</p>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fab fa-discord text-[#187cf4] text-3xl mb-6"></i>
-                <h3 class="text-xl font-bold mb-3">Discord</h3>
-                <p class="text-gray-500 text-sm">Advanced Discord automation and setup that makes management effortless. Custom bots and structures designed to scale with your community.</p>
+                <p class="text-gray-500 text-sm">High quality ER:LC liveries for professional roleplay.</p>
             </div>
         </section>
     </main>
@@ -130,18 +143,10 @@
         <section class="max-w-7xl mx-auto px-10 py-10">
             <h2 class="text-4xl font-black mb-12 tracking-tight">Showcase<span class="text-[#187cf4]">.</span></h2>
             <div class="grid md:grid-cols-2 gap-10">
-                <div class="work-item" style="transition-delay: 0.1s">
-                    <img src="assets/dubaiwork1.png" class="work-img glow-dubai1" data-tilt onclick="openLightbox(this.src)">
-                </div>
-                <div class="work-item" style="transition-delay: 0.2s">
-                    <img src="assets/dubaiwork2.png" class="work-img glow-dubai2" data-tilt onclick="openLightbox(this.src)">
-                </div>
-                <div class="work-item" style="transition-delay: 0.3s">
-                    <img src="assets/judahwork1.png" class="work-img glow-judah1" data-tilt onclick="openLightbox(this.src)">
-                </div>
-                <div class="work-item" style="transition-delay: 0.4s">
-                    <img src="assets/judahwork2.png" class="work-img glow-judah2" data-tilt onclick="openLightbox(this.src)">
-                </div>
+                <div class="work-item" style="transition-delay: 0.1s"><img src="assets/dubaiwork1.png" class="work-img glow-dubai1" data-tilt onclick="openLightbox(this.src)"></div>
+                <div class="work-item" style="transition-delay: 0.2s"><img src="assets/dubaiwork2.png" class="work-img glow-dubai2" data-tilt onclick="openLightbox(this.src)"></div>
+                <div class="work-item" style="transition-delay: 0.3s"><img src="assets/judahwork1.png" class="work-img glow-judah1" data-tilt onclick="openLightbox(this.src)"></div>
+                <div class="work-item" style="transition-delay: 0.4s"><img src="assets/judahwork2.png" class="work-img glow-judah2" data-tilt onclick="openLightbox(this.src)"></div>
             </div>
             <div class="text-center mt-20">
                 <button onclick="showPage('home')" class="glass-card px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest">Back Home</button>
@@ -160,18 +165,20 @@
             cursor.style.top = e.clientY + 'px';
         });
 
+        function handleContact() {
+            // Copy Logic
+            navigator.clipboard.writeText('contact@jcustoms.org');
+            
+            // UI Feedback
+            const toast = document.getElementById('contact-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
         function setupHovers() {
             document.querySelectorAll('a, button, .glass-card, .work-img').forEach(el => {
-                el.onmouseenter = () => { 
-                    cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; 
-                    cursor.style.background = 'white'; 
-                    cursor.style.mixBlendMode = 'difference'; 
-                };
-                el.onmouseleave = () => { 
-                    cursor.style.transform = 'translate(-50%, -50%) scale(1)'; 
-                    cursor.style.background = '#187cf4'; 
-                    cursor.style.mixBlendMode = 'normal'; 
-                };
+                el.onmouseenter = () => { cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; cursor.style.background = 'white'; cursor.style.mixBlendMode = 'difference'; };
+                el.onmouseleave = () => { cursor.style.transform = 'translate(-50%, -50%) scale(1)'; cursor.style.background = '#187cf4'; cursor.style.mixBlendMode = 'normal'; };
             });
         }
 
@@ -179,9 +186,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.getElementById(pageId + '-page').classList.add('active-page');
-            
             setTimeout(() => {
-                VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
+                VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 8, speed: 400, glare: true, "max-glare": 0.1 });
                 setupHovers();
             }, 100);
         }
@@ -189,19 +195,18 @@
         function openLightbox(src) {
             const lb = document.getElementById('lightbox');
             document.getElementById('lightbox-img').src = src;
-            lb.style.display = 'flex';
-            setTimeout(() => lb.classList.add('open'), 10);
+            lb.classList.add('open');
             cursor.style.opacity = '0';
         }
 
         function closeLightbox() {
             const lb = document.getElementById('lightbox');
             lb.classList.remove('open');
-            setTimeout(() => { lb.style.display = 'none'; cursor.style.opacity = '1'; }, 300);
+            setTimeout(() => cursor.style.opacity = '1', 300);
         }
 
         setupHovers();
-        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 8, speed: 400, glare: true, "max-glare": 0.1 });
     </script>
 </body>
 </html>
