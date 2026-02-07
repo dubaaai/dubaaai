@@ -4,87 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dubaaai</title>
-    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
     <style>
-        :root {
-            --pink: #e6bbc7;
-            --pink-glow: rgba(230, 187, 199, 0.6);
-            --black: #050505;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --blur: 24px;
-        }
-
+        :root { --pink: #e6bbc7; --pink-glow: rgba(230, 187, 199, 0.6); --black: #050505; --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08); --blur: 24px; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        
-        body {
-            background-color: var(--black);
-            color: #ffffff;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .bg-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 20% 30%, #1a1214 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, #0f1116 0%, transparent 40%);
-            filter: blur(80px);
-        }
-
+        body { background: var(--black); color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .bg-canvas { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 20% 30%, #1a1214 0%, transparent 40%), radial-gradient(circle at 80% 70%, #0f1116 0%, transparent 40%); filter: blur(80px); }
         .header { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 10; }
-        .brand { font-size: 13px; letter-spacing: 7px; text-transform: uppercase; color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300; transition: 0.3s; }
-        
+        .brand { font-size: 13px; letter-spacing: 7px; text-transform: uppercase; color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300; }
         .version-bar { display: flex; gap: 6px; background: var(--glass); padding: 5px; border-radius: 100px; border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); }
         .ver-btn { background: transparent; border: none; color: rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 100px; font-size: 11px; cursor: pointer; transition: 0.4s; }
         .ver-btn.active { background: rgba(230, 187, 199, 0.15); color: var(--pink); }
-
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 25px; max-width: 900px; margin: 0 auto; width: 100%; scrollbar-width: none; }
-        #chat-window::-webkit-scrollbar { display: none; }
-        
-        .msg {
-            max-width: 85%; padding: 18px 24px; border-radius: 26px; line-height: 1.6; font-size: 15px;
-            backdrop-filter: blur(var(--blur)); border: 1px solid var(--border);
-            animation: slideUp 0.4s ease forwards;
-        }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; max-width: 900px; margin: 0 auto; width: 100%; scrollbar-width: none; }
+        .msg { max-width: 85%; padding: 18px 24px; border-radius: 26px; line-height: 1.6; font-size: 15px; backdrop-filter: blur(var(--blur)); border: 1px solid var(--border); animation: slideUp 0.3s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
-
-        pre { background: #0d0d0d !important; padding: 16px; border-radius: 12px; overflow-x: auto; margin: 12px 0; border: 1px solid var(--border); }
-        code { font-family: 'Fira Code', monospace !important; font-size: 13px !important; }
-        
         .img-container { position: relative; margin-top: 10px; width: 100%; max-width: 400px; }
-        .img-content { width: 100%; border-radius: 15px; border: 1px solid var(--border); cursor: zoom-in; transition: 0.3s; }
-        .dl-btn { 
-            position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); 
-            border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; 
-            font-size: 10px; cursor: pointer; backdrop-filter: blur(4px); opacity: 0; transition: 0.3s;
-        }
+        .img-content { width: 100%; border-radius: 15px; border: 1px solid var(--border); }
+        .dl-btn { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; font-size: 10px; cursor: pointer; opacity: 0; transition: 0.3s; }
         .img-container:hover .dl-btn { opacity: 1; }
-
         .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
-        .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); }
+        .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); gap: 10px; }
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 15px; }
-        
-        .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.4; transition: 0.3s; display: flex; align-items: center; }
-        .icon-btn svg { width: 22px; height: 22px; fill: var(--pink); }
+        .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.5; transition: 0.3s; display: flex; align-items: center; }
         .icon-btn.active { opacity: 1; filter: drop-shadow(0 0 8px var(--pink-glow)); }
-
         .thinking .brand { animation: breathe 2s infinite; }
         @keyframes breathe { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body id="main-body">
-
     <div class="bg-canvas"></div>
-
     <div class="header">
         <div class="brand">dubaaai</div>
         <div class="version-bar">
@@ -94,95 +46,74 @@
             <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
         </div>
     </div>
-
-    <div id="chat-window">
-        </div>
-
+    <div id="chat-window"></div>
     <div class="input-area">
         <div class="input-container">
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </button>
+            <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileUpload(event)">
             <input type="text" id="user-input" placeholder="type sum..." oninput="toggleGlow()" autocomplete="off">
             <button class="icon-btn" id="send-trigger" onclick="send()">
-                <svg viewBox="0 0 24 24"><path d="m19.8 12.925l-15.4 6.5q-.5.2-.95-.088T3 18.5v-13q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925M5 17l11.85-5L5 7v3.5l6 1.5l-6 1.5zm0 0V7z"/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="m19.8 12.925l-15.4 6.5q-.5.2-.95-.088T3 18.5v-13q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925M5 17l11.85-5L5 7v3.5l6 1.5l-6 1.5zm0 0V7z"/></svg>
             </button>
         </div>
     </div>
-
     <script>
         let currentVer = "Fast", chatHistory = [];
-
-        const starts = {
-            Fast: "hey. i'm dubaaai. what's the move?",
-            Complex: "deep mode active. what are we analyzing today?",
-            Dev: "terminal ready. send the logic and i'll build it.",
-            Image: "visuals on. what are we creating?"
-        };
+        const starts = { Fast: "hey. i'm dubaaai. what's the move?", Complex: "deep mode active. what are we analyzing?", Dev: "terminal ready. send the logic.", Image: "visuals on. what are we creating?" };
 
         function setVer(v, btn) {
-            currentVer = v;
-            chatHistory = []; 
-            document.getElementById('chat-window').innerHTML = ''; 
-            
+            currentVer = v; chatHistory = []; document.getElementById('chat-window').innerHTML = '';
             document.querySelectorAll('.ver-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            addMessage(starts[v], 'ai');
+            btn.classList.add('active'); addMessage(starts[v], 'ai');
         }
 
-        function toggleGlow() {
-            const val = document.getElementById('user-input').value.trim();
-            document.getElementById('send-trigger').classList.toggle('active', val.length > 0);
-        }
+        function toggleGlow() { document.getElementById('send-trigger').classList.toggle('active', document.getElementById('user-input').value.trim().length > 0); }
 
         function addMessage(content, type, isImg = false) {
             const win = document.getElementById('chat-window'), div = document.createElement('div');
             div.className = `msg ${type}`;
-            
             if (isImg) {
                 const container = document.createElement('div'); container.className = 'img-container';
                 const img = document.createElement('img'); img.src = content; img.className = 'img-content';
                 const btn = document.createElement('button'); btn.className = 'dl-btn'; btn.innerText = 'Download';
-                btn.onclick = () => { const a = document.createElement('a'); a.href = content; a.download = `gen-${Date.now()}.png`; a.click(); };
+                btn.onclick = () => { const a = document.createElement('a'); a.href = content; a.download = 'dubaaai.png'; a.click(); };
                 container.append(img, btn); div.appendChild(container);
             } else {
                 div.innerHTML = type === 'ai' ? marked.parse(content) : content.toLowerCase();
                 if (type === 'ai') div.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
             }
-            
-            win.appendChild(div);
-            win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
+            win.appendChild(div); win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
 
         async function send() {
             const input = document.getElementById('user-input'), text = input.value.trim();
             if (!text) return;
-
-            addMessage(text, 'user');
-            input.value = ''; toggleGlow();
+            addMessage(text, 'user'); input.value = ''; toggleGlow();
             document.getElementById('main-body').classList.add('thinking');
-            
             chatHistory.push({ role: "user", content: text });
-
             try {
-                const res = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ messages: chatHistory, currentVer, text })
-                });
-                
+                const res = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: chatHistory, currentVer, text }) });
                 const data = await res.json();
                 document.getElementById('main-body').classList.remove('thinking');
-
-                if (data.isImage) {
-                    addMessage(data.url, 'ai', true);
-                } else {
-                    addMessage(data.content, 'ai');
-                    chatHistory.push({ role: "assistant", content: data.content });
-                }
-            } catch (e) {
-                document.getElementById('main-body').classList.remove('thinking');
-                addMessage("bridge is acting up.", 'ai');
-            }
+                if (data.isImage) { addMessage(data.url, 'ai', true); }
+                else { addMessage(data.content, 'ai'); chatHistory.push({ role: "assistant", content: data.content }); }
+            } catch (e) { addMessage("bridge error.", 'ai'); document.getElementById('main-body').classList.remove('thinking'); }
         }
+
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) { const reader = new FileReader(); reader.onload = (f) => addMessage(f.target.result, 'user', true); reader.readAsDataURL(file); }
+        }
+
+        window.addEventListener('paste', e => {
+            const item = e.clipboardData.items[0];
+            if (item && item.type.includes('image')) {
+                const blob = item.getAsFile(), reader = new FileReader();
+                reader.onload = (f) => addMessage(f.target.result, 'user', true); reader.readAsDataURL(blob);
+            }
+        });
 
         window.onload = () => addMessage(starts.Fast, 'ai');
         document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
