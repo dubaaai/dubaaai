@@ -179,10 +179,10 @@
                         <div class="flex gap-4">
                             <input type="text" id="new-form-time" placeholder="Est. Time (e.g. 5m)" class="form-input">
                             <input type="text" id="new-form-role" placeholder="Required Role ID" class="form-input">
-                        </div>
-                        <div id="questions-list" class="space-y-3 mt-6"></div>
+             <div id="questions-list" class="space-y-3 mt-6"></div>
                         <button onclick="addQuestion()" class="w-full border border-dashed border-blue-500/30 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest text-blue-400 hover:bg-blue-400/5 transition">+ Add Question</button>
-                        <button onclick="saveForm()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase tracking-widest mt-6">Publish Form</button>
+                        <button onclick="saveForm()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase tracking-widest mt-6 hover:bg-blue-500 shadow-[0_0_15px_rgba(24,124,244,0.3)] transition-all">Publish Form</button>
+                        <button onclick="deleteActiveForm()" class="w-full border border-red-500/20 bg-red-500/5 py-3 rounded-xl font-bold uppercase tracking-widest mt-3 text-red-500/70 hover:text-red-500 hover:bg-red-500/10 transition-all text-[10px]">Delete Active Form</button>
                     </div>
                 </div>
                 <div class="glass-card p-8 rounded-[2rem]">
