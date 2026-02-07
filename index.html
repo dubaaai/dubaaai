@@ -3,284 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai | pilot</title>
+    <title>dubaaai | ghost pilot</title>
+    <script src="https://js.puter.com/v2/"></script>
     <style>
         :root {
             --pink: #e6bbc7;
             --pink-glow: rgba(230, 187, 199, 0.4);
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --bg: #050505;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: white; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-        body {
-            background: var(--bg);
-            color: white;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+        /* Background Orbs */
+        .orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 187, 199, 0.1) 0%, transparent 70%); filter: blur(80px); border-radius: 50%; z-index: -1; animation: float 20s infinite alternate ease-in-out; }
+        .orb-2 { right: -100px; bottom: -100px; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(-5%, -5%); } 100% { transform: translate(5%, 10%); } }
 
-        /* Animated Background Orbs */
-        .orb {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(230, 187, 199, 0.15) 0%, transparent 70%);
-            filter: blur(80px); border-radius: 50%; z-index: -1;
-            animation: float 25s infinite alternate ease-in-out;
-        }
-        .orb-2 { right: -100px; bottom: -100px; animation-delay: -5s; background: radial-gradient(circle, rgba(230, 187, 199, 0.08) 0%, transparent 70%); }
-        @keyframes float {
-            0% { transform: translate(-10%, -10%) scale(1); }
-            100% { transform: translate(10%, 15%) scale(1.1); }
-        }
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); transition: 0.8s; }
+        .glass-card { background: var(--glass); backdrop-filter: blur(50px); border: 1px solid var(--glass-border); padding: 60px 50px; border-radius: 40px; width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        
+        /* UI Elements */
+        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; display: inline-block; border: 1px solid rgba(230, 187, 199, 0.2); }
+        h2 { font-weight: 200; margin-bottom: 30px; letter-spacing: -1px; }
+        input, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px 25px; color: white; outline: none; transition: 0.4s; }
+        input:focus, textarea:focus { border-color: var(--pink); box-shadow: 0 0 20px var(--pink-glow); }
+        .btn-prime { width: 100%; background: var(--pink); color: #000; border: none; padding: 18px; border-radius: 20px; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+        .btn-prime:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--pink-glow); }
 
-        /* The Glass Module (Login) */
-        #login-screen {
-            position: fixed; inset: 0; z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(15px); transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card {
-            background: var(--glass);
-            backdrop-filter: blur(40px);
-            border: 1px solid var(--glass-border);
-            padding: 60px 50px;
-            border-radius: 40px;
-            width: 420px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255,255,255,0.1);
-            position: relative;
-        }
-
-        .brand-pill {
-            background: rgba(230, 187, 199, 0.1);
-            color: var(--pink);
-            font-size: 10px;
-            padding: 6px 15px;
-            border-radius: 100px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 25px;
-            border: 1px solid rgba(230, 187, 199, 0.2);
-        }
-
-        h2 { font-weight: 200; font-size: 28px; letter-spacing: -0.5px; margin-bottom: 35px; }
-
-        /* Beautiful Inputs */
-        .input-group { position: relative; margin-bottom: 25px; }
-        input, textarea {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 18px 25px;
-            color: white;
-            font-size: 14px;
-            outline: none;
-            transition: 0.4s;
-        }
-        input:focus, textarea:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--pink);
-            box-shadow: 0 0 25px rgba(230, 187, 199, 0.2);
-        }
-
-        /* Pink Action Button */
-        .btn-prime {
-            width: 100%;
-            background: var(--pink);
-            color: #000;
-            border: none;
-            padding: 18px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.5s;
-            box-shadow: 0 10px 20px -5px rgba(230, 187, 199, 0.3);
-        }
-        .btn-prime:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px -5px rgba(230, 187, 199, 0.5);
-            letter-spacing: 3px;
-        }
-
-        /* Client Interface */
-        #client-ui {
-            display: none; width: 100%; height: 100%; display: flex;
-            opacity: 0; transform: scale(1.05); transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #client-ui.active { display: flex; opacity: 1; transform: scale(1); }
-
-        .sidebar {
-            width: 320px;
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(50px);
-            border-right: 1px solid var(--glass-border);
-            display: flex; flex-direction: column;
-        }
-
-        .main-stage { flex: 1; display: flex; flex-direction: column; position: relative; }
-
-        .item-row {
-            padding: 15px 25px; margin: 4px 15px; border-radius: 15px;
-            cursor: pointer; color: #888; font-size: 13px;
-            transition: 0.3s; display: flex; align-items: center;
-        }
-        .item-row:hover { background: rgba(255,255,255,0.05); color: var(--pink); }
-        .item-row.active { background: rgba(230, 187, 199, 0.1); color: var(--pink); border: 1px solid rgba(230, 187, 199, 0.2); }
-
-        .sidebar-label { font-size: 9px; text-transform: uppercase; letter-spacing: 4px; color: #555; padding: 30px 25px 10px; }
-
-        #auth-status { font-size: 11px; margin-top: 20px; letter-spacing: 1px; }
-        .success { color: #a3e635; }
-        .error { color: #fb7185; }
-
-        .hidden { opacity: 0; pointer-events: none; transform: scale(0.9) !important; }
+        /* Main App */
+        #client-ui { display: none; width: 100%; height: 100%; opacity: 0; transition: 1s; }
+        .sidebar { width: 300px; background: rgba(0,0,0,0.3); backdrop-filter: blur(40px); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
+        .main-stage { flex: 1; display: flex; flex-direction: column; }
+        .item { padding: 15px 25px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: #777; font-size: 13px; transition: 0.2s; }
+        .item:hover { background: rgba(255,255,255,0.05); color: var(--pink); }
+        .item.active { background: rgba(230, 187, 199, 0.1); color: var(--pink); }
+        .label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #444; padding: 25px 25px 10px; }
+        #status-msg { font-size: 11px; margin-top: 15px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-
-    <div class="orb"></div>
-    <div class="orb orb-2"></div>
+    <div class="orb"></div><div class="orb orb-2"></div>
 
     <div id="login-screen">
         <div class="glass-card">
-            <div class="brand-pill">Terminal Link</div>
-            <h2>Initialize Pilot</h2>
-            <div class="input-group">
-                <input type="password" id="token-input" placeholder="Enter Bot Token">
-            </div>
-            <button class="btn-prime" onclick="connect()">Connect to Grid</button>
-            <div id="auth-status"></div>
+            <div class="brand-pill">Ghost Link v2</div>
+            <h2>System Initialize</h2>
+            <input type="password" id="token-input" placeholder="Bot Token">
+            <button class="btn-prime" onclick="init()">Establish Connection</button>
+            <div id="status-msg"></div>
         </div>
     </div>
 
-    <div id="client-ui">
+    <div id="client-ui" style="display: flex;">
         <div class="sidebar">
-            <div style="padding: 40px 25px;">
-                <div class="brand-pill" style="margin:0">Active Session</div>
-                <h3 id="bot-tag" style="margin-top:10px; font-weight:300; font-size:18px;">...</h3>
-            </div>
-            
-            <div class="sidebar-label">Servers</div>
-            <div id="guild-list" style="flex: 0.4; overflow-y: auto;"></div>
-            
-            <div class="sidebar-label" style="border-top: 1px solid var(--glass-border); margin-top: 10px;">Channels</div>
-            <div id="channel-list" style="flex: 0.6; overflow-y: auto;"></div>
+            <div class="label">Servers</div>
+            <div id="g-list" style="overflow-y: auto; flex: 1;"></div>
+            <div class="label" style="border-top: 1px solid var(--glass-border)">Channels</div>
+            <div id="c-list" style="overflow-y: auto; flex: 1.5;"></div>
         </div>
-
         <div class="main-stage">
             <div style="padding: 60px 50px;">
-                <span id="nav-hint" style="font-size: 10px; color: var(--pink); letter-spacing: 4px; text-transform: uppercase;">Awaiting Target</span>
-                <h1 id="channel-heading" style="font-weight: 200; font-size: 42px; margin-top: 10px;">Transmission Console</h1>
+                <span id="target-g" style="font-size: 10px; color: var(--pink); letter-spacing: 4px;">TARGET UNSET</span>
+                <h1 id="target-c" style="font-weight: 200; font-size: 42px; margin-top: 10px;">Transmission</h1>
             </div>
-
-            <div style="flex: 1;"></div>
-
-            <div style="padding: 50px; background: linear-gradient(0deg, var(--bg) 0%, transparent 100%);">
-                <textarea id="msg-input" rows="4" placeholder="Draft transmission content..."></textarea>
-                <button class="btn-prime" id="send-btn" style="margin-top: 20px;" onclick="transmit()">Execute Send</button>
-                <div id="tx-status" style="text-align: center; margin-top: 20px; font-size: 11px; letter-spacing: 1px;"></div>
+            <div style="flex:1"></div>
+            <div style="padding: 50px;">
+                <textarea id="msg" rows="4" placeholder="Input transmission..."></textarea>
+                <button class="btn-prime" onclick="sendTx()">Execute Send</button>
             </div>
         </div>
     </div>
 
     <script>
-        let sessionToken = "";
-        let targetChannel = null;
-        const PROXY = "https://corsproxy.io/?"; 
-        const API = "https://discord.com/api/v10";
+        let TOKEN = "";
+        let CID = null;
 
-        async function call(path, method = "GET", body = null) {
-            const url = `${PROXY}${encodeURIComponent(API + path)}`;
-            const opts = { method, headers: { "Authorization": `Bot ${sessionToken}`, "Content-Type": "application/json" } };
-            if (body) opts.body = JSON.stringify(body);
-            return await fetch(url, opts);
+        async function api(path, method = "GET", body = null) {
+            // Using Puter.js fetch which acts as a built-in proxy to bypass CORS
+            return await puter.fetch(`https://discord.com/api/v10${path}`, {
+                method,
+                headers: { "Authorization": `Bot ${TOKEN}`, "Content-Type": "application/json" },
+                body: body ? JSON.stringify(body) : null
+            });
         }
 
-        async function connect() {
-            const input = document.getElementById('token-input');
-            const status = document.getElementById('auth-status');
-            sessionToken = input.value.trim();
-            
-            if(!sessionToken) return;
-            status.innerText = "BYPASSING SECURITY...";
-            status.className = "";
+        async function init() {
+            TOKEN = document.getElementById('token-input').value.trim();
+            const status = document.getElementById('status-msg');
+            if(!TOKEN) return;
+            status.innerText = "BYPASSING GRID...";
 
             try {
-                const res = await call("/users/@me");
+                const res = await api("/users/@me");
                 if(res.ok) {
-                    const data = await res.json();
-                    document.getElementById('bot-tag').innerText = `${data.username}`;
-                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('login-screen').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('login-screen').style.display = 'none';
                         const ui = document.getElementById('client-ui');
-                        ui.style.display = 'flex';
-                        setTimeout(() => ui.classList.add('active'), 50);
-                        loadGuilds();
+                        ui.style.opacity = '1';
+                        loadG();
                     }, 800);
-                } else {
-                    status.innerText = "LINK SEVERED: INVALID TOKEN";
-                    status.className = "error";
-                }
-            } catch (e) { status.innerText = "CONNECTION BLOCKED"; status.className = "error"; }
+                } else { status.innerText = "ACCESS DENIED"; }
+            } catch (e) { status.innerText = "CONNECTION BLOCKED"; }
         }
 
-        async function loadGuilds() {
-            const res = await call("/users/@me/guilds");
-            const guilds = await res.json();
-            document.getElementById('guild-list').innerHTML = guilds.map(g => 
-                `<div class="item-row" onclick="loadChannels('${g.id}', '${g.name}')">${g.name}</div>`
+        async function loadG() {
+            const res = await api("/users/@me/guilds");
+            const data = await res.json();
+            document.getElementById('g-list').innerHTML = data.map(g => 
+                `<div class="item" onclick="loadC('${g.id}', '${g.name}')">${g.name}</div>`
             ).join('');
         }
 
-        async function loadChannels(gid, gname) {
-            document.getElementById('nav-hint').innerText = gname;
-            const res = await call(`/guilds/${gid}/channels`);
-            const channels = await res.json();
-            document.getElementById('channel-list').innerHTML = channels
-                .filter(c => c.type === 0)
-                .map(c => `<div class="item-row" onclick="selectChannel('${c.id}', '${c.name}')"># ${c.name}</div>`)
-                .join('');
+        async function loadC(id, name) {
+            document.getElementById('target-g').innerText = name.toUpperCase();
+            const res = await api(`/guilds/${id}/channels`);
+            const data = await res.json();
+            document.getElementById('c-list').innerHTML = data.filter(c => c.type === 0).map(c => 
+                `<div class="item" onclick="setC('${c.id}', '${c.name}')"># ${c.name}</div>`
+            ).join('');
         }
 
-        function selectChannel(id, name) {
-            targetChannel = id;
-            document.getElementById('channel-heading').innerText = "#" + name;
-            document.querySelectorAll('.item-row').forEach(el => el.classList.remove('active'));
+        function setC(id, name) {
+            CID = id;
+            document.getElementById('target-c').innerText = "#" + name;
+            document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
             event.currentTarget.classList.add('active');
         }
 
-        async function transmit() {
-            if(!targetChannel) return;
-            const input = document.getElementById('msg-input');
-            const status = document.getElementById('tx-status');
-            const btn = document.getElementById('send-btn');
-            
-            if(!input.value.trim()) return;
-
-            btn.innerText = "TRANSMITTING...";
-            const res = await call(`/channels/${targetChannel}/messages`, "POST", { content: input.value });
-            
-            if(res.ok) {
-                status.innerText = "TRANSMISSION SUCCESSFUL";
-                status.className = "success";
-                input.value = "";
-            } else {
-                status.innerText = "TRANSMISSION FAILED";
-                status.className = "error";
-            }
-            btn.innerText = "EXECUTE SEND";
+        async function sendTx() {
+            if(!CID) return;
+            const content = document.getElementById('msg').value;
+            await api(`/channels/${CID}/messages`, "POST", { content });
+            document.getElementById('msg').value = "";
         }
     </script>
 </body>
