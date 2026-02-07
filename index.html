@@ -4,190 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dubaaai | admin-os</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;600&family=JetBrains+Mono:wght@100&display=swap');
 
         :root {
             --pink: #e6bbc7;
             --pink-glow: rgba(230, 187, 199, 0.4);
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --bg: #030303;
+            --border: rgba(255, 255, 255, 0.05);
+            --bg: #010101;
+            --grid-color: rgba(230, 187, 199, 0.03);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; cursor: none; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden; 
+        }
 
-        /* Background Visuals */
-        .orb { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 187, 199, 0.05) 0%, transparent 70%); filter: blur(100px); z-index: -1; }
+        /* --- THE DYNAMIC GRID BACKGROUND --- */
+        .background-container {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: 
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: center;
+        }
 
-        /* THE GATE (Login Popup) */
+        /* Moving Mouse Spotlight */
+        #spotlight {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle 400px at var(--x, 50%) var(--y, 50%), rgba(230, 187, 199, 0.08), transparent 80%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 8px; height: 8px; background: var(--pink); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 9999;
+            box-shadow: 0 0 15px var(--pink); transition: transform 0.1s;
+        }
+
+        /* --- THE LOGIN GATE --- */
         #login-gate {
-            width: 400px; padding: 50px 40px;
-            background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(50px);
+            width: 450px; padding: 60px 40px;
+            background: rgba(2, 2, 2, 0.6);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 30px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-radius: 20px;
             text-align: center;
             z-index: 100;
-            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        .gate-header { font-size: 10px; letter-spacing: 10px; color: var(--pink); text-transform: uppercase; margin-bottom: 30px; font-weight: 600; }
+        .gate-title { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; letter-spacing: 12px; color: var(--pink); 
+            text-transform: uppercase; margin-bottom: 40px; opacity: 0.6; 
+        }
         
         .pass-input {
-            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            padding: 15px; border-radius: 12px; color: white; text-align: center;
-            font-size: 18px; font-weight: 100; outline: none; transition: 0.4s;
-            margin-bottom: 20px;
+            width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+            padding: 18px; border-radius: 5px; color: white; text-align: center;
+            font-size: 14px; font-weight: 200; outline: none; transition: 0.5s;
+            margin-bottom: 25px; font-family: 'JetBrains Mono', monospace;
         }
 
-        .pass-input:focus { border-color: var(--pink); box-shadow: 0 0 30px var(--pink-glow); }
+        .pass-input:focus { border-color: var(--pink); box-shadow: 0 0 20px rgba(230, 187, 199, 0.1); }
 
         .auth-btn {
             background: transparent; color: var(--pink); border: 1px solid var(--pink);
-            padding: 10px 30px; border-radius: 30px; font-size: 10px; letter-spacing: 3px;
-            cursor: pointer; transition: 0.3s; font-weight: 600;
+            padding: 12px 40px; border-radius: 2px; font-size: 10px; letter-spacing: 4px;
+            cursor: pointer; transition: 0.4s; font-weight: 600; text-transform: uppercase;
         }
 
-        .auth-btn:hover { background: var(--pink); color: black; box-shadow: 0 0 40px var(--pink-glow); }
+        .auth-btn:hover { background: var(--pink); color: black; box-shadow: 0 0 30px var(--pink-glow); }
 
-        /* THE MAIN CONSOLE (Hidden by default) */
+        /* --- MAIN HUB --- */
         #admin-hub {
-            display: none; width: 90%; max-width: 1100px; height: 80vh;
-            flex-direction: column; opacity: 0; transition: 1s ease;
+            display: none; width: 92%; max-width: 1200px; height: 85vh;
+            flex-direction: column; opacity: 0; transform: translateY(30px);
+            transition: 1.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .hub-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .hub-title { font-size: 12px; letter-spacing: 8px; color: var(--pink); text-transform: uppercase; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .header h1 { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 8px; color: var(--pink); text-transform: uppercase; opacity: 0.8; }
 
-        .grid-layout { display: grid; grid-template-columns: 2fr 1.2fr; gap: 25px; height: 100%; }
+        .grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 30px; height: 100%; }
 
-        .glass-panel {
-            background: var(--glass); backdrop-filter: blur(60px);
-            border: 1px solid var(--border); border-radius: 30px;
-            padding: 40px; display: flex; flex-direction: column;
+        .panel {
+            background: rgba(2, 2, 2, 0.4); backdrop-filter: blur(40px);
+            border: 1px solid var(--border); border-radius: 15px;
+            padding: 40px; position: relative;
+            transform-style: preserve-3d;
         }
 
-        /* CDN Dropzone */
-        .dropzone {
-            flex-grow: 1; border: 2px dashed rgba(230,187,199,0.1);
-            border-radius: 20px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: 0.3s;
-            cursor: pointer;
-        }
-        .dropzone:hover { border-color: var(--pink); background: rgba(230,187,199,0.02); }
+        .label { font-size: 9px; color: #444; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; }
 
-        /* Tiny Label Styles */
-        .label { font-size: 9px; color: #444; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; }
+        .drop-area {
+            width: 100%; height: 250px; border: 1px dashed rgba(230,187,199,0.1);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+
+        #ping { font-family: 'JetBrains Mono', monospace; text-shadow: 0 0 20px var(--pink-glow); }
+
+        /* Animation for successful login */
+        .scanline {
+            width: 100%; height: 100px; background: linear-gradient(to bottom, transparent, rgba(230, 187, 199, 0.05), transparent);
+            position: fixed; top: -100px; left: 0; z-index: 10; pointer-events: none;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan { 0% { top: -100px; } 100% { top: 100vh; } }
     </style>
 </head>
 <body>
 
-    <div class="orb"></div>
+    <div class="background-container"></div>
+    <div id="spotlight"></div>
+    <div id="cursor"></div>
+    <div class="scanline"></div>
 
-    <div id="login-gate">
-        <div class="gate-header">Identity Required</div>
-        <input type="password" id="pass-field" class="pass-input" placeholder="••••••••" onkeypress="handleEnter(event)">
-        <button class="auth-btn" onclick="authorize()">Authorize</button>
+    <div id="login-gate" data-tilt data-tilt-max="5" data-tilt-glare data-tilt-max-glare="0.1">
+        <div class="gate-title">System // Locked</div>
+        <input type="password" id="pass-field" class="pass-input" placeholder="ACCESS KEY">
+        <button class="auth-btn" onclick="authorize()">Unlock</button>
     </div>
 
     <div id="admin-hub">
-        <div class="hub-header">
-            <div class="hub-title">dubaaai // admin-os</div>
-            <div id="status-tag" style="font-size: 10px; color: #444;">SYNC_STATUS: <span style="color: #0f0;">ONLINE</span></div>
+        <div class="header">
+            <h1>dubaaai / admin-os</h1>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #333;">SECURED_SESSION_ACTIVE</div>
         </div>
 
-        <div class="grid-layout">
-            <div class="glass-panel">
-                <div class="label">CDN_Crystallizer_v1</div>
-                <div class="dropzone" id="dropzone" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
-                    <div id="cdn-status" style="font-size: 12px; color: #666; text-align: center;">
-                        DRAG IMAGE TO GENERATE LINK<br>
-                        <span style="font-size: 10px; color: var(--pink); opacity: 0.5;">cdn.dubaaai.vercel.app</span>
+        <div class="grid">
+            <div class="panel" data-tilt data-tilt-max="2" data-tilt-speed="400" data-tilt-perspective="1000">
+                <div class="label">CDN_CRYSTALLIZER</div>
+                <div class="drop-area" id="drop-area" ondrop="handleDrop(event)" ondragover="event.preventDefault()">
+                    <div id="status-text" style="font-size: 11px; color: #555; text-align: center; font-family: 'JetBrains Mono';">
+                        READY_FOR_DEPLOYMENT
                     </div>
                 </div>
-                <input type="text" id="gh-token" class="pass-input" style="margin-top:20px; font-size:12px; padding:10px;" placeholder="GitHub API Key">
+                <input type="text" id="gh-token" class="pass-input" style="margin-top:25px; font-size:10px;" placeholder="GITHUB_AUTH_TOKEN">
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 25px;">
-                <div class="glass-panel" style="flex: 1;">
-                    <div class="label">Ghost_Vault</div>
-                    <textarea style="background:transparent; border:none; color:white; font-size:13px; font-weight:200; resize:none; outline:none; height: 100%;" placeholder="Secure notes here..."></textarea>
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                <div class="panel" data-tilt data-tilt-max="4" style="flex: 1;">
+                    <div class="label">Notes_Vault</div>
+                    <textarea style="width:100%; height:80%; background:transparent; border:none; color:white; font-size:13px; font-weight:200; outline:none; resize:none; font-family: 'JetBrains Mono';" placeholder="> Initializing..."></textarea>
                 </div>
-                <div class="glass-panel" style="flex: 0.5; justify-content: center;">
-                    <div class="label">Network_Latency</div>
-                    <div id="ping" style="font-size: 32px; font-weight: 100; color: var(--pink);">24ms</div>
+                <div class="panel" data-tilt data-tilt-max="10" style="flex: 0.4; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div class="label">System_Latency</div>
+                    <div id="ping" style="font-size: 42px; font-weight: 100; color: var(--pink);">22ms</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // AUTHENTICATION LOGIC
-        function handleEnter(e) { if(e.key === 'Enter') authorize(); }
+        const KEY = "dubaaaismegasupersussypassthatdefinetelynobodtwilleverfigureoutcuziamfuckinghimlmaooooooooahiga";
+
+        // Mouse Tracker for Spotlight & Cursor
+        document.addEventListener('mousemove', e => {
+            document.body.style.setProperty('--x', e.clientX + 'px');
+            document.body.style.setProperty('--y', e.clientY + 'px');
+            const cursor = document.getElementById('cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
         function authorize() {
             const input = document.getElementById('pass-field').value;
             const gate = document.getElementById('login-gate');
             const hub = document.getElementById('admin-hub');
 
-            if(input === "CONSOLE_PASS") {
+            if (input === KEY) {
                 gate.style.opacity = '0';
-                gate.style.transform = 'scale(0.9) translateY(-20px)';
+                gate.style.transform = 'scale(1.1) rotateX(10deg)';
                 setTimeout(() => {
                     gate.style.display = 'none';
                     hub.style.display = 'flex';
-                    setTimeout(() => { hub.style.opacity = '1'; }, 100);
-                }, 800);
-                startSystems();
+                    setTimeout(() => {
+                        hub.style.opacity = '1';
+                        hub.style.transform = 'translateY(0)';
+                    }, 50);
+                }, 1000);
+                setInterval(() => {
+                    let ms = Math.floor(Math.random() * 5) + 15;
+                    document.getElementById('ping').innerText = `${ms}ms`;
+                }, 3000);
             } else {
-                document.getElementById('pass-field').style.borderColor = 'red';
-                setTimeout(() => { document.getElementById('pass-field').style.borderColor = 'var(--border)'; }, 500);
+                gate.style.animation = 'shake 0.4s';
+                setTimeout(() => gate.style.animation = '', 400);
             }
         }
 
-        function startSystems() {
-            // Live Ping Simulator
-            setInterval(() => {
-                let p = Math.floor(Math.random() * 15) + 12;
-                document.getElementById('ping').innerText = `${p}ms`;
-            }, 3000);
-        }
+        // Add shake animation to CSS
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }`;
+        document.head.appendChild(style);
 
-        // CDN HANDLER
-        async function handleDrop(e) {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            const token = document.getElementById('gh-token').value;
-            const status = document.getElementById('cdn-status');
+        // Allow 'Enter' key
+        document.getElementById('pass-field').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') authorize();
+        });
 
-            if(!token) { alert("GitHub Token Required"); return; }
-
-            status.innerHTML = "CRYSTALLIZING FILE...";
-            
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const content = reader.result.split(',')[1];
-                const fileName = `${Date.now()}-${file.name}`;
-                
-                // GitHub API request
-                const res = await fetch(`https://api.github.com/repos/YOUR_USER/cdn-repo/contents/${fileName}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: "upload", content: content })
-                });
-
-                if(res.ok) {
-                    const url = `https://cdn.dubaaai.vercel.app/${fileName}`;
-                    status.innerHTML = `<span style="color:var(--pink)">SUCCESS</span><br><input readonly value="${url}" style="background:transparent; border:none; color:white; width:100%; text-align:center; margin-top:10px;">`;
-                } else {
-                    status.innerHTML = "UPLOAD FAILED";
-                }
-            };
-        }
+        // Initialize Tilt on everything with the attribute
+        VanillaTilt.init(document.querySelectorAll("[data-tilt]"));
     </script>
 </body>
 </html>
