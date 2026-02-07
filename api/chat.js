@@ -1,11 +1,15 @@
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: "Method not allowed" });
     
+    if (!process.env.GROQ_KEY) return res.status(200).json({ isImage: false, content: "missing GROQ_KEY in env." });
+    if (!process.env.DISCORD_TOKEN) return res.status(200).json({ isImage: false, content: "missing DISCORD_TOKEN in env." });
+    if (!process.env.DISCORD_CHANNEL_ID) return res.status(200).json({ isImage: false, content: "missing DISCORD_CHANNEL_ID in env." });
+
     try {
         const { messages, currentVer, text } = JSON.parse(req.body);
 
         if (currentVer === "Image") {
-            const tempUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
+            const tempUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(text || 'aesthetic')}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
             
             const discordRes = await fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
                 method: 'POST',
@@ -21,6 +25,10 @@ export default async function handler(req, res) {
 
             const discordData = await discordRes.json();
             
+            if (!discordRes.ok) {
+                return res.status(200).json({ isImage: false, content: `discord error: ${discordData.message || 'check bot permissions'}` });
+            }
+
             const finalUrl = discordData.embeds?.[0]?.image?.url || tempUrl;
             return res.status(200).json({ isImage: true, url: finalUrl });
         }
@@ -39,12 +47,14 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        if (!data.choices) throw new Error("Groq API error");
+        
+        if (data.error) {
+            return res.status(200).json({ isImage: false, content: `groq error: ${data.error.message}` });
+        }
         
         res.status(200).json({ isImage: false, content: data.choices[0].message.content });
 
     } catch (error) {
-        console.error("Bridge Error:", error);
-        res.status(200).json({ isImage: false, content: "bridge is acting up. check your environment variables." });
+        res.status(200).json({ isImage: false, content: "bridge crash. check server logs." });
     }
 }
