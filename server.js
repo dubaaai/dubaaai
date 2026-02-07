@@ -13,11 +13,19 @@ mongoose.connect(process.env.MONGO_URL)
     .catch(err => console.error("❌ MongoDB Error:", err));
 
 const Form = mongoose.model('Form', new mongoose.Schema({
-    title: String, time: String, role: String, questions: Array
+    title: String,
+    time: String,
+    role: String,
+    questions: Array
 }));
 
 const Submission = mongoose.model('Submission', new mongoose.Schema({
-    formId: String, username: String, userId: String, userAvatar: String, answers: Array, 
+    formId: String,
+    formTitle: String,
+    username: String,
+    userId: String,
+    userAvatar: String,
+    answers: Array,
     submittedAt: { type: Date, default: Date.now }
 }));
 
@@ -48,7 +56,7 @@ app.get('/api/auth/callback', async (req, res) => {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
             roles = memberRes.data.roles;
-        } catch (e) { console.log("User not in guild"); }
+        } catch (e) {}
 
         const params = new URLSearchParams({
             user: userRes.data.username,
@@ -57,12 +65,17 @@ app.get('/api/auth/callback', async (req, res) => {
             roles: roles.join(',')
         });
         res.redirect(`/?${params.toString()}`);
-    } catch (err) { res.status(500).send("Auth Failed"); }
+    } catch (err) {
+        res.status(500).send("Auth Failed");
+    }
 });
 
 app.post('/api/forms', async (req, res) => {
-    await new Form(req.body).save();
-    res.json({ success: true });
+    try {
+        const newForm = new Form(req.body);
+        await newForm.save();
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.get('/api/forms', async (req, res) => {
@@ -74,12 +87,16 @@ app.get('/api/forms/:id', async (req, res) => {
 });
 
 app.post('/api/submissions', async (req, res) => {
-    await new Submission(req.body).save();
-    res.json({ success: true });
+    try {
+        const sub = new Submission(req.body);
+        await sub.save();
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.get('/api/submissions', async (req, res) => {
     res.json(await Submission.find().sort({ submittedAt: -1 }));
 });
 
-app.listen(process.env.PORT || 3000, () => console.log(`🚀 Site Live`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🚀 Server on port ${PORT}`));

@@ -58,6 +58,7 @@
         .form-input:focus { border-color: var(--brand-blue); background: rgba(24,124,244,0.05); }
         select.form-input { color: #aaa; }
         option { background: #111; color: white; }
+        .admin-btn { background: var(--brand-blue); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; transition: 0.3s; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -70,11 +71,11 @@
 
     <div id="mobile-menu">
         <button onclick="toggleMobileMenu()" class="absolute top-10 right-10 text-3xl"><i class="fas fa-times"></i></button>
-        <button onclick="navTo('home')" class="menu-link">HOME</button>
-        <button onclick="navTo('work')" class="menu-link">WORK</button>
-        <button onclick="navTo('courses')" class="menu-link">COURSES</button>
-        <button onclick="navTo('forms')" class="menu-link">FORMS</button>
-        <a href="https://discord.gg/judah" target="_blank" class="menu-link">DISCORD</a>
+        <button onclick="showPage('home')" class="menu-link">HOME</button>
+        <button onclick="showPage('work')" class="menu-link">WORK</button>
+        <button onclick="showPage('courses')" class="menu-link">COURSES</button>
+        <button onclick="showPage('forms')" class="menu-link">FORMS</button>
+        <button onclick="showPage('admin')" class="menu-link text-blue-500">ADMIN</button>
     </div>
 
     <div class="noise-bg"></div>
@@ -88,7 +89,7 @@
             <button onclick="showPage('work')" class="hover:text-white transition">WORK</button>
             <button onclick="showPage('courses')" class="hover:text-white transition">COURSES</button>
             <button onclick="showPage('forms')" class="hover:text-white transition">FORMS</button>
-            <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition">DISCORD</a>
+            <button onclick="showPage('admin')" class="hover:text-blue-400 transition">ADMIN</button>
         </div>
         <div class="flex items-center gap-4">
             <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] transition-all">Contact</button>
@@ -104,10 +105,10 @@
                 <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
-                            <img id="server-icon" src="assets/titleicon.png" class="w-full h-full object-cover">
+                            <img src="assets/titleicon.png" class="w-full h-full object-cover">
                         </div>
                         <div class="text-left">
-                            <h3 id="server-name" class="font-bold text-lg leading-none mb-1">Judah's Customs</h3>
+                            <h3 class="font-bold text-lg leading-none mb-1">Judah's Customs</h3>
                             <div class="flex items-center gap-2">
                                 <div class="status-dot"></div>
                                 <span class="text-[10px] font-bold uppercase tracking-widest text-blue-400">BRINGING YOUR VISION TO LIFE</span>
@@ -119,11 +120,11 @@
                 <div class="grid grid-cols-2 gap-3 relative z-10">
                     <div class="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
                         <p class="text-[9px] uppercase tracking-widest font-bold opacity-40 mb-1">Online</p>
-                        <p id="stat-online" class="text-xl font-black text-blue-400">--</p>
+                        <p class="text-xl font-black text-blue-400">1,240</p>
                     </div>
                     <div class="bg-white/5 rounded-2xl p-4 border border-white/5 text-center">
                         <p class="text-[9px] uppercase tracking-widest font-bold opacity-40 mb-1">Total Members</p>
-                        <p id="stat-total" class="text-xl font-black">--</p>
+                        <p class="text-xl font-black">4,500+</p>
                     </div>
                 </div>
             </a>
@@ -138,59 +139,6 @@
             <div class="glass-card p-8 rounded-[2rem]" data-tilt><i class="fas fa-camera text-[#187cf4] text-3xl mb-4"></i><h3 class="font-bold text-xl mb-2">Photography</h3><p class="text-gray-500 text-sm leading-relaxed">Cinematic in-game captures and lighting techniques.</p></div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt><i class="fab fa-discord text-[#187cf4] text-3xl mb-4"></i><h3 class="font-bold text-xl mb-2">Discord</h3><p class="text-gray-500 text-sm leading-relaxed">Professional server architecture and automation.</p></div>
         </section>
-    </main>
-
-    <main id="forms-page" class="page container mx-auto px-6 pt-10">
-        <div id="forms-auth" class="flex flex-col items-center justify-center min-h-[60vh]">
-            <div class="glass-card p-10 rounded-[3rem] text-center max-w-md w-full" data-tilt>
-                <i class="fab fa-discord text-5xl text-[#187cf4] mb-6"></i>
-                <h2 class="text-3xl font-black mb-4 uppercase">Authorize</h2>
-                <p class="text-gray-400 text-sm mb-8">Login with Discord to view and submit active forms.</p>
-                <button onclick="handleDiscordLogin()" class="w-full bg-[#187cf4] py-4 rounded-2xl font-black uppercase tracking-widest hover:shadow-[0_0_30px_#187cf4] transition-all">Authorize with Discord</button>
-            </div>
-        </div>
-
-        <div id="forms-dashboard" class="hidden">
-            <div class="flex justify-between items-end mb-12">
-                <div>
-                    <h2 class="text-4xl font-black uppercase">Active Forms<span class="text-[#187cf4]">.</span></h2>
-                    <p id="user-welcome" class="text-gray-500 text-xs uppercase tracking-widest mt-2">Welcome</p>
-                </div>
-                <button id="admin-btn" onclick="showAdmin()" class="hidden glass-card px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border-blue-500/50">Admin Panel</button>
-            </div>
-            <div id="active-forms-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20"></div>
-        </div>
-
-        <div id="forms-view" class="hidden max-w-2xl mx-auto pb-20">
-            <button onclick="showDashboard()" class="text-gray-500 hover:text-white mb-8 transition uppercase text-[10px] font-bold tracking-widest"><i class="fas fa-arrow-left mr-2"></i> Back to dashboard</button>
-            <div id="form-content"></div>
-        </div>
-
-        <div id="forms-admin" class="hidden pb-20">
-            <div class="flex items-center gap-4 mb-10">
-                <button onclick="showDashboard()" class="text-gray-500 hover:text-white transition"><i class="fas fa-arrow-left"></i></button>
-                <h2 class="text-4xl font-black uppercase">Admin Panel<span class="text-[#187cf4]">.</span></h2>
-            </div>
-            <div class="grid lg:grid-cols-2 gap-10">
-                <div class="glass-card p-8 rounded-[2rem]">
-                    <h3 class="text-xl font-bold mb-6 uppercase tracking-wider">Create Form</h3>
-                    <div class="space-y-4">
-                        <input type="text" id="new-form-title" placeholder="Form Title" class="form-input">
-                        <div class="flex gap-4">
-                            <input type="text" id="new-form-time" placeholder="Est. Time (e.g. 5m)" class="form-input">
-                            <input type="text" id="new-form-role" placeholder="Required Role ID" class="form-input">
-                        </div>
-                        <div id="questions-list" class="space-y-3 mt-6"></div>
-                        <button onclick="addQuestion()" class="w-full border border-dashed border-blue-500/30 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest text-blue-400 hover:bg-blue-400/5 transition">+ Add Question</button>
-                        <button onclick="saveForm()" class="w-full bg-blue-600 py-4 rounded-xl font-black uppercase tracking-widest mt-6">Publish Form</button>
-                    </div>
-                </div>
-                <div class="glass-card p-8 rounded-[2rem]">
-                    <h3 class="text-xl font-bold mb-6 uppercase tracking-wider">Submissions</h3>
-                    <div id="submissions-list" class="space-y-4"></div>
-                </div>
-            </div>
-        </div>
     </main>
 
     <main id="work-page" class="page container mx-auto px-6 pt-10">
@@ -223,61 +171,182 @@
                 <h3 class="text-xl font-bold mb-2">Simple Logo Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and 24/7 support.</p>
                 <div class="flex gap-2">
-                    <button onclick="openShowcase('simpleshowcase', 'Simple Logo')" class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
+                    <a href="#" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col" data-tilt>
                 <h3 class="text-xl font-bold mb-2">Banner Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and backgrounds.</p>
                 <div class="flex gap-2">
-                    <button onclick="openShowcase('bannershow', 'Banner')" class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
+                    <a href="#" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col" data-tilt>
                 <h3 class="text-xl font-bold mb-2">Vectorized Logo</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos, assets, and resource links.</p>
                 <div class="flex gap-2">
-                    <button onclick="openShowcase('vecshow', 'Vectorized Logo')" class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
+                    <a href="#" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col" data-tilt>
                 <h3 class="text-xl font-bold mb-2">Clothing Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes 100+ assets, tutorials, and tutorial levels.</p>
                 <div class="flex gap-2">
-                    <button onclick="openShowcase('clotheshow', 'Clothing')" class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
+                    <a href="#" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col" data-tilt>
                 <h3 class="text-xl font-bold mb-2">Leadership</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Master management with elite tips and server architecture.</p>
-                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <a href="#" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col" data-tilt>
                 <h3 class="text-xl font-bold mb-2">Livery Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs, many assets, and industry website resources.</p>
                 <div class="flex gap-2">
-                    <button onclick="openShowcase('livshow', 'Livery')" class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button class="bg-white/5 border border-white/10 px-3 py-3 rounded-xl text-[8px] font-bold uppercase tracking-widest text-center hover:bg-white/10 transition">Showcase</button>
+                    <a href="#" target="_blank" class="flex-grow bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
                 </div>
             </div>
         </div>
     </main>
 
-    <main id="showcase-page" class="page container mx-auto px-6 pt-10">
-        <div class="flex items-center gap-4 mb-12">
-            <button onclick="showPage('courses')" class="text-gray-500 hover:text-white transition-all"><i class="fas fa-arrow-left text-xl"></i></button>
-            <h2 id="showcase-title" class="text-4xl font-black uppercase tracking-tighter">Showcase<span class="text-[#187cf4]">.</span></h2>
+    <main id="forms-page" class="page container mx-auto px-6 py-10">
+        <h2 class="text-4xl font-black mb-12">ACTIVE <span class="text-blue-500">FORMS.</span></h2>
+        <div id="user-forms-list" class="grid md:grid-cols-2 gap-6"></div>
+        
+        <div id="form-submission-view" class="hidden max-w-2xl mx-auto">
+            <button onclick="renderUserForms()" class="text-xs font-bold opacity-40 mb-10 hover:opacity-100 transition uppercase tracking-[0.2em]"><i class="fas fa-arrow-left mr-2"></i> Back to Dashboard</button>
+            <div class="glass-card p-10 rounded-[2.5rem]">
+                <h2 id="current-form-title" class="text-3xl font-black mb-8 text-blue-500 uppercase"></h2>
+                <form id="active-dynamic-form" class="space-y-8"></form>
+            </div>
         </div>
-        <div id="showcase-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-20"></div>
     </main>
 
-    <footer class="text-center py-10 opacity-30 text-[10px] uppercase tracking-[0.5em]">&copy; 2026 Judah's Customs</footer>
+    <main id="admin-page" class="page container mx-auto px-6 py-10">
+        <h2 class="text-4xl font-black mb-12 uppercase tracking-tighter">Admin <span class="text-blue-500">Control</span></h2>
+        <div class="grid lg:grid-cols-2 gap-10">
+            <div class="glass-card p-10 rounded-[2.5rem]">
+                <h3 class="text-xl font-bold mb-6">Create New Application</h3>
+                <input type="text" id="admin-form-title" placeholder="Form Title" class="form-input mb-4 font-bold">
+                <div id="admin-questions-list" class="space-y-3 mb-6"></div>
+                <div class="flex gap-3">
+                    <button onclick="addAdminQuestion()" class="flex-1 bg-white/5 py-4 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-white/10 hover:bg-white/10 transition">+ Add Question</button>
+                    <button onclick="saveAdminForm()" class="flex-1 admin-btn">Publish</button>
+                </div>
+            </div>
+            <div class="glass-card p-10 rounded-[2.5rem]">
+                <h3 class="text-xl font-bold mb-6">User Submissions</h3>
+                <div id="admin-submissions-list" class="space-y-6"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-20 opacity-30 text-[10px] uppercase tracking-[0.5em]">&copy; 2026 Judah's Customs</footer>
 
     <script>
+        let forms = JSON.parse(localStorage.getItem('j_forms')) || [];
+        let submissions = JSON.parse(localStorage.getItem('j_subs')) || [];
+        let tempQuestions = ["Discord Username", "Portfolio Link"];
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId + '-page').classList.add('active-page');
+            window.scrollTo(0,0);
+            if(pageId === 'admin') renderAdmin();
+            if(pageId === 'forms') renderUserForms();
+        }
+
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('active'); }
+        function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); }
+        function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+
+        function handleContact() {
+            navigator.clipboard.writeText('contact@jcustoms.org');
+            const toast = document.getElementById('contact-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Admin Logic
+        function renderAdmin() {
+            const qList = document.getElementById('admin-questions-list');
+            qList.innerHTML = tempQuestions.map((q, i) => `
+                <div class="flex gap-2">
+                    <input type="text" value="${q}" onchange="tempQuestions[${i}]=this.value" class="form-input text-xs">
+                    <button onclick="tempQuestions.splice(${i},1); renderAdmin()" class="text-red-500 px-3"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join('');
+
+            const sList = document.getElementById('admin-submissions-list');
+            sList.innerHTML = submissions.length ? submissions.map((s, i) => `
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/5 relative">
+                    <button onclick="submissions.splice(${i},1); localStorage.setItem('j_subs', JSON.stringify(submissions)); renderAdmin()" class="absolute top-4 right-4 text-white/10 hover:text-red-500"><i class="fas fa-times"></i></button>
+                    <p class="text-blue-500 text-[10px] font-black uppercase mb-4">${s.title}</p>
+                    <div class="space-y-3">
+                        ${Object.entries(s.data).map(([k,v]) => `<div class="text-[11px]"><span class="opacity-30 uppercase font-bold mr-2">${k}:</span><span>${v}</span></div>`).join('')}
+                    </div>
+                </div>
+            `).join('') : '<p class="opacity-20 italic">No submissions yet.</p>';
+        }
+
+        function addAdminQuestion() { tempQuestions.push(""); renderAdmin(); }
+        
+        function saveAdminForm() {
+            const title = document.getElementById('admin-form-title').value;
+            if(!title) return alert("Enter a title");
+            forms.push({ title, questions: [...tempQuestions] });
+            localStorage.setItem('j_forms', JSON.stringify(forms));
+            document.getElementById('admin-form-title').value = "";
+            alert("Published!");
+            renderAdmin();
+        }
+
+        function renderUserForms() {
+            document.getElementById('user-forms-list').classList.remove('hidden');
+            document.getElementById('form-submission-view').classList.add('hidden');
+            const list = document.getElementById('user-forms-list');
+            list.innerHTML = forms.map((f, i) => `
+                <div onclick="openUserForm(${i})" class="glass-card p-8 rounded-[2rem] cursor-pointer flex justify-between items-center group">
+                    <div><h4 class="text-xl font-bold group-hover:text-blue-500 transition">${f.title}</h4><p class="text-[10px] opacity-40 uppercase tracking-widest mt-1">Open Application</p></div>
+                    <i class="fas fa-chevron-right text-white/10 group-hover:text-blue-500 group-hover:translate-x-2 transition"></i>
+                </div>
+            `).join('') || '<p class="opacity-20">No active applications at this time.</p>';
+        }
+
+        let currentActiveFormIdx = null;
+        function openUserForm(idx) {
+            currentActiveFormIdx = idx;
+            const f = forms[idx];
+            document.getElementById('user-forms-list').classList.add('hidden');
+            document.getElementById('form-submission-view').classList.remove('hidden');
+            document.getElementById('current-form-title').innerText = f.title;
+            
+            const formEl = document.getElementById('active-dynamic-form');
+            formEl.innerHTML = f.questions.map(q => `
+                <div class="space-y-3">
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] opacity-40">${q}</label>
+                    <input type="text" name="${q}" required class="form-input py-4">
+                </div>
+            `).join('') + `<button type="submit" class="admin-btn w-full py-5 text-xs">Submit Application</button>`;
+            
+            formEl.onsubmit = (e) => {
+                e.preventDefault();
+                const fd = new FormData(formEl);
+                const data = {};
+                fd.forEach((v, k) => data[k] = v);
+                submissions.push({ title: f.title, data });
+                localStorage.setItem('j_subs', JSON.stringify(submissions));
+                alert("Submitted!");
+                showPage('home');
+            };
+        }
+
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => { 
             if(window.innerWidth > 1024) {
@@ -286,302 +355,9 @@
             }
         });
 
-        let userRoles = [];
-        const ADMIN_ROLE_ID = "1408919581896212620";
-
-        window.onload = () => {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('user')) {
-                const username = params.get('user');
-                const isAdmin = params.get('isAdmin') === 'true';
-                userRoles = params.get('roles') ? params.get('roles').split(',') : [];
-                
-                document.getElementById('forms-auth').classList.add('hidden');
-                document.getElementById('forms-dashboard').classList.remove('hidden');
-                document.getElementById('user-welcome').innerText = `Welcome back, ${username}`;
-                
-                if(isAdmin || userRoles.includes(ADMIN_ROLE_ID)) {
-                    document.getElementById('admin-btn').classList.remove('hidden');
-                    renderSubmissions();
-                }
-                renderForms();
-            }
-        };
-
-        function handleDiscordLogin() { window.location.href = '/api/auth'; }
-        
-        function toggleOptions(select) {
-            const container = select.parentElement.nextElementSibling;
-            if (select.value === 'multiple') {
-                container.classList.remove('hidden');
-                if (container.querySelector('.opt-list').children.length === 0) addOption(container.querySelector('button'));
-            } else {
-                container.classList.add('hidden');
-            }
+        if (typeof VanillaTilt !== 'undefined') {
+            VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 5, speed: 400, glare: true, "max-glare": 0.2 });
         }
-
-        function addOption(btn) {
-            const list = btn.previousElementSibling;
-            const div = document.createElement('div');
-            div.className = "flex items-center gap-2 mb-2";
-            div.innerHTML = `
-                <input type="radio" name="correct-${Date.now()}" class="opt-correct">
-                <input type="text" placeholder="Choice text" class="form-input text-[10px] py-2 opt-text">
-                <button onclick="this.parentElement.remove()" class="text-white/20 hover:text-red-500"><i class="fas fa-times"></i></button>
-            `;
-            list.appendChild(div);
-        }
-
-        function addQuestion() {
-            const list = document.getElementById('questions-list');
-            const div = document.createElement('div');
-            div.className = "glass-card p-4 rounded-xl flex flex-col gap-2 q-block";
-            div.innerHTML = `
-                <div class="flex gap-2">
-                    <input type="text" placeholder="Question Text" class="form-input text-xs q-text">
-                    <select class="form-input text-xs q-type w-32" onchange="toggleOptions(this)">
-                        <option value="short">Short Response</option>
-                        <option value="multiple">Multiple Choice</option>
-                        <option value="image">Image Submission</option>
-                    </select>
-                </div>
-                <div class="options-container hidden space-y-2 pl-4 border-l border-white/10 mt-2">
-                    <div class="opt-list"></div>
-                    <button onclick="addOption(this)" class="text-[9px] text-blue-400 font-bold uppercase">+ Add Choice</button>
-                </div>
-                <button onclick="this.parentElement.remove()" class="text-[9px] text-red-500 uppercase font-bold text-right">Remove</button>
-            `;
-            list.appendChild(div);
-        }
-
-        async function saveForm() {
-            const title = document.getElementById('new-form-title').value;
-            const time = document.getElementById('new-form-time').value;
-            const role = document.getElementById('new-form-role').value;
-            const questions = [];
-            
-            document.querySelectorAll('.q-block').forEach(el => {
-                const type = el.querySelector('.q-type').value;
-                const questionData = { text: el.querySelector('.q-text').value, type: type };
-                if (type === 'multiple') {
-                    questionData.options = [];
-                    el.querySelectorAll('.opt-list > div').forEach(opt => {
-                        questionData.options.push({ text: opt.querySelector('.opt-text').value, isCorrect: opt.querySelector('.opt-correct').checked });
-                    });
-                }
-                questions.push(questionData);
-            });
-
-            if(!title) return alert("Title required");
-            const response = await fetch('/api/forms', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, time, role, questions })
-            });
-            if(response.ok) { alert("Form published!"); showDashboard(); }
-        }
-
-        async function renderForms() {
-            const grid = document.getElementById('active-forms-grid');
-            grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">Loading forms...</p>';
-            try {
-                const response = await fetch('/api/forms');
-                const forms = await response.json();
-                grid.innerHTML = '';
-                if (!forms || forms.length === 0) {
-                    grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">No forms available</p>';
-                    return;
-                }
-                forms.forEach(form => {
-                    const hasAccess = !form.role || userRoles.includes(form.role) || userRoles.includes(ADMIN_ROLE_ID);
-                    if (hasAccess) {
-                        const card = document.createElement('div');
-                        card.className = "glass-card p-8 rounded-[2rem] flex flex-col hover:scale-[1.02] cursor-pointer";
-                        card.onclick = () => openForm(form._id || form.id);
-                        card.innerHTML = `
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">${form.time || '5m'}</span>
-                                <i class="fas fa-file-signature text-gray-600"></i>
-                            </div>
-                            <h3 class="text-xl font-bold mb-2">${form.title}</h3>
-                            <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold mb-6">${form.questions ? form.questions.length : 0} Questions</p>
-                        `;
-                        grid.appendChild(card);
-                    }
-                });
-            } catch(e) { grid.innerHTML = '<p class="text-gray-500 text-xs uppercase tracking-widest">No forms available</p>'; }
-        }
-
-        async function openForm(id) {
-            try {
-                const response = await fetch(`/api/forms/${id}`);
-                const form = await response.json();
-                document.getElementById('forms-dashboard').classList.add('hidden');
-                document.getElementById('forms-view').classList.remove('hidden');
-                const content = document.getElementById('form-content');
-                content.innerHTML = `
-                    <h2 class="text-4xl font-black uppercase mb-12">${form.title}<span class="text-[#187cf4]">.</span></h2>
-                    <div id="form-questions" class="space-y-6">
-                        ${form.questions.map((q, i) => `
-                            <div class="glass-card p-8 rounded-[2rem] q-entry" data-qtext="${q.text}" data-qtype="${q.type}">
-                                <p class="font-bold text-lg mb-4">${q.text}</p>
-                                ${renderInputType(q, i)}
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button onclick="submitAnswers('${id}')" class="w-full bg-[#187cf4] py-6 rounded-[2rem] font-black uppercase tracking-[0.2em] mt-10 hover:shadow-[0_0_40px_rgba(24,124,244,0.4)] transition-all">Submit Application</button>
-                `;
-            } catch(e) { alert("Error loading form."); }
-        }
-
-        function renderInputType(q, i) {
-            if(q.type === 'short' || q.type === 'image') return `<input type="text" class="form-input q-val" placeholder="Type your response...">`;
-            if(q.type === 'multiple') return q.options.map(o => `
-                <label class="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 cursor-pointer transition mb-2">
-                    <input type="radio" name="q-${i}" value="${o.text}" class="q-val w-4 h-4 accent-[#187cf4]">
-                    <span class="text-sm font-medium opacity-80">${o.text}</span>
-                </label>
-            `).join('');
-        }
-
-        async function submitAnswers(formId) {
-            const params = new URLSearchParams(window.location.search);
-            const answers = [];
-            document.querySelectorAll('.q-entry').forEach(entry => {
-                const type = entry.dataset.qtype;
-                let answerVal = "";
-                if(type === 'multiple') {
-                    const checked = entry.querySelector('.q-val:checked');
-                    answerVal = checked ? checked.value : "No answer";
-                } else {
-                    answerVal = entry.querySelector('.q-val').value;
-                }
-                answers.push({ question: entry.dataset.qtext, answer: answerVal });
-            });
-
-            const payload = {
-                formId,
-                username: params.get('user'),
-                userId: params.get('id'),
-                userAvatar: params.get('avatar'),
-                answers: answers
-            };
-
-            const response = await fetch('/api/submissions', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if(response.ok) {
-                alert("Form submitted successfully!");
-                showDashboard();
-            }
-        }
-
-        async function renderSubmissions() {
-            const list = document.getElementById('submissions-list');
-            try {
-                const response = await fetch('/api/submissions');
-                const subs = await response.json();
-                list.innerHTML = subs.length === 0 ? '<p class="text-gray-500 text-sm">No submissions recorded.</p>' : '';
-                subs.forEach(sub => {
-                    const div = document.createElement('div');
-                    div.className = "glass-card p-6 rounded-2xl mb-4";
-                    div.innerHTML = `
-                        <div class="flex items-center gap-4 mb-6 pb-4 border-b border-white/5">
-                            <img src="https://cdn.discordapp.com/avatars/${sub.userId}/${sub.userAvatar}.png" class="w-12 h-12 rounded-xl border border-white/10" onerror="this.src='assets/titleicon.png'">
-                            <div>
-                                <h4 class="font-black uppercase text-sm leading-none mb-1">${sub.username}</h4>
-                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-tighter opacity-60">ID: ${sub.userId}</p>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            ${sub.answers.map(a => `<div><p class="text-[9px] uppercase font-black text-gray-500 mb-1">${a.question}</p><p class="text-xs opacity-90">${a.answer}</p></div>`).join('')}
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            } catch(e) { list.innerHTML = '<p class="text-gray-500 text-sm">No submissions recorded.</p>'; }
-        }
-
-        async function fetchDiscord() {
-            try {
-                const response = await fetch('https://discord.com/api/v9/invites/judah?with_counts=true');
-                const data = await response.json();
-                document.getElementById('server-name').innerText = data.guild.name;
-                document.getElementById('stat-online').innerText = data.approximate_presence_count.toLocaleString();
-                document.getElementById('stat-total').innerText = data.approximate_member_count.toLocaleString();
-                if(data.guild.icon) document.getElementById('server-icon').src = `https://cdn.discordapp.com/icons/${data.guild.id}/${data.guild.icon}.png`;
-            } catch (err) {
-                document.getElementById('stat-online').innerText = "LIVE";
-                document.getElementById('stat-total').innerText = "1.4k+";
-            }
-        }
-        fetchDiscord();
-
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('active');
-            menu.style.display = menu.classList.contains('active') ? 'flex' : 'none';
-            setTimeout(() => menu.style.opacity = menu.classList.contains('active') ? '1' : '0', 10);
-        }
-
-        function handleContact() {
-            navigator.clipboard.writeText('contact@jcustoms.org');
-            const toast = document.getElementById('contact-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
-        }
-
-        function showPage(pageId) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            const target = document.getElementById(pageId + '-page');
-            if(target) target.classList.add('active-page');
-            setTimeout(() => { VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 }); }, 100);
-        }
-
-        function showAdmin() { 
-            document.getElementById('forms-dashboard').classList.add('hidden');
-            document.getElementById('forms-admin').classList.remove('hidden');
-            renderSubmissions();
-        }
-        function showDashboard() { 
-            document.getElementById('forms-admin').classList.add('hidden');
-            document.getElementById('forms-view').classList.add('hidden');
-            document.getElementById('forms-dashboard').classList.remove('hidden');
-            renderForms();
-        }
-
-        function openShowcase(coursePrefix, title) {
-            const grid = document.getElementById('showcase-grid');
-            document.getElementById('showcase-title').innerHTML = `${title}<span class="text-[#187cf4]">.</span>`;
-            grid.innerHTML = ''; 
-            for (let i = 1; i <= 3; i++) {
-                const img = document.createElement('img');
-                img.src = `assets/${coursePrefix}${i}.png`;
-                img.className = 'showcase-img w-full rounded-2xl border border-white/10 glass-card cursor-pointer';
-                img.onclick = () => openLightbox(img.src);
-                grid.appendChild(img);
-                setTimeout(() => img.classList.add('visible'), i * 200);
-            }
-            showPage('showcase');
-        }
-
-        function openLightbox(src) {
-            const lb = document.getElementById('lightbox');
-            document.getElementById('lightbox-img').src = src;
-            lb.classList.add('open');
-            setTimeout(() => document.getElementById('lightbox-img').style.transform = 'scale(1)', 10);
-        }
-
-        function closeLightbox() {
-            document.getElementById('lightbox-img').style.transform = 'scale(0.9)';
-            setTimeout(() => document.getElementById('lightbox').classList.remove('open'), 300);
-        }
-
-        VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
     </script>
 </body>
 </html>
