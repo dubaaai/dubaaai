@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/cdn-img/:path*",
-      "destination": "https://pollinations.ai/p/:path*"
-    }
-  ]
-}
