@@ -1,9 +1,11 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
-    
-    const { message, systemPrompt } = JSON.parse(req.body);
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: "Method not allowed" });
+    }
 
     try {
+        const { message, systemPrompt } = JSON.parse(req.body);
+
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -16,13 +18,13 @@ export default async function handler(req, res) {
                     { role: "system", content: systemPrompt },
                     { role: "user", content: message }
                 ],
-                temperature: 0.8
+                temperature: 0.7
             })
         });
 
         const data = await response.json();
         res.status(200).json(data);
-    } catch (e) {
-        res.status(500).json({ error: "link failed" });
+    } catch (error) {
+        res.status(500).json({ error: "failed to connect to groq" });
     }
 }

@@ -8,13 +8,13 @@
         :root {
             --pink: #e6bbc7;
             --pink-glow: rgba(230, 187, 199, 0.4);
-            --black: #060606;
+            --black: #050505;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
             --blur: 24px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
 
         body {
             background-color: var(--black);
@@ -23,10 +23,35 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: radial-gradient(circle at 10% 20%, #1a1214 0%, transparent 50%),
-                        radial-gradient(circle at 90% 80%, #0d0f14 0%, transparent 50%);
+            position: relative;
         }
 
+        /* Modern Dark Mesh Background */
+        .bg-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 20% 30%, #1a1214 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, #0f1116 0%, transparent 40%);
+            filter: blur(80px);
+        }
+
+        .bg-orb {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: var(--pink);
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.04;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes drift {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(20%, 30%); }
+        }
+
+        /* Glass Header */
         .header {
             padding: 30px;
             display: flex;
@@ -72,6 +97,7 @@
             color: var(--pink);
         }
 
+        /* Chat window */
         #chat-window {
             flex: 1;
             overflow-y: auto;
@@ -84,6 +110,8 @@
             width: 100%;
             scrollbar-width: none;
         }
+
+        #chat-window::-webkit-scrollbar { display: none; }
 
         .msg {
             max-width: 80%;
@@ -103,6 +131,14 @@
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
 
+        .ai img { 
+            width: 100%; 
+            border-radius: 15px; 
+            margin-top: 10px; 
+            border: 1px solid var(--border);
+        }
+
+        /* Input Glass Bar */
         .input-area {
             padding: 20px 20px 50px;
             max-width: 800px;
@@ -121,8 +157,24 @@
             -webkit-backdrop-filter: blur(var(--blur));
         }
 
-        input { flex: 1; background: transparent; border: none; color: white; padding: 14px; outline: none; font-size: 15px; }
-        .send-btn { background: transparent; border: none; color: var(--pink); font-size: 22px; cursor: pointer; padding: 10px; }
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 14px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .send-btn {
+            background: transparent;
+            border: none;
+            color: var(--pink);
+            font-size: 22px;
+            cursor: pointer;
+            padding: 10px;
+        }
 
         .thinking .brand { animation: breathe 2s infinite ease-in-out; }
         @keyframes breathe { 50% { opacity: 0.3; } }
@@ -130,17 +182,21 @@
 </head>
 <body id="main-body">
 
+    <div class="bg-canvas"></div>
+    <div class="bg-orb"></div>
+
     <div class="header">
         <div class="brand">dubaaai</div>
         <div class="version-bar">
             <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
             <button class="ver-btn" onclick="setVer('Complex', this)">Complex</button>
             <button class="ver-btn" onclick="setVer('Dev', this)">Dev</button>
+            <button class="ver-btn" onclick="setVer('Image', this)">Image</button>
         </div>
     </div>
 
     <div id="chat-window">
-        <div class="msg ai">yo. i'm dubaaai. we chillin or what?</div>
+        <div class="msg ai">hey. i'm dubaaai. what's on your mind?</div>
     </div>
 
     <div class="input-area">
@@ -159,11 +215,19 @@
             btn.classList.add('active');
         }
 
-        function addMessage(text, type) {
+        function addMessage(text, type, isImg = false) {
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
             div.className = `msg ${type}`;
-            div.textContent = text.toLowerCase();
+            
+            if (isImg) {
+                const img = document.createElement('img');
+                img.src = text;
+                div.appendChild(img);
+            } else {
+                div.textContent = text.toLowerCase();
+            }
+            
             win.appendChild(div);
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
@@ -176,14 +240,20 @@
 
             addMessage(text, 'user');
             input.value = '';
+
+            if (currentVer === "Image") {
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true`;
+                addMessage(imgUrl, 'ai', true);
+                return;
+            }
+
             body.classList.add('thinking');
 
-            let systemPrompt = "you are dubaaai. speak like a chill guy. all lowercase. use slang like 'ite', 'bet', 'fosho'.";
-            if(currentVer === "Complex") systemPrompt += " give deeper advice but stay chill.";
-            if(currentVer === "Dev") systemPrompt += " focus on code help.";
+            let systemPrompt = "you are dubaaai. speak in all lowercase. be chill but use normal vocabulary. respond naturally without adding extra fluff.";
+            if(currentVer === "Complex") systemPrompt += " provide more detail and depth.";
+            if(currentVer === "Dev") systemPrompt += " provide clean technical and code assistance.";
 
             try {
-                // TALKING TO YOUR VERCEL BRIDGE
                 const response = await fetch("/api/chat", {
                     method: "POST",
                     body: JSON.stringify({ message: text, systemPrompt: systemPrompt })
@@ -192,11 +262,11 @@
                 const data = await response.json();
                 body.classList.remove('thinking');
                 
-                const reply = data.choices?.[0]?.message?.content || "link's acting up. check vercel logs.";
+                const reply = data.choices?.[0]?.message?.content || "link is acting up.";
                 addMessage(reply, 'ai');
             } catch (e) {
                 body.classList.remove('thinking');
-                addMessage("ion know what happened. try again?", 'ai');
+                addMessage("error connecting to bridge.", 'ai');
             }
         }
 
