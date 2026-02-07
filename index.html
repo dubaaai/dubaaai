@@ -3,139 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai | render-lab</title>
+    <title>dubaaai | sonic-glass</title>
     <style>
         :root {
             --pink: #e6bbc7;
-            --pink-glow: rgba(230, 187, 199, 0.4);
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.12);
+            --pink-glow: rgba(230, 187, 199, 0.3);
+            --glass: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.1);
             --bg: #050505;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; }
 
-        .orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 187, 199, 0.1) 0%, transparent 70%); filter: blur(80px); border-radius: 50%; z-index: -1; animation: float 20s infinite alternate ease-in-out; }
-        @keyframes float { 0% { transform: translate(-5%, -5%); } 100% { transform: translate(5%, 10%); } }
+        /* Background Visuals */
+        .bg-glow { position: absolute; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, rgba(230, 187, 199, 0.05) 0%, transparent 50%); filter: blur(100px); }
 
-        .studio-card {
-            background: var(--glass); backdrop-filter: blur(50px);
-            border: 1px solid var(--border); padding: 50px;
-            border-radius: 40px; width: 90%; max-width: 900px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            position: relative; z-index: 10;
+        /* Sidebar - Glass Nav */
+        aside {
+            width: 300px; background: rgba(0,0,0,0.4); backdrop-filter: blur(40px);
+            border-right: 1px solid var(--border); padding: 50px 30px;
+            display: flex; flex-direction: column; gap: 40px;
         }
 
-        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
-        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid rgba(230, 187, 199, 0.2); display: inline-block; }
+        .logo { font-size: 18px; letter-spacing: 6px; color: var(--pink); text-transform: uppercase; font-weight: 200; }
+        .nav-btn { background: var(--pink); color: black; border: none; padding: 12px; border-radius: 100px; font-weight: 800; font-size: 10px; cursor: pointer; text-transform: uppercase; }
 
-        textarea {
-            width: 100%; height: 350px; background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border); border-radius: 25px;
-            padding: 20px; color: #888; font-family: 'monospace';
-            font-size: 12px; outline: none; transition: 0.3s; resize: none;
+        #playlist-results { margin-top: 20px; overflow-y: auto; flex-grow: 1; }
+        .pl-card { padding: 12px; font-size: 13px; color: #777; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+        .pl-card:hover { color: var(--pink); background: var(--glass); border-radius: 8px; }
+
+        /* Main Workspace */
+        main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px; position: relative; }
+
+        /* YOUR CUSTOM SEARCH BAR (Matching the screenshot) */
+        .search-wrapper { width: 100%; max-width: 800px; margin-bottom: 60px; }
+        .search-input {
+            width: 100%; background: var(--glass); border: 1px solid var(--border);
+            padding: 22px 40px; border-radius: 20px; color: white; outline: none;
+            backdrop-filter: blur(25px); font-size: 18px; font-weight: 200;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); text-align: center;
         }
-        textarea:focus { border-color: var(--pink); color: white; box-shadow: 0 0 20px var(--pink-glow); }
+        .search-input:focus { border-color: var(--pink); box-shadow: 0 0 40px var(--pink-glow); background: rgba(255,255,255,0.08); }
 
-        .output-container {
-            width: 100%; height: 350px; background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border); border-radius: 25px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
+        /* Giant Player Hub */
+        .giant-player {
+            width: 100%; max-width: 900px; height: 500px;
+            background: var(--glass); backdrop-filter: blur(80px);
+            border: 1px solid var(--border); border-radius: 40px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            overflow: hidden;
         }
 
-        /* The rendered image result */
-        #final-render { max-width: 90%; max-height: 90%; cursor: context-menu; transition: 0.5s; display: none; }
-        #final-render.active { display: block; animation: fadeIn 0.5s ease; }
-
-        .hint-text { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 15px; text-align: center; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        #loader { display: none; border: 2px solid transparent; border-top: 2px solid var(--pink); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        #spotify-frame { width: 100%; height: 100%; border: none; display: none; }
+        .placeholder-text { font-size: 12px; color: #444; letter-spacing: 4px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="orb"></div>
-    
-    <div class="studio-card">
-        <div class="brand-pill">Asset Engine</div>
-        <h1 style="font-weight: 200; margin-top: 10px; font-size: 32px;">Render Lab</h1>
-        
-        <div class="layout">
-            <textarea id="svg-input" placeholder="Paste <svg> markup here..." oninput="handleInput()"></textarea>
-            
-            <div class="output-container">
-                <div id="loader"></div>
-                <img id="final-render" alt="Right click to save">
-                <div id="hint" class="hint-text">Awaiting Input</div>
-            </div>
-        </div>
-    </div>
+    <div class="bg-glow"></div>
 
-    <canvas id="stage" style="display:none"></canvas>
+    <aside>
+        <div class="logo">SONIC.IO</div>
+        <button id="auth-btn" class="nav-btn" onclick="login()">Connect Spotify</button>
+        <div id="playlist-results">
+            <p style="font-size: 10px; color: #333; letter-spacing: 1px;">LIBRARY OFFLINE</p>
+        </div>
+    </aside>
+
+    <main>
+        <div class="search-wrapper">
+            <input type="text" id="search" class="search-input" placeholder="Search the Spotify library..." onkeypress="handleSearch(event)">
+        </div>
+
+        <div class="giant-player" id="player-container">
+            <div class="placeholder-text" id="status-msg">Awaiting Neural Link</div>
+            <iframe id="spotify-frame" src="" allow="encrypted-media"></iframe>
+        </div>
+    </main>
 
     <script>
-        let timer;
-        const input = document.getElementById('svg-input');
-        const img = document.getElementById('final-render');
-        const hint = document.getElementById('hint');
-        const loader = document.getElementById('loader');
-        const canvas = document.getElementById('stage');
-        const ctx = canvas.getContext('2d');
+        const CLIENT_ID = 'bf11ddaca30a45ed82247a01026b0dd6'; // <--- PUT YOUR ID HERE
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
 
-        function handleInput() {
-            clearTimeout(timer);
-            const val = input.value.trim();
-            if (!val.includes('<svg')) return;
-
-            // Wait until user stops typing
-            timer = setTimeout(() => render(val), 600);
+        // 1. Spotify Auth
+        function login() {
+            const scope = 'playlist-read-private user-library-read';
+            const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&show_dialog=true`;
+            window.location.href = url;
         }
 
-        async function render(svgMarkup) {
-            hint.innerText = "Processing Grid...";
-            img.classList.remove('active');
-            loader.style.display = 'block';
+        // 2. Capture Token
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const token = params.get('access_token');
 
-            try {
-                // 1. Create a virtual image from SVG
-                const svgBlob = new Blob([svgMarkup], {type: 'image/svg+xml;charset=utf-8'});
-                const url = URL.createObjectURL(svgBlob);
-                const tempImg = new Image();
+        if (token) {
+            document.getElementById('auth-btn').innerText = "LINKED";
+            document.getElementById('status-msg').innerText = "CONNECTED TO GRID";
+            loadPlaylists();
+        }
 
-                tempImg.onload = () => {
-                    // 2. Setup Canvas Dimensions (Default to 512 if not specified)
-                    canvas.width = tempImg.width || 512;
-                    canvas.height = tempImg.height || 512;
-                    
-                    // 3. Draw SVG to Canvas
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(tempImg, 0, 0);
-
-                    // 4. Convert to Data URL (High Quality PNG/GIF format)
-                    const resultUrl = canvas.toDataURL("image/png");
-                    
-                    // 5. Update UI
-                    img.src = resultUrl;
-                    img.classList.add('active');
-                    loader.style.display = 'none';
-                    hint.innerText = "Right Click -> Save Image As";
-                    
-                    URL.revokeObjectURL(url);
+        // 3. Import Playlists
+        async function loadPlaylists() {
+            const response = await fetch('https://api.spotify.com/v1/me/playlists', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            const list = document.getElementById('playlist-results');
+            list.innerHTML = '<h4 style="font-size:10px; margin-bottom:15px; color:#555;">MY PLAYLISTS</h4>';
+            
+            data.items.forEach(pl => {
+                const div = document.createElement('div');
+                div.className = 'pl-card';
+                div.innerText = pl.name.toUpperCase();
+                div.onclick = () => {
+                    document.getElementById('spotify-frame').src = `https://open.spotify.com/embed/playlist/${pl.id}`;
+                    document.getElementById('spotify-frame').style.display = 'block';
+                    document.getElementById('status-msg').style.display = 'none';
                 };
+                list.appendChild(div);
+            });
+        }
 
-                tempImg.onerror = () => {
-                    throw new Error("Invalid SVG Path");
-                };
+        // 4. Search & Play
+        async function handleSearch(e) {
+            if (e.key === 'Enter' && token) {
+                const query = e.target.value;
+                const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=1`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const track = data.tracks.items[0];
 
-                tempImg.src = url;
-
-            } catch (err) {
-                loader.style.display = 'none';
-                hint.innerText = "Error: Invalid SVG Structure";
+                if (track) {
+                    const player = document.getElementById('spotify-frame');
+                    player.src = `https://open.spotify.com/embed/track/${track.id}`;
+                    player.style.display = 'block';
+                    document.getElementById('status-msg').style.display = 'none';
+                }
+            } else if (e.key === 'Enter' && !token) {
+                alert("Please connect Spotify first!");
             }
         }
     </script>
