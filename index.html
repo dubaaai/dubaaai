@@ -3,188 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai | logic</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
+    <title>dubaaai | pilot</title>
     <style>
-        :root { --pink: #e6bbc7; --glow: rgba(230, 187, 199, 0.4); --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.1); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: #050505; color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        :root {
+            --pink: #e6bbc7;
+            --glow: rgba(230, 187, 199, 0.4);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --bg: #050505;
+        }
 
-        .header { padding: 20px; text-align: center; z-index: 10; }
-        .nav { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .nav-btn { background: var(--glass); border: 1px solid var(--border); color: #666; padding: 8px 20px; border-radius: 100px; cursor: pointer; transition: 0.3s; font-size: 12px; }
-        .nav-btn.active { color: var(--pink); border-color: var(--pink); box-shadow: 0 0 15px var(--glow); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
 
-        #calc-view, #ask-view { flex: 1; display: none; padding: 20px; overflow-y: auto; max-width: 1000px; margin: 0 auto; width: 100%; }
-        .active-view { display: flex !important; flex-direction: column; gap: 20px; }
+        body {
+            background: var(--bg);
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
 
-        .calc-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; height: 100%; }
-        .calc-main { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; }
-        #display { font-size: 24px; text-align: right; padding: 20px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-bottom: 20px; color: var(--pink); min-height: 80px; }
-        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .key { background: var(--glass); border: 1px solid var(--border); padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .key:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
-        .key:active { transform: scale(0.95); box-shadow: 0 0 10px var(--pink); }
-        .fn-key { color: var(--pink); font-weight: bold; }
+        .bg-glow {
+            position: fixed; width: 400px; height: 400px;
+            background: radial-gradient(circle, var(--glow) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; filter: blur(60px);
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+        @keyframes drift {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(20%, 20%); }
+        }
 
-        .graph-area { background: var(--glass); border: 1px solid var(--border); border-radius: 24px; padding: 20px; }
-        canvas { width: 100% !important; height: 300px !important; }
+        #login-screen {
+            position: fixed; inset: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        #chat-history { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .msg { padding: 15px 20px; border-radius: 20px; max-width: 85%; border: 1px solid var(--border); }
-        .user { align-self: flex-end; background: rgba(230,187,199,0.1); color: var(--pink); }
-        .ai { align-self: flex-start; background: var(--glass); }
-        .input-box { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; padding: 15px 25px; color: white; outline: none; width: 100%; margin-top: 10px; }
+        .glass-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(25px);
+            padding: 50px; border-radius: 40px;
+            width: 90%; max-width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
 
-        @keyframes pulse { 50% { opacity: 0.4; } }
-        .thinking { animation: pulse 1s infinite; color: var(--pink); }
+        .brand-label {
+            font-size: 10px; letter-spacing: 6px; color: var(--pink);
+            text-transform: uppercase; margin-bottom: 15px; display: block;
+            opacity: 0.7;
+        }
+
+        input, textarea {
+            width: 100%; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            border-radius: 20px; padding: 20px; color: white; outline: none;
+            font-size: 14px; margin-bottom: 20px; transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--pink);
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .action-btn {
+            width: 100%; background: var(--pink); color: black;
+            border: none; padding: 20px; border-radius: 100px;
+            font-weight: 700; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 2px; cursor: pointer; transition: 0.4s;
+        }
+        .action-btn:hover {
+            box-shadow: 0 0 30px var(--glow);
+            transform: translateY(-2px);
+            letter-spacing: 3px;
+        }
+        .action-btn:active { transform: scale(0.97); }
+
+        #console {
+            width: 90%; max-width: 800px; opacity: 0; transform: translateY(30px);
+            transition: 1s ease; display: none;
+        }
+        #console.active { display: block; opacity: 1; transform: translateY(0); }
+
+        .console-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 30px; padding: 0 10px;
+        }
+
+        .status-dot {
+            width: 8px; height: 8px; background: var(--pink);
+            border-radius: 50%; display: inline-block;
+            margin-right: 10px; box-shadow: 0 0 10px var(--pink);
+            animation: breathe 2s infinite;
+        }
+        @keyframes breathe { 50% { opacity: 0.3; transform: scale(0.8); } }
+
+        #notify {
+            font-size: 12px; margin-top: 20px; text-align: center;
+            min-height: 20px; transition: 0.3s;
+        }
+        .neon-success { color: #a3e635; text-shadow: 0 0 10px rgba(163,230,53,0.3); }
+        .neon-error { color: #fb7185; text-shadow: 0 0 10px rgba(251,113,133,0.3); }
+
+        .hidden { opacity: 0 !important; pointer-events: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div style="letter-spacing: 5px; font-size: 12px; color: var(--pink)">DUBAAAI LOGIC</div>
-        <div class="nav">
-            <button class="nav-btn active" onclick="switchView('calc', this)">CALCULATE</button>
-            <button class="nav-btn" onclick="switchView('ask', this)">ASK</button>
+    <div class="bg-glow"></div>
+    <div class="bg-glow" style="right: 0; bottom: 0; animation-delay: -5s; background: radial-gradient(circle, rgba(230,187,199,0.2) 0%, transparent 70%);"></div>
+
+    <div id="login-screen">
+        <div class="glass-card">
+            <span class="brand-label">Bot Authentication</span>
+            <h2 style="font-weight: 200; margin-bottom: 30px;">Initialize Pilot</h2>
+            <input type="password" id="token" placeholder="Insert Token...">
+            <button class="action-btn" onclick="initPilot()">Connect to Grid</button>
+            <p id="login-msg" style="font-size: 11px; margin-top: 20px; color: #666;"></p>
         </div>
     </div>
 
-    <div id="calc-view" class="active-view">
-        <div class="calc-grid">
-            <div class="calc-main">
-                <div id="display">0</div>
-                <div class="keypad">
-                    <button class="key fn-key" onclick="press('AC')">AC</button>
-                    <button class="key fn-key" onclick="press('graph')">PLOT</button>
-                    <button class="key fn-key" onclick="press('sin(')">sin</button>
-                    <button class="key fn-key" onclick="press('/')">/</button>
-                    <button class="key" onclick="press('7')">7</button>
-                    <button class="key" onclick="press('8')">8</button>
-                    <button class="key" onclick="press('9')">9</button>
-                    <button class="key fn-key" onclick="press('*')">*</button>
-                    <button class="key" onclick="press('4')">4</button>
-                    <button class="key" onclick="press('5')">5</button>
-                    <button class="key" onclick="press('6')">6</button>
-                    <button class="key fn-key" onclick="press('-')">-</button>
-                    <button class="key" onclick="press('1')">1</button>
-                    <button class="key" onclick="press('2')">2</button>
-                    <button class="key" onclick="press('3')">3</button>
-                    <button class="key fn-key" onclick="press('+')">+</button>
-                    <button class="key" onclick="press('0')">0</button>
-                    <button class="key" onclick="press('.')">.</button>
-                    <button class="key" onclick="press('x')">x</button>
-                    <button class="key fn-key" style="background: var(--pink); color: black;" onclick="press('=')">=</button>
-                </div>
+    <div id="console">
+        <div class="console-header">
+            <div>
+                <span class="brand-label" style="margin: 0;">System Active</span>
+                <h3 id="bot-name" style="font-weight: 300;">Ready for command</h3>
             </div>
-            <div class="graph-area">
-                <div style="font-size: 10px; margin-bottom: 10px; color: #666;">GRAPHING SYSTEM v1.0</div>
-                <canvas id="myChart"></canvas>
+            <div style="font-size: 11px; color: #666;">
+                <span class="status-dot"></span> ENCRYPTED LINK
             </div>
         </div>
-    </div>
 
-    <div id="ask-view">
-        <div id="chat-history"></div>
-        <input type="text" id="ai-input" class="input-box" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')askAI()">
+        <div class="glass-card" style="max-width: none; width: 100%; text-align: left;">
+            <label class="brand-label" style="margin-left: 20px;">Target Channel ID</label>
+            <input type="text" id="channel-id" placeholder="000000000000000000">
+            
+            <label class="brand-label" style="margin-left: 20px;">Transmission Content</label>
+            <textarea id="content" rows="6" placeholder="Construct message..."></textarea>
+            
+            <button class="action-btn" id="send-btn" onclick="sendTransmission()">Execute Send</button>
+            <div id="notify"></div>
+        </div>
     </div>
 
     <script>
-        let currentExpr = "";
-        let chart = null;
+        let sessionToken = "";
 
-        function switchView(view, btn) {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('calc-view').classList.toggle('active-view', view === 'calc');
-            document.getElementById('ask-view').classList.toggle('active-view', view === 'ask');
-        }
+        async function initPilot() {
+            const t = document.getElementById('token').value.trim();
+            const msg = document.getElementById('login-msg');
+            
+            if(!t) return;
 
-        function press(key) {
-            const display = document.getElementById('display');
-            if (key === 'AC') { currentExpr = ""; display.innerText = "0"; }
-            else if (key === '=') {
-                try {
-                    currentExpr = math.evaluate(currentExpr).toString();
-                    display.innerText = currentExpr;
-                } catch { display.innerText = "Error"; }
-            }
-            else if (key === 'graph') { plotGraph(); }
-            else {
-                currentExpr += key;
-                display.innerText = currentExpr;
-            }
-        }
-
-        function plotGraph() {
-            const ctx = document.getElementById('myChart').getContext('2d');
-            const xValues = math.range(-10, 10, 0.5).toArray();
-            const yValues = xValues.map(x => {
-                try { return math.evaluate(currentExpr, {x: x}); } 
-                catch { return 0; }
-            });
-
-            if (chart) chart.destroy();
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: xValues,
-                    datasets: [{
-                        label: 'f(x) = ' + currentExpr,
-                        data: yValues,
-                        borderColor: '#e6bbc7',
-                        tension: 0.4,
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }]
-                },
-                options: {
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' } }
-                    }
-                }
-            });
-        }
-
-        async function askAI() {
-            const input = document.getElementById('ai-input');
-            const history = document.getElementById('chat-history');
-            const val = input.value.trim();
-            if(!val) return;
-
-            const userDiv = document.createElement('div');
-            userDiv.className = "msg user";
-            userDiv.innerText = val;
-            history.appendChild(userDiv);
-            input.value = "";
-
-            const aiDiv = document.createElement('div');
-            aiDiv.className = "msg ai thinking";
-            aiDiv.innerText = "processing logic...";
-            history.appendChild(aiDiv);
+            msg.innerText = "Verifying link...";
 
             try {
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ text: val })
+                const res = await fetch('https://discord.com/api/v10/users/@me', {
+                    headers: { 'Authorization': `Bot ${t}` }
                 });
-                const data = await res.json();
-                aiDiv.classList.remove('thinking');
-                aiDiv.innerHTML = marked.parse(data.content);
-            } catch { aiDiv.innerText = "stall."; }
-            history.scrollTop = history.scrollHeight;
+
+                if (res.ok) {
+                    const data = await res.json();
+                    sessionToken = t;
+                    document.getElementById('bot-name').innerText = `${data.username}#${data.discriminator}`;
+                    document.getElementById('login-screen').classList.add('hidden');
+                    setTimeout(() => {
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('console').style.display = 'block';
+                        setTimeout(() => document.getElementById('console').classList.add('active'), 50);
+                    }, 800);
+                } else {
+                    msg.innerText = "Verification failed. Check token.";
+                }
+            } catch (e) {
+                msg.innerText = "Grid timeout.";
+            }
         }
 
-        window.onload = () => {
-            currentExpr = "sin(x)";
-            plotGraph();
-        };
+        async function sendTransmission() {
+            const cid = document.getElementById('channel-id').value.trim();
+            const txt = document.getElementById('content').value.trim();
+            const notify = document.getElementById('notify');
+            const btn = document.getElementById('send-btn');
+
+            if(!cid || !txt) return;
+
+            // Trigger "warp" animation on input
+            document.getElementById('content').style.transform = "translateX(5px)";
+            setTimeout(() => document.getElementById('content').style.transform = "translateX(0)", 100);
+
+            btn.style.opacity = "0.5";
+            btn.innerText = "Transmitting...";
+
+            try {
+                const res = await fetch(`https://discord.com/api/v10/channels/${cid}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bot ${sessionToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: txt })
+                });
+
+                if (res.ok) {
+                    notify.innerText = "TRANSMISSION RECEIVED";
+                    notify.className = "neon-success";
+                    document.getElementById('content').value = "";
+                } else {
+                    const err = await res.json();
+                    notify.innerText = `ERROR: ${err.message.toUpperCase()}`;
+                    notify.className = "neon-error";
+                }
+            } catch (e) {
+                notify.innerText = "LINK SEVERED";
+                notify.className = "neon-error";
+            } finally {
+                btn.style.opacity = "1";
+                btn.innerText = "Execute Send";
+            }
+        }
     </script>
 </body>
 </html>
