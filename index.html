@@ -3,143 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubaaai | ghost pilot</title>
-    <script src="https://js.puter.com/v2/"></script>
+    <title>dubaaai | svg-to-gif</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
     <style>
         :root {
             --pink: #e6bbc7;
             --pink-glow: rgba(230, 187, 199, 0.4);
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.12);
             --bg: #050505;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: white; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        body { background: var(--bg); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 
-        /* Background Orbs */
+        /* Background Vibe */
         .orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, rgba(230, 187, 199, 0.1) 0%, transparent 70%); filter: blur(80px); border-radius: 50%; z-index: -1; animation: float 20s infinite alternate ease-in-out; }
-        .orb-2 { right: -100px; bottom: -100px; animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(-5%, -5%); } 100% { transform: translate(5%, 10%); } }
 
-        /* Login Screen */
-        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); transition: 0.8s; }
-        .glass-card { background: var(--glass); backdrop-filter: blur(50px); border: 1px solid var(--glass-border); padding: 60px 50px; border-radius: 40px; width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-        
-        /* UI Elements */
-        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; display: inline-block; border: 1px solid rgba(230, 187, 199, 0.2); }
-        h2 { font-weight: 200; margin-bottom: 30px; letter-spacing: -1px; }
-        input, textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 20px; padding: 18px 25px; color: white; outline: none; transition: 0.4s; }
-        input:focus, textarea:focus { border-color: var(--pink); box-shadow: 0 0 20px var(--pink-glow); }
-        .btn-prime { width: 100%; background: var(--pink); color: #000; border: none; padding: 18px; border-radius: 20px; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 20px; }
-        .btn-prime:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--pink-glow); }
+        /* The Glass Studio */
+        .studio-card {
+            background: var(--glass); backdrop-filter: blur(40px);
+            border: 1px solid var(--border); padding: 50px;
+            border-radius: 40px; width: 90%; max-width: 800px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 25px;
+        }
 
-        /* Main App */
-        #client-ui { display: none; width: 100%; height: 100%; opacity: 0; transition: 1s; }
-        .sidebar { width: 300px; background: rgba(0,0,0,0.3); backdrop-filter: blur(40px); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; }
-        .main-stage { flex: 1; display: flex; flex-direction: column; }
-        .item { padding: 15px 25px; margin: 4px 15px; border-radius: 12px; cursor: pointer; color: #777; font-size: 13px; transition: 0.2s; }
-        .item:hover { background: rgba(255,255,255,0.05); color: var(--pink); }
-        .item.active { background: rgba(230, 187, 199, 0.1); color: var(--pink); }
-        .label { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: #444; padding: 25px 25px 10px; }
-        #status-msg { font-size: 11px; margin-top: 15px; letter-spacing: 1px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .brand-pill { background: rgba(230, 187, 199, 0.1); color: var(--pink); font-size: 10px; padding: 6px 15px; border-radius: 100px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid rgba(230, 187, 199, 0.2); }
+
+        .editor-zone { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        textarea {
+            width: 100%; height: 300px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border); border-radius: 20px;
+            padding: 20px; color: #aaa; font-family: 'Courier New', monospace;
+            font-size: 13px; outline: none; transition: 0.3s; resize: none;
+        }
+        textarea:focus { border-color: var(--pink); color: white; box-shadow: 0 0 20px var(--pink-glow); }
+
+        .preview-box {
+            width: 100%; height: 300px; background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border); border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; position: relative;
+        }
+
+        #svg-render-container svg { max-width: 100%; max-height: 100%; }
+
+        .btn-prime {
+            width: 100%; background: var(--pink); color: #000; border: none;
+            padding: 18px; border-radius: 100px; font-weight: 700;
+            font-size: 12px; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: 0.4s;
+        }
+        .btn-prime:hover { transform: translateY(-3px); box-shadow: 0 10px 30px var(--pink-glow); }
+        .btn-prime:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        #status { text-align: center; font-size: 11px; letter-spacing: 1px; color: var(--pink); opacity: 0.8; }
     </style>
 </head>
 <body>
-    <div class="orb"></div><div class="orb orb-2"></div>
 
-    <div id="login-screen">
-        <div class="glass-card">
-            <div class="brand-pill">Ghost Link v2</div>
-            <h2>System Initialize</h2>
-            <input type="password" id="token-input" placeholder="Bot Token">
-            <button class="btn-prime" onclick="init()">Establish Connection</button>
-            <div id="status-msg"></div>
-        </div>
-    </div>
-
-    <div id="client-ui" style="display: flex;">
-        <div class="sidebar">
-            <div class="label">Servers</div>
-            <div id="g-list" style="overflow-y: auto; flex: 1;"></div>
-            <div class="label" style="border-top: 1px solid var(--glass-border)">Channels</div>
-            <div id="c-list" style="overflow-y: auto; flex: 1.5;"></div>
-        </div>
-        <div class="main-stage">
-            <div style="padding: 60px 50px;">
-                <span id="target-g" style="font-size: 10px; color: var(--pink); letter-spacing: 4px;">TARGET UNSET</span>
-                <h1 id="target-c" style="font-weight: 200; font-size: 42px; margin-top: 10px;">Transmission</h1>
+    <div class="orb"></div>
+    
+    <div class="studio-card">
+        <div class="header">
+            <div>
+                <div class="brand-pill">Asset Processor</div>
+                <h1 style="font-weight: 200; margin-top: 10px;">SVG to GIF</h1>
             </div>
-            <div style="flex:1"></div>
-            <div style="padding: 50px;">
-                <textarea id="msg" rows="4" placeholder="Input transmission..."></textarea>
-                <button class="btn-prime" onclick="sendTx()">Execute Send</button>
+            <div id="status">IDLE</div>
+        </div>
+
+        <div class="editor-zone">
+            <textarea id="svg-input" placeholder="Paste <svg> code here..." oninput="updatePreview()"></textarea>
+            <div class="preview-box" id="svg-render-container">
+                <span style="color: #444; font-size: 12px;">PREVIEW</span>
             </div>
         </div>
+
+        <button class="btn-prime" id="export-btn" onclick="generateGif()">Export as .GIF</button>
     </div>
+
+    <canvas id="proc-canvas" style="display: none;"></canvas>
 
     <script>
-        let TOKEN = "";
-        let CID = null;
+        const input = document.getElementById('svg-input');
+        const container = document.getElementById('svg-render-container');
+        const status = document.getElementById('status');
+        const canvas = document.getElementById('proc-canvas');
+        const ctx = canvas.getContext('2d');
 
-        async function api(path, method = "GET", body = null) {
-            // Using Puter.js fetch which acts as a built-in proxy to bypass CORS
-            return await puter.fetch(`https://discord.com/api/v10${path}`, {
-                method,
-                headers: { "Authorization": `Bot ${TOKEN}`, "Content-Type": "application/json" },
-                body: body ? JSON.stringify(body) : null
+        function updatePreview() {
+            const raw = input.value.trim();
+            if (raw.startsWith('<svg')) {
+                container.innerHTML = raw;
+            }
+        }
+
+        async function generateGif() {
+            const svgElement = container.querySelector('svg');
+            if (!svgElement) return alert("Please paste valid SVG code first.");
+
+            status.innerText = "PROCESSING...";
+            const btn = document.getElementById('export-btn');
+            btn.disabled = true;
+
+            // Get SVG dimensions
+            const width = svgElement.viewBox.baseVal.width || svgElement.width.baseVal.value || 500;
+            const height = svgElement.viewBox.baseVal.height || svgElement.height.baseVal.value || 500;
+            
+            canvas.width = width;
+            canvas.height = height;
+
+            // Prepare GIF.js
+            const gif = new GIF({
+                workers: 2,
+                quality: 1, // Highest quality
+                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
             });
-        }
 
-        async function init() {
-            TOKEN = document.getElementById('token-input').value.trim();
-            const status = document.getElementById('status-msg');
-            if(!TOKEN) return;
-            status.innerText = "BYPASSING GRID...";
+            // Convert SVG to Image for Canvas drawing
+            const svgData = new XMLSerializer().serializeToString(svgElement);
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+            const img = new Image();
 
-            try {
-                const res = await api("/users/@me");
-                if(res.ok) {
-                    document.getElementById('login-screen').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('login-screen').style.display = 'none';
-                        const ui = document.getElementById('client-ui');
-                        ui.style.opacity = '1';
-                        loadG();
-                    }, 800);
-                } else { status.innerText = "ACCESS DENIED"; }
-            } catch (e) { status.innerText = "CONNECTION BLOCKED"; }
-        }
+            img.onload = () => {
+                // Clear and draw
+                ctx.clearRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0);
+                
+                // Add frames (GIF needs frames, we add two identical ones for a high-quality static GIF)
+                gif.addFrame(ctx, {copy: true, delay: 500});
+                gif.addFrame(ctx, {copy: true, delay: 500});
 
-        async function loadG() {
-            const res = await api("/users/@me/guilds");
-            const data = await res.json();
-            document.getElementById('g-list').innerHTML = data.map(g => 
-                `<div class="item" onclick="loadC('${g.id}', '${g.name}')">${g.name}</div>`
-            ).join('');
-        }
+                gif.on('finished', (blob) => {
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = `dubaaai_asset.gif`;
+                    link.click();
+                    
+                    status.innerText = "EXPORTED";
+                    btn.disabled = false;
+                    setTimeout(() => status.innerText = "IDLE", 3000);
+                });
 
-        async function loadC(id, name) {
-            document.getElementById('target-g').innerText = name.toUpperCase();
-            const res = await api(`/guilds/${id}/channels`);
-            const data = await res.json();
-            document.getElementById('c-list').innerHTML = data.filter(c => c.type === 0).map(c => 
-                `<div class="item" onclick="setC('${c.id}', '${c.name}')"># ${c.name}</div>`
-            ).join('');
-        }
+                gif.render();
+            };
 
-        function setC(id, name) {
-            CID = id;
-            document.getElementById('target-c').innerText = "#" + name;
-            document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        async function sendTx() {
-            if(!CID) return;
-            const content = document.getElementById('msg').value;
-            await api(`/channels/${CID}/messages`, "POST", { content });
-            document.getElementById('msg').value = "";
+            img.src = url;
         }
     </script>
 </body>
