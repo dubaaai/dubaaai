@@ -26,32 +26,13 @@
             position: relative;
         }
 
-        /* Modern Dark Mesh Background */
         .bg-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: radial-gradient(circle at 20% 30%, #1a1214 0%, transparent 40%),
                         radial-gradient(circle at 80% 70%, #0f1116 0%, transparent 40%);
             filter: blur(80px);
         }
 
-        .bg-orb {
-            position: absolute;
-            width: 400px; height: 400px;
-            background: var(--pink);
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.04;
-            animation: drift 20s infinite alternate ease-in-out;
-        }
-
-        @keyframes drift {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(20%, 30%); }
-        }
-
-        /* Glass Header */
         .header {
             padding: 30px;
             display: flex;
@@ -62,128 +43,63 @@
         }
 
         .brand {
-            font-size: 13px;
-            letter-spacing: 7px;
-            text-transform: uppercase;
-            color: var(--pink);
-            text-shadow: 0 0 15px var(--pink-glow);
-            font-weight: 300;
+            font-size: 13px; letter-spacing: 7px; text-transform: uppercase;
+            color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300;
         }
 
         .version-bar {
-            display: flex;
-            gap: 6px;
-            background: var(--glass);
-            padding: 5px;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
+            display: flex; gap: 6px; background: var(--glass); padding: 5px;
+            border-radius: 100px; border: 1px solid var(--border); backdrop-filter: blur(var(--blur));
         }
 
         .ver-btn {
-            background: transparent;
-            border: none;
-            color: rgba(255,255,255,0.3);
-            padding: 8px 18px;
-            border-radius: 100px;
-            font-size: 11px;
-            cursor: pointer;
-            transition: 0.4s;
+            background: transparent; border: none; color: rgba(255,255,255,0.3);
+            padding: 8px 18px; border-radius: 100px; font-size: 11px; cursor: pointer; transition: 0.4s;
         }
 
-        .ver-btn.active {
-            background: rgba(230, 187, 199, 0.15);
-            color: var(--pink);
-        }
+        .ver-btn.active { background: rgba(230, 187, 199, 0.15); color: var(--pink); }
 
-        /* Chat window */
         #chat-window {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-            scrollbar-width: none;
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column;
+            gap: 25px; max-width: 800px; margin: 0 auto; width: 100%; scrollbar-width: none;
         }
-
-        #chat-window::-webkit-scrollbar { display: none; }
 
         .msg {
-            max-width: 80%;
-            padding: 16px 22px;
-            border-radius: 26px;
-            line-height: 1.6;
-            font-size: 15px;
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
-            border: 1px solid var(--border);
-            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            opacity: 0;
+            max-width: 80%; padding: 16px 22px; border-radius: 26px; line-height: 1.6; font-size: 15px;
+            backdrop-filter: blur(var(--blur)); border: 1px solid var(--border);
+            animation: slideUp 0.5s ease forwards; opacity: 0;
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
 
-        .ai img { 
-            width: 100%; 
-            border-radius: 15px; 
-            margin-top: 10px; 
-            border: 1px solid var(--border);
-        }
+        .msg img { width: 100%; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); }
 
-        /* Input Glass Bar */
-        .input-area {
-            padding: 20px 20px 50px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
+        .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+        #preview-box {
+            display: none; padding: 10px; background: var(--glass); border: 1px solid var(--border);
+            border-radius: 20px; margin-bottom: 10px; backdrop-filter: blur(var(--blur)); width: fit-content;
         }
+        #preview-box img { max-height: 80px; border-radius: 10px; }
 
         .input-container {
-            background: var(--glass);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            backdrop-filter: blur(var(--blur));
-            -webkit-backdrop-filter: blur(var(--blur));
+            background: var(--glass); border: 1px solid var(--border); border-radius: 100px;
+            display: flex; align-items: center; padding: 8px 15px; backdrop-filter: blur(var(--blur));
         }
 
-        input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 14px;
-            outline: none;
-            font-size: 15px;
-        }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 15px; }
+        .icon-btn { background: transparent; border: none; color: var(--pink); font-size: 20px; cursor: pointer; padding: 0 10px; }
 
-        .send-btn {
-            background: transparent;
-            border: none;
-            color: var(--pink);
-            font-size: 22px;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .thinking .brand { animation: breathe 2s infinite ease-in-out; }
+        .thinking .brand { animation: breathe 2s infinite; }
         @keyframes breathe { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body id="main-body">
 
     <div class="bg-canvas"></div>
-    <div class="bg-orb"></div>
 
     <div class="header">
         <div class="brand">dubaaai</div>
@@ -196,18 +112,24 @@
     </div>
 
     <div id="chat-window">
-        <div class="msg ai">hey. i'm dubaaai. what's on your mind?</div>
+        <div class="msg ai">hey. i'm dubaaai. what's up?</div>
     </div>
 
     <div class="input-area">
+        <div id="preview-box">
+            <img id="img-preview" src="">
+        </div>
         <div class="input-container">
-            <input type="text" id="user-input" placeholder="type sum..." autocomplete="off">
-            <button class="send-btn" onclick="send()">🚀</button>
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()">+</button>
+            <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
+            <input type="text" id="user-input" placeholder="type sum or paste image..." autocomplete="off">
+            <button class="icon-btn" onclick="send()">🚀</button>
         </div>
     </div>
 
     <script>
         let currentVer = "Fast";
+        let pendingImg = null;
 
         function setVer(v, btn) {
             currentVer = v;
@@ -215,11 +137,35 @@
             btn.classList.add('active');
         }
 
+        function handleFile(input) {
+            const file = input.files[0];
+            if (file) showPreview(file);
+        }
+
+        // Paste Image Logic
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf("image") !== -1) {
+                    showPreview(item.getAsFile());
+                }
+            }
+        });
+
+        function showPreview(file) {
+            pendingImg = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('img-preview').src = e.target.result;
+                document.getElementById('preview-box').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
         function addMessage(text, type, isImg = false) {
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
             div.className = `msg ${type}`;
-            
             if (isImg) {
                 const img = document.createElement('img');
                 img.src = text;
@@ -227,7 +173,6 @@
             } else {
                 div.textContent = text.toLowerCase();
             }
-            
             win.appendChild(div);
             win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
@@ -236,10 +181,16 @@
             const body = document.getElementById('main-body');
             const input = document.getElementById('user-input');
             const text = input.value.trim();
-            if (!text) return;
+            const currentImg = pendingImg ? document.getElementById('img-preview').src : null;
 
-            addMessage(text, 'user');
+            if (!text && !currentImg) return;
+
+            addMessage(text || "sent an image", 'user', false);
+            if(currentImg && currentVer !== "Image") addMessage(currentImg, 'user', true);
+
             input.value = '';
+            pendingImg = null;
+            document.getElementById('preview-box').style.display = 'none';
 
             if (currentVer === "Image") {
                 const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true`;
@@ -249,24 +200,21 @@
 
             body.classList.add('thinking');
 
-            let systemPrompt = "you are dubaaai. speak in all lowercase. be chill but use normal vocabulary. respond naturally without adding extra fluff.";
-            if(currentVer === "Complex") systemPrompt += " provide more detail and depth.";
-            if(currentVer === "Dev") systemPrompt += " provide clean technical and code assistance.";
+            let systemPrompt = "Your name is dubaaai. You are a grounded, chill individual. Use all lowercase letters. Do not use forced slang, just speak naturally and casually. Be helpful but brief.";
+            if(currentVer === "Complex") systemPrompt = "Your name is dubaaai. Use all lowercase. Provide deeply analytical and detailed responses while maintaining a calm, chill tone.";
+            if(currentVer === "Dev") systemPrompt = "Your name is dubaaai. Use all lowercase. You are an expert developer. Provide clean, accurate code and technical advice.";
 
             try {
                 const response = await fetch("/api/chat", {
                     method: "POST",
-                    body: JSON.stringify({ message: text, systemPrompt: systemPrompt })
+                    body: JSON.stringify({ message: text || "i sent you an image, can you see it?", systemPrompt: systemPrompt })
                 });
-
                 const data = await response.json();
                 body.classList.remove('thinking');
-                
-                const reply = data.choices?.[0]?.message?.content || "link is acting up.";
-                addMessage(reply, 'ai');
+                addMessage(data.choices?.[0]?.message?.content || "link's down.", 'ai');
             } catch (e) {
                 body.classList.remove('thinking');
-                addMessage("error connecting to bridge.", 'ai');
+                addMessage("error connecting.", 'ai');
             }
         }
 

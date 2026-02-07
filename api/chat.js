@@ -1,8 +1,6 @@
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: "Method not allowed" });
-    }
-
+    if (req.method !== 'POST') return res.status(405).json({ error: "Method not allowed" });
+    
     try {
         const { message, systemPrompt } = JSON.parse(req.body);
 
@@ -18,13 +16,13 @@ export default async function handler(req, res) {
                     { role: "system", content: systemPrompt },
                     { role: "user", content: message }
                 ],
-                temperature: 0.7
+                temperature: 0.6
             })
         });
 
         const data = await response.json();
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error: "failed to connect to groq" });
+        res.status(500).json({ error: "failed to connect" });
     }
 }
