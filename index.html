@@ -24,16 +24,18 @@
         .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.6); backdrop-filter: blur(40px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .menu-link { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: rgba(255,255,255,0.4); transition: 0.4s; position: relative; }
-        .menu-link:hover { color: white; text-shadow: 0 0 30px var(--brand-blue); transform: scale(1.1); }
-        .discord-glass-widget { background: rgba(24, 124, 244, 0.05); border: 1px solid rgba(24, 124, 244, 0.3); backdrop-filter: blur(20px); box-shadow: 0 0 40px rgba(24, 124, 244, 0.1); }
+        #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.95); backdrop-filter: blur(40px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
+        #mobile-menu.active { display: flex; }
+        .menu-link { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: rgba(255,255,255,0.4); transition: 0.4s; }
+        .menu-link:hover { color: white; transform: scale(1.1); }
+        .discord-glass-widget { background: rgba(24, 124, 244, 0.05); border: 1px solid rgba(24, 124, 244, 0.3); backdrop-filter: blur(20px); }
         .status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .work-img { width: 100%; border-radius: 12px; cursor: pointer; transition: 0.4s; border: 1px solid rgba(255,255,255,0.05); }
+        .work-img:hover { transform: scale(1.02); border-color: var(--brand-blue); }
         #contact-toast { position: fixed; top: 20px; right: 20px; z-index: 10001; padding: 16px 28px; border-radius: 20px; background: rgba(24, 124, 244, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(24, 124, 244, 0.4); transform: translateX(150%); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #contact-toast.show { transform: translateX(0); }
-        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         #lightbox.open { display: flex; }
     </style>
 </head>
@@ -47,26 +49,29 @@
 
     <div id="mobile-menu">
         <button onclick="toggleMobileMenu()" class="absolute top-10 right-10 text-3xl"><i class="fas fa-times"></i></button>
-        <button onclick="navTo('home')" class="menu-link">HOME</button>
-        <button onclick="navTo('work')" class="menu-link">WORK</button>
-        <button onclick="navTo('courses')" class="menu-link">COURSES</button>
-        <a href="https://discord.gg/judah" target="_blank" class="menu-link">DISCORD</a>
+        <button onclick="navTo('home')" class="menu-link uppercase">HOME</button>
+        <button onclick="navTo('work')" class="menu-link uppercase">WORK</button>
+        <button onclick="navTo('courses')" class="menu-link uppercase">COURSES</button>
+        <a href="https://discord.gg/judah" target="_blank" class="menu-link uppercase">DISCORD</a>
     </div>
 
     <div class="noise-bg"></div>
     <div class="glow-sphere"></div>
-    <div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img" class="max-w-[85%] max-h-[85%] rounded-xl transition-transform duration-500 scale-90" src=""></div>
+
+    <div id="lightbox" onclick="closeLightbox()">
+        <div id="lightbox-content" class="flex flex-wrap justify-center gap-4 p-6 max-h-screen overflow-y-auto">
+            </div>
+        <p class="mt-4 text-xs font-bold uppercase tracking-[0.5em] opacity-40">Click anywhere to close</p>
+    </div>
 
     <nav class="flex justify-between items-center px-6 md:px-10 py-8 max-w-7xl mx-auto relative z-10">
         <div class="text-2xl font-extrabold tracking-tighter cursor-pointer" onclick="showPage('home')">JUDAH<span class="text-[#187cf4]">.</span></div>
-        
         <div class="hidden lg:flex space-x-10 text-[11px] uppercase tracking-[0.3em] font-bold text-gray-400">
             <button onclick="showPage('home')" class="hover:text-white transition">HOME</button>
             <button onclick="showPage('work')" class="hover:text-white transition">WORK</button>
             <button onclick="showPage('courses')" class="hover:text-white transition">COURSES</button>
             <a href="https://discord.gg/judah" target="_blank" class="hover:text-white transition">DISCORD</a>
         </div>
-
         <div class="flex items-center gap-4">
             <button onclick="handleContact()" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] transition-all">Contact</button>
             <button onclick="toggleMobileMenu()" class="lg:hidden text-2xl p-2"><i class="fas fa-bars-staggered"></i></button>
@@ -76,9 +81,7 @@
     <main id="home-page" class="page active-page container mx-auto px-6">
         <section class="text-center pt-12 md:pt-24 pb-20 flex flex-col items-center">
             <h1 class="text-5xl md:text-8xl font-extrabold mb-12 tracking-tighter leading-tight uppercase">Bringing your <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">vision</span> to life.</h1>
-            
             <a href="https://discord.gg/judah" target="_blank" class="discord-glass-widget group p-6 rounded-[2.5rem] w-full max-w-md flex flex-col gap-6 hover:scale-[1.02] transition-all duration-500 relative overflow-hidden" data-tilt>
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 blur-[50px] rounded-full"></div>
                 <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 rounded-2xl overflow-hidden border border-white/10 bg-white/5">
@@ -105,76 +108,98 @@
                     </div>
                 </div>
             </a>
-            
             <button onclick="showPage('work')" class="mt-8 text-gray-500 text-xs font-bold uppercase tracking-[0.3em] hover:text-white transition">PROFESSIONAL WORK <i class="fas fa-arrow-right ml-2 text-[10px]"></i></button>
         </section>
 
         <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20 relative z-10">
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-pen-nib text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">Graphics</h3>
+                <h3 class="font-bold text-xl mb-2 uppercase">Graphics</h3>
                 <p class="text-gray-500 text-sm leading-relaxed">High-fidelity visual design tailored for your brand identity. We craft banners, logos, and UI elements.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-tshirt text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">Clothing</h3>
+                <h3 class="font-bold text-xl mb-2 uppercase">Clothing</h3>
                 <p class="text-gray-500 text-sm leading-relaxed">Premium Roblox attire with hyper-realistic textures. Engineered to fit perfectly.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-car text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">Liveries</h3>
+                <h3 class="font-bold text-xl mb-2 uppercase">Liveries</h3>
                 <p class="text-gray-500 text-sm leading-relaxed">Elite ER:LC department skins. Clean lines and professional aesthetics for your fleet.</p>
             </div>
         </section>
+    </main>
+
+    <main id="work-page" class="page container mx-auto px-6 pt-10">
+        <h2 class="text-4xl font-black mb-12 uppercase">Work<span class="text-[#187cf4]">.</span></h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+            <img src="assets/design1.png" class="work-img" onclick="openShowcase(['assets/design1.png'])" data-tilt>
+            <img src="assets/design2.png" class="work-img" onclick="openShowcase(['assets/design2.png'])" data-tilt>
+            <img src="assets/design3.png" class="work-img" onclick="openShowcase(['assets/design3.png'])" data-tilt>
+            <img src="assets/design4.png" class="work-img" onclick="openShowcase(['assets/design4.png'])" data-tilt>
+            <img src="assets/design5.png" class="work-img" onclick="openShowcase(['assets/design5.png'])" data-tilt>
+            <img src="assets/design6.png" class="work-img" onclick="openShowcase(['assets/design6.png'])" data-tilt>
+            <img src="assets/design7.png" class="work-img" onclick="openShowcase(['assets/design7.png'])" data-tilt>
+            <img src="assets/design8.png" class="work-img" onclick="openShowcase(['assets/design8.png'])" data-tilt>
+            <img src="assets/design9.png" class="work-img" onclick="openShowcase(['assets/design9.png'])" data-tilt>
+            <img src="assets/design10.png" class="work-img" onclick="openShowcase(['assets/design10.png'])" data-tilt>
+            <img src="assets/design11.png" class="work-img" onclick="openShowcase(['assets/design11.png'])" data-tilt>
+            <img src="assets/design12.png" class="work-img" onclick="openShowcase(['assets/design12.png'])" data-tilt>
+            <img src="assets/design13.png" class="work-img" onclick="openShowcase(['assets/design13.png'])" data-tilt>
+            <img src="assets/design14.png" class="work-img" onclick="openShowcase(['assets/design14.png'])" data-tilt>
+            <img src="assets/design15.png" class="work-img" onclick="openShowcase(['assets/design15.png'])" data-tilt>
+            <img src="assets/design16.png" class="work-img" onclick="openShowcase(['assets/design16.png'])" data-tilt>
+            <img src="assets/design17.png" class="work-img" onclick="openShowcase(['assets/design17.png'])" data-tilt>
+        </div>
     </main>
 
     <main id="courses-page" class="page container mx-auto px-6 pt-10">
         <h2 class="text-4xl font-black mb-12 uppercase">Courses<span class="text-[#187cf4]">.</span></h2>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Simple Logo Course</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and 24/7 support.</p>
+                <h3 class="text-xl font-bold mb-2 uppercase">Simple Logo Course</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Tutorial videos, assets, and support.</p>
                 <div class="flex gap-2">
-                    <button onclick="openLightbox('assets/logokey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button onclick="openShowcase(['assets/simpleshowcase1.png', 'assets/simpleshowcase2.png', 'assets/simpleshowcase3.png'])" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Banner Course</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and backgrounds.</p>
+                <h3 class="text-xl font-bold mb-2 uppercase">Banner Course</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Tutorial videos, assets, and backgrounds.</p>
                 <div class="flex gap-2">
-                    <button onclick="openLightbox('assets/bannerkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button onclick="openShowcase(['assets/bannershow1.png', 'assets/bannershow2.png', 'assets/bannershow3.png'])" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Vectorized Logo</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos, assets, and resource links.</p>
+                <h3 class="text-xl font-bold mb-2 uppercase">Vectorized Logo</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos and resource links.</p>
                 <div class="flex gap-2">
-                    <button onclick="openLightbox('assets/vectorkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button onclick="openShowcase(['assets/vecshow1.png', 'assets/vecshow2.png', 'assets/vecshow3.png'])" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Clothing Course</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Includes 100+ assets, tutorials, and tutorial levels.</p>
+                <h3 class="text-xl font-bold mb-2 uppercase">Clothing Course</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">100+ assets and level-based tutorials.</p>
                 <div class="flex gap-2">
-                    <button onclick="openLightbox('assets/clothingkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button onclick="openShowcase(['assets/clotheshow1.png', 'assets/clotheshow2.png', 'assets/clotheshow3.png'])" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Livery Course</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs, many assets, and industry website resources.</p>
+                <h3 class="text-xl font-bold mb-2 uppercase">Livery Course</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs and industry resources.</p>
                 <div class="flex gap-2">
-                    <button onclick="openLightbox('assets/liverykey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
-                    <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                    <button onclick="openShowcase(['assets/livshow1.png', 'assets/livshow2.png', 'assets/livshow3.png'])" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
                 </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Leadership</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Master management with elite tips and server architecture.</p>
-                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <h3 class="text-xl font-bold mb-2 uppercase">Leadership</h3>
+                <p class="text-gray-500 text-sm mb-6 flex-grow">Management and server architecture.</p>
+                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase text-center">Purchase</a>
             </div>
         </div>
     </main>
@@ -208,8 +233,7 @@
         fetchDiscord();
 
         function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+            document.getElementById('mobile-menu').classList.toggle('active');
         }
 
         function handleContact() {
@@ -229,7 +253,19 @@
         }
 
         function navTo(pageId) { toggleMobileMenu(); showPage(pageId); }
-        function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); }
+
+        function openShowcase(images) {
+            const container = document.getElementById('lightbox-content');
+            container.innerHTML = '';
+            images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = "max-w-full md:max-w-[45%] rounded-xl shadow-2xl border border-white/10";
+                container.appendChild(img);
+            });
+            document.getElementById('lightbox').classList.add('open');
+        }
+
         function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.1 });
