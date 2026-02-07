@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judah's Customs | Vision to Life</title>
+    <title>Judah's Customs | Bringing your vision to life</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -11,34 +11,42 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
         :root { --brand-blue: #187cf4; --bg-dark: #030303; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; cursor: none; scroll-behavior: smooth; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow-x: hidden; 
+            cursor: none; 
+            scroll-behavior: smooth;
+        }
 
-        /* Textured Background & Glows */
+        /* Background & Texture */
         .noise-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 50; }
         .glow-sphere { position: fixed; width: 600px; height: 600px; background: radial-gradient(circle, rgba(24, 124, 244, 0.12) 0%, rgba(0,0,0,0) 70%); border-radius: 50%; filter: blur(80px); z-index: -1; animation: pulse 12s infinite alternate; }
         @keyframes pulse { 0% { transform: translate(-10%, -10%) scale(1); } 100% { transform: translate(20%, 20%) scale(1.1); } }
 
-        /* UI Elements */
+        /* UI Styling */
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .glass-card:hover { border-color: var(--brand-blue); box-shadow: 0 0 30px rgba(24, 124, 244, 0.2); }
         
-        #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transition: transform 0.15s ease, background 0.3s ease; transform: translate(-50%, -50%); }
+        #cursor { width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; box-shadow: 0 0 20px var(--brand-blue); transition: transform 0.1s ease, background 0.3s ease; transform: translate(-50%, -50%); }
 
-        /* Page Logic */
+        /* Page Animations */
         .page { display: none; opacity: 0; }
-        .active-page { display: block; animation: fadeIn 0.8s forwards ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .active-page { display: block; animation: pageIn 0.8s forwards ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Staggered Work Animation */
+        /* Work Grid Animations */
         .work-item { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
         .active-page .work-item { opacity: 1; transform: translateY(0); }
 
-        .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.05); }
+        .work-img { width: 100%; border-radius: 15px; cursor: pointer; transition: 0.5s; border: 1px solid rgba(255,255,255,0.05); background: #111; }
         .work-img:hover { filter: drop-shadow(0 0 20px var(--brand-blue)); transform: scale(1.02); }
 
-        /* Lightbox */
-        #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: zoom-out; }
-        #lightbox img { max-width: 90%; max-height: 85%; border-radius: 12px; border: 1px solid rgba(24, 124, 244, 0.3); transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* Lightbox Fix */
+        #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); cursor: zoom-out; }
+        #lightbox img { max-width: 85%; max-height: 85%; border-radius: 12px; border: 1px solid rgba(24, 124, 244, 0.3); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #lightbox.open { display: flex; }
         #lightbox.open img { transform: scale(1); }
     </style>
@@ -50,15 +58,15 @@
     <div class="glow-sphere" style="top: -10%; left: -10%;"></div>
     
     <div id="lightbox" onclick="closeLightbox()">
-        <img id="lightbox-img" src="" alt="Full size preview">
+        <img id="lightbox-img" src="" alt="Work Preview">
     </div>
 
     <nav class="flex justify-between items-center px-10 py-8 max-w-7xl mx-auto relative z-10">
-        <div class="text-2xl font-extrabold tracking-tighter" onclick="showPage('home')" style="cursor: pointer;">JUDAH<span class="text-[#187cf4]">.</span></div>
+        <div class="text-2xl font-extrabold tracking-tighter cursor-pointer" onclick="showPage('home')">JUDAH<span class="text-[#187cf4]">.</span></div>
         <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.3em] font-bold text-gray-400">
-            <button onclick="showPage('home')" class="hover:text-white transition uppercase tracking-[0.3em]">Home</button>
-            <button onclick="showPage('work')" class="hover:text-white transition uppercase tracking-[0.3em]">Work</button>
-            <a href="https://discord.gg/judah" target="_blank" rel="noopener noreferrer" class="hover:text-white transition uppercase tracking-[0.3em]">Discord</a>
+            <button onclick="showPage('home')" class="hover:text-white transition uppercase">Home</button>
+            <button onclick="showPage('work')" class="hover:text-white transition uppercase">Work</button>
+            <a href="https://discord.gg/judah" target="_blank" rel="noopener noreferrer" class="hover:text-white transition">Discord</a>
         </div>
         <a href="mailto:contact@jcustoms.org" class="glass-card px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#187cf4] hover:text-white transition-all">Contact</a>
     </nav>
@@ -82,27 +90,27 @@
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-pen-nib text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Graphics</h3>
-                <p class="text-gray-500 text-sm">High-quality graphics tailored to your design needs. From server banners to profile branding, we craft visuals that command attention and define your identity.</p>
+                <p class="text-gray-500 text-sm">High-quality graphics tailored to your design needs. We craft visuals that command attention and define your identity, ensuring your brand stands out in any crowd.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-tshirt text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Clothing</h3>
-                <p class="text-gray-500 text-sm">Roblox clothing that comes in premium quality and fits your needs perfectly. Detailed textures and modern fits designed for the discerning avatar.</p>
+                <p class="text-gray-500 text-sm">Roblox clothing that comes in premium quality and fits your needs perfectly. Detailed textures and modern fits designed specifically for high-end avatars.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-car text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Liveries</h3>
-                <p class="text-gray-500 text-sm">High quality ER:LC liveries that fit the standard of your server. Sharp lines and realistic department designs for maximum roleplay immersion.</p>
+                <p class="text-gray-500 text-sm">High quality ER:LC liveries that fit the standard of your server. Sharp lines and realistic department designs for maximum roleplay immersion and professionalism.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fas fa-camera text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Photography</h3>
-                <p class="text-gray-500 text-sm">Capturing the immersive roleplay experience within your ER:LC server. Cinematic shots that showcase your community's best moments in high definition.</p>
+                <p class="text-gray-500 text-sm">Capturing the immersive roleplay experience within your ER:LC server. Cinematic shots that showcase your community's best moments in stunning high definition.</p>
             </div>
             <div class="glass-card p-8 rounded-[2rem]" data-tilt>
                 <i class="fab fa-discord text-[#187cf4] text-3xl mb-6"></i>
                 <h3 class="text-xl font-bold mb-3">Discord</h3>
-                <p class="text-gray-500 text-sm">Advanced Discord automation and setup that makes management effortless. Custom bots and structures designed to scale with your community.</p>
+                <p class="text-gray-500 text-sm">Advanced Discord automation and setup that makes management effortless. Custom bots and structures designed to grow and scale alongside your community.</p>
             </div>
         </section>
     </main>
@@ -111,10 +119,18 @@
         <section class="max-w-7xl mx-auto px-10 py-10">
             <h2 class="text-4xl font-black mb-12 tracking-tight">Showcase<span class="text-[#187cf4]">.</span></h2>
             <div class="grid md:grid-cols-2 gap-10">
-                <div class="work-item" style="transition-delay: 0.1s"><img src="https://media.discordapp.net/attachments/1461546579159945321/1462135543390277643/image.png?format=webp" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.2s"><img src="https://media.discordapp.net/attachments/1461546579159945321/1465610895072694365/image.png?format=webp" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.3s"><img src="https://media.discordapp.net/attachments/1302425103006564467/1468763501144051732/ERLC_OA_Banners.png?format=webp" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
-                <div class="work-item" style="transition-delay: 0.4s"><img src="https://media.discordapp.net/attachments/1302425103006564467/1468764172929208391/v3.png?format=webp" class="work-img" data-tilt onclick="openLightbox(this.src)"></div>
+                <div class="work-item" style="transition-delay: 0.1s">
+                    <img src="assets/judahwork1.png" class="work-img" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.2s">
+                    <img src="assets/judahwork2.png" class="work-img" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.3s">
+                    <img src="assets/dubaiwork1.png" class="work-img" data-tilt onclick="openLightbox(this.src)">
+                </div>
+                <div class="work-item" style="transition-delay: 0.4s">
+                    <img src="assets/dubaiwork2.png" class="work-img" data-tilt onclick="openLightbox(this.src)">
+                </div>
             </div>
             <div class="text-center mt-20">
                 <button onclick="showPage('home')" class="glass-card px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest">Back Home</button>
@@ -127,31 +143,48 @@
     </footer>
 
     <script>
+        // Custom Cursor Movement
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
+        // Hover Effect Logic
         function setupHovers() {
             document.querySelectorAll('a, button, .glass-card, .work-img').forEach(el => {
-                el.onmouseenter = () => { cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; cursor.style.background = 'white'; cursor.style.mixBlendMode = 'difference'; };
-                el.onmouseleave = () => { cursor.style.transform = 'translate(-50%, -50%) scale(1)'; cursor.style.background = '#187cf4'; cursor.style.mixBlendMode = 'normal'; };
+                el.onmouseenter = () => { 
+                    cursor.style.transform = 'translate(-50%, -50%) scale(3.5)'; 
+                    cursor.style.background = 'white'; 
+                    cursor.style.mixBlendMode = 'difference'; 
+                };
+                el.onmouseleave = () => { 
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)'; 
+                    cursor.style.background = '#187cf4'; 
+                    cursor.style.mixBlendMode = 'normal'; 
+                };
             });
         }
 
+        // Single Page App - Page Switching
         function showPage(pageId) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId + '-page').classList.add('active-page');
             
-            // Re-run setup
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+
+            // Show current page
+            const active = document.getElementById(pageId + '-page');
+            active.classList.add('active-page');
+            
+            // Refresh libraries for new page content
             setTimeout(() => {
                 VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
                 setupHovers();
-            }, 100);
+            }, 150);
         }
 
+        // Lightbox Image Popup Logic
         function openLightbox(src) {
             const lb = document.getElementById('lightbox');
             document.getElementById('lightbox-img').src = src;
@@ -166,7 +199,7 @@
             setTimeout(() => { lb.style.display = 'none'; cursor.style.opacity = '1'; }, 300);
         }
 
-        // Initial setup
+        // Initial setup on Load
         setupHovers();
         VanillaTilt.init(document.querySelectorAll("[data-tilt]"), { max: 10, speed: 400, glare: true, "max-glare": 0.2 });
     </script>
