@@ -14,7 +14,7 @@
             --blur: 24px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
         body {
             background-color: var(--black);
@@ -23,35 +23,10 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            position: relative;
-        }
-
-        /* Animated Mesh Background */
-        .bg-canvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
             background: radial-gradient(circle at 10% 20%, #1a1214 0%, transparent 50%),
                         radial-gradient(circle at 90% 80%, #0d0f14 0%, transparent 50%);
-            filter: blur(80px);
         }
 
-        .bg-orb {
-            position: absolute;
-            width: 400px; height: 400px;
-            background: var(--pink);
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.05;
-            animation: drift 20s infinite alternate ease-in-out;
-        }
-
-        @keyframes drift {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(30%, 40%); }
-        }
-
-        /* Glass Header */
         .header {
             padding: 30px;
             display: flex;
@@ -89,16 +64,14 @@
             border-radius: 100px;
             font-size: 11px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: 0.4s;
         }
 
         .ver-btn.active {
             background: rgba(230, 187, 199, 0.15);
             color: var(--pink);
-            box-shadow: 0 0 15px rgba(230, 187, 199, 0.1);
         }
 
-        /* Chat Window */
         #chat-window {
             flex: 1;
             overflow-y: auto;
@@ -111,8 +84,6 @@
             width: 100%;
             scrollbar-width: none;
         }
-
-        #chat-window::-webkit-scrollbar { display: none; }
 
         .msg {
             max-width: 80%;
@@ -127,25 +98,11 @@
             opacity: 0;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .user {
-            align-self: flex-end;
-            background: rgba(230, 187, 199, 0.1);
-            color: var(--pink);
-            border-bottom-right-radius: 4px;
-        }
+        .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
+        .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
 
-        .ai {
-            align-self: flex-start;
-            background: var(--glass);
-            border-bottom-left-radius: 4px;
-        }
-
-        /* Input Glass Bar */
         .input-area {
             padding: 20px 20px 50px;
             max-width: 800px;
@@ -162,49 +119,16 @@
             padding: 8px 15px;
             backdrop-filter: blur(var(--blur));
             -webkit-backdrop-filter: blur(var(--blur));
-            transition: 0.3s;
         }
 
-        .input-container:focus-within {
-            border-color: rgba(230, 187, 199, 0.4);
-            box-shadow: 0 0 30px rgba(230, 187, 199, 0.05);
-        }
+        input { flex: 1; background: transparent; border: none; color: white; padding: 14px; outline: none; font-size: 15px; }
+        .send-btn { background: transparent; border: none; color: var(--pink); font-size: 22px; cursor: pointer; padding: 10px; }
 
-        input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: white;
-            padding: 14px;
-            outline: none;
-            font-size: 15px;
-        }
-
-        .send-btn {
-            background: transparent;
-            border: none;
-            color: var(--pink);
-            font-size: 22px;
-            cursor: pointer;
-            padding: 10px;
-            transition: transform 0.2s ease;
-        }
-
-        .send-btn:hover { transform: scale(1.1); }
-
-        .thinking .brand {
-            animation: breathe 2s infinite ease-in-out;
-        }
-
-        @keyframes breathe {
-            50% { opacity: 0.3; text-shadow: 0 0 5px var(--pink-glow); }
-        }
+        .thinking .brand { animation: breathe 2s infinite ease-in-out; }
+        @keyframes breathe { 50% { opacity: 0.3; } }
     </style>
 </head>
 <body id="main-body">
-
-    <div class="bg-canvas"></div>
-    <div class="bg-orb"></div>
 
     <div class="header">
         <div class="brand">dubaaai</div>
@@ -227,9 +151,6 @@
     </div>
 
     <script>
-        // PASTE YOUR KEY INSIDE THE QUOTES BELOW
-        const GROQ_KEY = "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";
-        
         let currentVer = "Fast";
 
         function setVer(v, btn) {
@@ -257,35 +178,22 @@
             input.value = '';
             body.classList.add('thinking');
 
-            let systemPrompt = "you are dubaaai. speak like a chill guy. all lowercase. use slang like 'ite', 'bet', 'fosho'. keep it short and modern.";
-            if(currentVer === "Complex") systemPrompt += " give deeper advice but keep the chill vibe.";
-            if(currentVer === "Dev") systemPrompt += " focus on code help but explain it like a friend.";
+            let systemPrompt = "you are dubaaai. speak like a chill guy. all lowercase. use slang like 'ite', 'bet', 'fosho'.";
+            if(currentVer === "Complex") systemPrompt += " give deeper advice but stay chill.";
+            if(currentVer === "Dev") systemPrompt += " focus on code help.";
 
             try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                // TALKING TO YOUR VERCEL BRIDGE
+                const response = await fetch("/api/chat", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${GROQ_KEY}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: text }
-                        ],
-                        temperature: 0.8
-                    })
+                    body: JSON.stringify({ message: text, systemPrompt: systemPrompt })
                 });
 
                 const data = await response.json();
                 body.classList.remove('thinking');
                 
-                if (data.choices && data.choices[0]) {
-                    addMessage(data.choices[0].message.content, 'ai');
-                } else {
-                    addMessage("link's acting up. check your api key.", 'ai');
-                }
+                const reply = data.choices?.[0]?.message?.content || "link's acting up. check vercel logs.";
+                addMessage(reply, 'ai');
             } catch (e) {
                 body.classList.remove('thinking');
                 addMessage("ion know what happened. try again?", 'ai');
