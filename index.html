@@ -38,7 +38,7 @@
         }
 
         .header { padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 10; }
-        .brand { font-size: 13px; letter-spacing: 7px; text-transform: uppercase; color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300; transition: 0.3s; }
+        .brand { font-size: 13px; letter-spacing: 7px; text-transform: uppercase; color: var(--pink); text-shadow: 0 0 15px var(--pink-glow); font-weight: 300; }
         
         .version-bar { display: flex; gap: 6px; background: var(--glass); padding: 5px; border-radius: 100px; border: 1px solid var(--border); backdrop-filter: blur(var(--blur)); }
         .ver-btn { background: transparent; border: none; color: rgba(255,255,255,0.3); padding: 8px 18px; border-radius: 100px; font-size: 11px; cursor: pointer; transition: 0.4s; }
@@ -56,7 +56,7 @@
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
 
-        .img-container { position: relative; margin-top: 10px; width: 100%; max-width: 500px; min-height: 100px; }
+        .img-container { position: relative; margin-top: 10px; width: 100%; max-width: 500px; }
         .img-content { width: 100%; border-radius: 18px; border: 1px solid var(--border); display: block; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .dl-btn { 
             position: absolute; bottom: 15px; right: 15px; background: rgba(0,0,0,0.7); 
@@ -69,15 +69,14 @@
         .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); gap: 10px; }
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 15px; }
         
-        .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.4; transition: 0.3s; display: flex; align-items: center; }
-        .icon-btn.active { opacity: 1; filter: drop-shadow(0 0 8px var(--pink-glow)); }
+        .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.4; transition: 0.3s; }
+        .icon-btn.active { opacity: 1; }
 
-        .thinking .brand { animation: breathe 1.5s infinite; opacity: 0.6; }
-        @keyframes breathe { 50% { opacity: 0.2; transform: scale(0.98); } }
+        .thinking .brand { animation: breathe 1.5s infinite; }
+        @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         pre { background: #0d0d0d !important; padding: 16px; border-radius: 12px; overflow-x: auto; margin: 10px 0; border: 1px solid var(--border); }
-        code { font-family: 'Fira Code', monospace !important; font-size: 13px !important; }
     </style>
 </head>
 <body id="main-body">
@@ -85,7 +84,7 @@
     <div class="bg-canvas"></div>
 
     <div class="header">
-        <div class="brand" id="brand-logo">dubaaai</div>
+        <div class="brand">dubaaai</div>
         <div class="version-bar">
             <button class="ver-btn active" onclick="setVer('Fast', this)">Fast</button>
             <button class="ver-btn" onclick="setVer('Complex', this)">Complex</button>
@@ -98,25 +97,16 @@
 
     <div class="input-area">
         <div class="input-container">
-            <button class="icon-btn" onclick="document.getElementById('file-input').click()">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-            </button>
+            <button class="icon-btn" onclick="document.getElementById('file-input').click()">+</button>
             <input type="file" id="file-input" hidden accept="image/*" onchange="handleFileUpload(event)">
-            <input type="text" id="user-input" placeholder="say sum..." oninput="toggleGlow()" autocomplete="off">
-            <button class="icon-btn" id="send-trigger" onclick="send()">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="m19.8 12.925l-15.4 6.5q-.5.2-.95-.088T3 18.5v-13q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925M5 17l11.85-5L5 7v3.5l6 1.5l-6 1.5zm0 0V7z"/></svg>
-            </button>
+            <input type="text" id="user-input" placeholder="type sum..." oninput="toggleGlow()" autocomplete="off">
+            <button class="icon-btn" id="send-trigger" onclick="send()">Send</button>
         </div>
     </div>
 
     <script>
         let currentVer = "Fast", chatHistory = [];
-        const starts = { 
-            Fast: "hey. i'm dubaaai. what's the move?", 
-            Complex: "deep mode active. let's break it down.", 
-            Dev: "terminal ready. send logic.", 
-            Image: "visuals on. what are we creating?" 
-        };
+        const starts = { Fast: "hey. i'm dubaaai. what's the move?", Complex: "deep mode active.", Dev: "terminal ready.", Image: "visuals on." };
 
         function setVer(v, btn) {
             currentVer = v; chatHistory = []; document.getElementById('chat-window').innerHTML = '';
@@ -126,25 +116,7 @@
         }
 
         function toggleGlow() { 
-            const hasText = document.getElementById('user-input').value.trim().length > 0;
-            document.getElementById('send-trigger').classList.toggle('active', hasText); 
-        }
-
-        async function downloadImg(url) {
-            try {
-                const response = await fetch(url);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                link.download = `dubaaai-${Date.now()}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(blobUrl);
-            } catch (e) {
-                window.open(url, '_blank');
-            }
+            document.getElementById('send-trigger').classList.toggle('active', document.getElementById('user-input').value.trim().length > 0); 
         }
 
         function addMessage(content, type, isImg = false) {
@@ -155,18 +127,12 @@
                 const container = document.createElement('div'); container.className = 'img-container';
                 const img = document.createElement('img'); 
                 img.className = 'img-content';
-                img.src = content;
-                img.crossOrigin = "anonymous";
-                
-                img.onerror = () => {
-                    if (content.includes('corsproxy.io')) {
-                        const originalUrl = decodeURIComponent(content.split('?')[1]);
-                        img.src = originalUrl;
-                    }
-                };
+                img.src = content; 
                 
                 const btn = document.createElement('button'); btn.className = 'dl-btn'; btn.innerText = 'Download';
-                btn.onclick = () => downloadImg(img.src);
+                btn.onclick = () => {
+                    const a = document.createElement('a'); a.href = content; a.download = `dubaaai-${Date.now()}.png`; a.click();
+                };
                 
                 container.append(img, btn); div.appendChild(container);
             } else {
@@ -175,7 +141,7 @@
             }
             
             win.appendChild(div); 
-            setTimeout(() => win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' }), 100);
+            win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
 
         async function send() {
@@ -217,15 +183,6 @@
                 reader.readAsDataURL(file); 
             }
         }
-
-        window.addEventListener('paste', e => {
-            const item = Array.from(e.clipboardData.items).find(x => x.type.indexOf('image') !== -1);
-            if (item) {
-                const blob = item.getAsFile(), reader = new FileReader();
-                reader.onload = (f) => addMessage(f.target.result, 'user', true);
-                reader.readAsDataURL(blob);
-            }
-        });
 
         window.onload = () => addMessage(starts.Fast, 'ai');
         document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
