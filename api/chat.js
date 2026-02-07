@@ -5,19 +5,7 @@ export default async function handler(req, res) {
         const { messages = [], currentVer = "Fast", text = "" } = req.body;
 
         if (currentVer === "Image") {
-            const seed = Math.floor(Math.random() * 1000000);
-            const prompt = encodeURIComponent(text || 'aesthetic');
-            const rawUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&nologo=true&seed=${seed}`;
-            
-            const response = await fetch(rawUrl);
-            if (!response.ok) throw new Error('Pollinations fetch failed');
-            
-            const arrayBuffer = await response.arrayBuffer();
-            const base64 = Buffer.from(arrayBuffer).toString('base64');
-            
-            const dataUrl = `data:image/png;base64,${base64}`;
-            
-            return res.status(200).json({ isImage: true, url: dataUrl });
+            return res.status(200).json({ isImage: true, text: text });
         }
 
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -28,20 +16,15 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [
-                    { role: "system", content: "you are dubaaai. chill. witty. lowercase only." },
-                    ...messages
-                ],
+                messages: [{ role: "system", content: "you are dubaaai. chill. lowercase." }, ...messages],
                 temperature: 0.6
             })
         });
 
         const data = await groqRes.json();
-        const content = data.choices?.[0]?.message?.content || "stall.";
-        return res.status(200).json({ isImage: false, content });
+        return res.status(200).json({ isImage: false, content: data.choices?.[0]?.message?.content || "stall." });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ isImage: false, content: "bridge failed." });
+        return res.status(500).json({ isImage: false, content: "bridge error." });
     }
 }
