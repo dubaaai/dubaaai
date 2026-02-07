@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Judah's Customs</title>
+    
+    <link rel="icon" type="image/png" href="assets/titleicon.png">
+    <link rel="apple-touch-icon" href="assets/titleicon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -21,15 +25,12 @@
         @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .glass-card { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #mobile-menu { position: fixed; inset: 0; background: rgba(3, 3, 3, 0.6); backdrop-filter: blur(40px); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; opacity: 0; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        #mobile-menu.active { display: flex; opacity: 1; }
         .menu-link { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; color: rgba(255,255,255,0.4); transition: 0.4s; position: relative; }
         .menu-link:hover { color: white; text-shadow: 0 0 30px var(--brand-blue); transform: scale(1.1); }
         .discord-glass-widget { background: rgba(24, 124, 244, 0.05); border: 1px solid rgba(24, 124, 244, 0.3); backdrop-filter: blur(20px); box-shadow: 0 0 40px rgba(24, 124, 244, 0.1); }
         .status-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; animation: blink 2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
         .work-img { width: 100%; border-radius: 12px; cursor: pointer; transition: 0.4s; border: 1px solid rgba(255,255,255,0.05); }
-        .work-item { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
-        .active-page .work-item { opacity: 1; transform: translateY(0); }
         #contact-toast { position: fixed; top: 20px; right: 20px; z-index: 10001; padding: 16px 28px; border-radius: 20px; background: rgba(24, 124, 244, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(24, 124, 244, 0.4); transform: translateX(150%); transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #contact-toast.show { transform: translateX(0); }
         #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
@@ -124,45 +125,7 @@
                 <h3 class="font-bold text-xl mb-2">Liveries</h3>
                 <p class="text-gray-500 text-sm leading-relaxed">Elite ER:LC department skins. Clean lines and professional aesthetics for your fleet.</p>
             </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-lightbulb text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">ELS</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Realistic Emergency Lighting Systems for ER:LC. Synchronized patterns for response immersion.</p>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fas fa-camera text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">Photography</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Cinematic in-game captures using advanced lighting techniques for promotional masterpieces.</p>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem]" data-tilt>
-                <i class="fab fa-discord text-[#187cf4] text-3xl mb-4"></i>
-                <h3 class="font-bold text-xl mb-2">Discord</h3>
-                <p class="text-gray-500 text-sm leading-relaxed">Professional server architecture and automation. Security bots and custom embed systems.</p>
-            </div>
         </section>
-    </main>
-
-    <main id="work-page" class="page container mx-auto px-6 pt-10">
-        <h2 class="text-4xl font-black mb-12 uppercase">Work<span class="text-[#187cf4]">.</span></h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-            <div class="work-item"><img src="assets/design1.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design2.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design3.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design4.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design5.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design6.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design7.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design8.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design9.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design10.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design11.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design12.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design13.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design14.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design15.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design16.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-            <div class="work-item"><img src="assets/design17.png" class="work-img" onclick="openLightbox(this.src)" data-tilt></div>
-        </div>
     </main>
 
     <main id="courses-page" class="page container mx-auto px-6 pt-10">
@@ -171,32 +134,47 @@
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Simple Logo Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and 24/7 support.</p>
-                <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <div class="flex gap-2">
+                    <button onclick="openLightbox('assets/logokey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/98699263467290/Logo-" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Banner Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes follow-along, tutorial videos, assets, and backgrounds.</p>
-                <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <div class="flex gap-2">
+                    <button onclick="openLightbox('assets/bannerkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/134014930443031/Banner-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Vectorized Logo</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes tutorial videos, assets, and resource links.</p>
-                <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <div class="flex gap-2">
+                    <button onclick="openLightbox('assets/vectorkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/140169198736897/Vectorized-Logo-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Clothing Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Includes 100+ assets, tutorials, and tutorial levels.</p>
-                <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
-            </div>
-            <div class="glass-card p-8 rounded-[2rem] flex flex-col">
-                <h3 class="text-xl font-bold mb-2">Leadership</h3>
-                <p class="text-gray-500 text-xs mb-6 flex-grow">Master management with elite tips and server architecture.</p>
-                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <div class="flex gap-2">
+                    <button onclick="openLightbox('assets/clothingkey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/102367683741766/Clothing-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                </div>
             </div>
             <div class="glass-card p-8 rounded-[2rem] flex flex-col">
                 <h3 class="text-xl font-bold mb-2">Livery Course</h3>
                 <p class="text-gray-500 text-xs mb-6 flex-grow">Watch-alongs, many assets, and industry website resources.</p>
-                <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="bg-blue-600 px-4 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                <div class="flex gap-2">
+                    <button onclick="openLightbox('assets/liverykey.png')" class="w-1/3 bg-white/5 border border-white/10 py-3 rounded-xl text-[9px] font-bold uppercase hover:bg-white/10 transition">Showcase</button>
+                    <a href="https://www.roblox.com/catalog/86289649617583/Livery-Course" target="_blank" class="w-2/3 bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
+                </div>
+            </div>
+            <div class="glass-card p-8 rounded-[2rem] flex flex-col">
+                <h3 class="text-xl font-bold mb-2">Leadership</h3>
+                <p class="text-gray-500 text-xs mb-6 flex-grow">Master management with elite tips and server architecture.</p>
+                <a href="https://www.roblox.com/catalog/115494452965929/Leadership-Course" target="_blank" class="bg-blue-600 py-3 rounded-xl text-[9px] font-bold uppercase tracking-widest text-center">Purchase</a>
             </div>
         </div>
     </main>
@@ -232,7 +210,6 @@
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
-            setTimeout(() => menu.classList.toggle('active'), 10);
         }
 
         function handleContact() {
