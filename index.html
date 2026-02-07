@@ -58,10 +58,6 @@
         .form-input:focus { border-color: var(--brand-blue); background: rgba(24,124,244,0.05); }
         select.form-input { color: #aaa; }
         option { background: #111; color: white; }
-
-        #user-widget { display: none; animation: widgetIn 0.6s forwards; }
-        @keyframes widgetIn { from { transform: translate(-50%, -100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
-        .role-tag { background: rgba(24, 124, 244, 0.15); border: 1px solid rgba(24, 124, 244, 0.3); color: #60a5fa; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -70,17 +66,6 @@
     <div id="contact-toast" class="flex items-center gap-4">
         <div class="bg-[#187cf4] rounded-full w-8 h-8 flex items-center justify-center shrink-0"><i class="fas fa-check text-xs"></i></div>
         <div><p class="text-[10px] uppercase tracking-widest font-bold opacity-60">Copied</p><p class="text-sm font-bold">contact@jcustoms.org</p></div>
-    </div>
-
-    <div id="user-widget" class="fixed top-6 left-1/2 -translate-x-1/2 z-[10002] w-full max-w-sm px-4">
-        <div class="discord-glass-widget p-4 rounded-2xl flex items-center gap-4 border-white/10">
-            <img id="user-pfp" src="" class="w-12 h-12 rounded-xl border border-white/10">
-            <div class="flex-grow min-w-0">
-                <h4 id="user-name-widget" class="font-black text-sm uppercase tracking-tighter truncate leading-none mb-1">Username</h4>
-                <div id="user-roles-widget" class="flex flex-wrap gap-1"></div>
-            </div>
-            <button onclick="location.href='/'" class="text-white/20 hover:text-red-500 transition px-2"><i class="fas fa-sign-out-alt"></i></button>
-        </div>
     </div>
 
     <div id="mobile-menu">
@@ -308,24 +293,9 @@
             const params = new URLSearchParams(window.location.search);
             if (params.has('user')) {
                 const username = params.get('user');
-                const avatar = params.get('avatar');
-                const discordId = params.get('id');
                 const isAdmin = params.get('isAdmin') === 'true';
                 userRoles = params.get('roles') ? params.get('roles').split(',') : [];
                 
-                document.getElementById('user-widget').style.display = 'block';
-                document.getElementById('user-name-widget').innerText = username;
-                document.getElementById('user-pfp').src = avatar && avatar !== 'null' ? `https://cdn.discordapp.com/avatars/${discordId}/${avatar}.png` : 'assets/titleicon.png';
-                
-                const widgetRoles = document.getElementById('user-roles-widget');
-                widgetRoles.innerHTML = '';
-                userRoles.slice(0, 3).forEach(role => {
-                    const span = document.createElement('span');
-                    span.className = 'role-tag';
-                    span.innerText = role;
-                    widgetRoles.appendChild(span);
-                });
-
                 document.getElementById('forms-auth').classList.add('hidden');
                 document.getElementById('forms-dashboard').classList.remove('hidden');
                 document.getElementById('user-welcome').innerText = `Welcome back, ${username}`;
@@ -435,9 +405,6 @@
                             </div>
                             <h3 class="text-xl font-bold mb-2">${form.title}</h3>
                             <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold mb-6">${form.questions ? form.questions.length : 0} Questions</p>
-                            <div class="mt-auto border-t border-white/5 pt-4">
-                                 <p class="text-[9px] text-gray-400 uppercase font-bold">Role: <span class="text-blue-500">${form.role || 'Public'}</span></p>
-                            </div>
                         `;
                         grid.appendChild(card);
                     }
