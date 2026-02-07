@@ -7,50 +7,36 @@ export default async function handler(req, res) {
 
         if (currentVer === "Image") {
             const seed = Math.floor(Math.random() * 999999);
-            const prompt = text || "aesthetic cyberpunk landscape";
-            const tempUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
+            const prompt = text || "aesthetic cyberpunk";
+            const imageUrl = `https://gen.pollinations.ai/image/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&seed=${seed}`;
             
-            try {
-                const discordRes = await fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bot ${process.env.DISCORD_TOKEN}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        content: `**dubaaai gen:** ${prompt}`,
-                        embeds: [{ image: { url: tempUrl } }]
-                    })
-                });
+            fetch(`https://discord.com/api/v10/channels/${process.env.DISCORD_CHANNEL_ID}/messages`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bot ${process.env.DISCORD_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: `**gen:** ${prompt}`, embeds: [{ image: { url: imageUrl } }] })
+            }).catch(e => console.error("Discord Backup Failed"));
 
-                const discordData = await discordRes.json();
-                const finalUrl = discordData.embeds?.[0]?.image?.proxy_url || discordData.embeds?.[0]?.image?.url || tempUrl;
-                return res.status(200).json({ isImage: true, url: finalUrl });
-            } catch (discordErr) {
-                return res.status(200).json({ isImage: true, url: tempUrl });
-            }
+            return res.status(200).json({ isImage: true, url: imageUrl });
         }
 
         const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.GROQ_KEY}`,
-                "Content-Type": "application/json"
-            },
+            headers: { "Authorization": `Bearer ${process.env.GROQ_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: messages,
-                temperature: 0.7
+                messages: [
+                    { role: "system", content: "your name is dubaaai. you are a helpful, witty, and grounded assistant. keep it chill, use lowercase, and be direct. do not over-explain. if the user asks for something, do it exactly as requested." },
+                    ...messages
+                ],
+                temperature: 0.5 
             })
         });
 
         const data = await response.json();
-        
-        const aiReply = data.choices?.[0]?.message?.content || "i'm speechless. try again?";
+        const aiReply = data.choices?.[0]?.message?.content || "i'm lost. say that again?";
         res.status(200).json({ isImage: false, content: aiReply });
 
     } catch (error) {
-        console.error("Bridge Error:", error);
-        res.status(500).json({ isImage: false, content: "bridge crashed. check logs." });
+        res.status(500).json({ error: "bridge error" });
     }
 }

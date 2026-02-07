@@ -22,15 +22,22 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .user { align-self: flex-end; background: rgba(230, 187, 199, 0.1); color: var(--pink); border-bottom-right-radius: 4px; }
         .ai { align-self: flex-start; background: var(--glass); border-bottom-left-radius: 4px; }
-        .img-content { width: 100%; max-width: 400px; border-radius: 15px; margin-top: 10px; border: 1px solid var(--border); cursor: zoom-in; }
+        
+        /* Image & Download Styles */
+        .img-container { position: relative; margin-top: 10px; width: 100%; max-width: 400px; }
+        .img-content { width: 100%; border-radius: 15px; border: 1px solid var(--border); cursor: zoom-in; display: block; }
+        .dl-btn { 
+            position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); 
+            border: 1px solid var(--border); color: white; padding: 6px 12px; border-radius: 8px; 
+            font-size: 10px; cursor: pointer; backdrop-filter: blur(4px); opacity: 0; transition: 0.3s;
+        }
+        .img-container:hover .dl-btn { opacity: 1; }
+
         .input-area { padding: 20px 20px 50px; max-width: 800px; margin: 0 auto; width: 100%; }
-        #preview-box { display: none; padding: 10px; background: var(--glass); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 10px; }
-        #preview-box img { max-height: 80px; border-radius: 10px; }
         .input-container { background: var(--glass); border: 1px solid var(--border); border-radius: 100px; display: flex; align-items: center; padding: 8px 18px; backdrop-filter: blur(var(--blur)); }
         input { flex: 1; background: transparent; border: none; color: white; padding: 12px; outline: none; font-size: 15px; }
         .icon-btn { background: transparent; border: none; color: var(--pink); cursor: pointer; opacity: 0.4; transition: 0.3s; }
-        .icon-btn.active { opacity: 1; transform: scale(1.1); }
-        .icon-btn svg { width: 22px; height: 22px; fill: var(--pink); }
+        .icon-btn.active { opacity: 1; filter: drop-shadow(0 0 8px var(--pink-glow)); }
         .thinking .brand { animation: breathe 2s infinite; }
         @keyframes breathe { 50% { opacity: 0.3; } }
     </style>
@@ -48,92 +55,61 @@
     </div>
     <div id="chat-window"><div class="msg ai">hey. i'm dubaaai. what's the move?</div></div>
     <div class="input-area">
-        <div id="preview-box"><img id="img-preview" src=""></div>
         <div class="input-container">
-            <button class="icon-btn" style="opacity:1" onclick="document.getElementById('file-input').click()"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></button>
-            <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this)">
             <input type="text" id="user-input" placeholder="type sum..." oninput="toggleGlow()" autocomplete="off">
-            <button class="icon-btn" id="send-trigger" onclick="send()"><svg viewBox="0 0 24 24"><path d="m19.8 12.925l-15.4 6.5q-.5.2-.95-.088T3 18.5v-13q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925M5 17l11.85-5L5 7v3.5l6 1.5l-6 1.5zm0 0V7z"/></svg></button>
+            <button class="icon-btn" id="send-trigger" onclick="send()"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="m19.8 12.925l-15.4 6.5q-.5.2-.95-.088T3 18.5v-13q0-.55.45-.837t.95-.088l15.4 6.5q.625.275.625.925t-.625.925M5 17l11.85-5L5 7v3.5l6 1.5l-6 1.5zm0 0V7z"/></svg></button>
         </div>
     </div>
     <script>
-        let currentVer = "Fast", pendingImgData = null, chatHistory = [];
-
-        function setVer(v, btn) {
-            currentVer = v;
-            document.querySelectorAll('.ver-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function toggleGlow() {
-            const val = document.getElementById('user-input').value.trim();
-            const btn = document.getElementById('send-trigger');
-            (val.length > 0 || pendingImgData) ? btn.classList.add('active') : btn.classList.remove('active');
-        }
-
-        function handleFile(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    pendingImgData = e.target.result;
-                    document.getElementById('preview-box').style.display = 'block';
-                    document.getElementById('img-preview').src = pendingImgData;
-                    toggleGlow();
-                };
-                reader.readAsDataURL(file);
-            }
+        let currentVer = "Fast", chatHistory = [];
+        function setVer(v, btn) { currentVer = v; document.querySelectorAll('.ver-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        function toggleGlow() { const val = document.getElementById('user-input').value.trim(); document.getElementById('send-trigger').classList.toggle('active', val.length > 0); }
+        
+        async function downloadImg(url) {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `dubaaai-${Date.now()}.png`;
+            a.click();
         }
 
         function addMessage(content, type, isImg = false) {
             const win = document.getElementById('chat-window'), div = document.createElement('div');
             div.className = `msg ${type}`;
-            if (isImg || (content.startsWith('http') && !content.includes(' '))) {
+            if (isImg) {
+                const container = document.createElement('div'); container.className = 'img-container';
                 const img = document.createElement('img'); img.src = content; img.className = 'img-content';
-                img.onclick = () => img.classList.toggle('zoomed');
-                div.appendChild(img);
+                const btn = document.createElement('button'); btn.className = 'dl-btn'; btn.innerText = 'Download';
+                btn.onclick = () => downloadImg(content);
+                container.append(img, btn); div.appendChild(container);
             } else {
                 div.innerHTML = type === 'ai' ? marked.parse(content) : content.toLowerCase();
-                if (type === 'ai') div.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
             }
             win.appendChild(div); win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
         }
 
         async function send() {
             const input = document.getElementById('user-input'), text = input.value.trim();
-            if (!text && !pendingImgData) return;
-
-            if (text) addMessage(text, 'user', false);
-            if (pendingImgData) addMessage(pendingImgData, 'user', true);
-
-            const userText = text; input.value = ''; pendingImgData = null;
-            document.getElementById('preview-box').style.display = 'none';
-            toggleGlow(); document.getElementById('main-body').classList.add('thinking');
-
+            if (!text) return;
+            addMessage(text, 'user');
+            input.value = ''; toggleGlow();
+            document.getElementById('main-body').classList.add('thinking');
             try {
-                const response = await fetch("/api/chat", {
+                const res = await fetch("/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        messages: [{role: "system", content: "your name is dubaaai. chill. lowercase."} , ...chatHistory.slice(-10)],
-                        currentVer, 
-                        text: userText 
-                    })
+                    body: JSON.stringify({ messages: chatHistory.slice(-6), currentVer, text })
                 });
-                const data = await response.json();
+                const data = await res.json();
                 document.getElementById('main-body').classList.remove('thinking');
-
                 if (data.isImage) {
                     addMessage(data.url, 'ai', true);
                 } else {
                     addMessage(data.content, 'ai');
-                    chatHistory.push({ role: "user", content: userText || "sent image" });
-                    chatHistory.push({ role: "assistant", content: data.content });
+                    chatHistory.push({ role: "user", content: text }, { role: "assistant", content: data.content });
                 }
-            } catch (e) {
-                document.getElementById('main-body').classList.remove('thinking');
-                addMessage("bridge is acting up.", 'ai');
-            }
+            } catch (e) { addMessage("link's down.", 'ai'); }
         }
         document.getElementById('user-input').onkeypress = (e) => { if(e.key === 'Enter') send(); };
     </script>
