@@ -4,8 +4,12 @@ export default async function handler(req, res) {
 
     if (currentVer === "Image") {
         const seed = Math.floor(Math.random() * 1000000);
-        const proxiedUrl = `/cdn-img/${encodeURIComponent(text || 'aesthetic')}?width=1024&height=1024&nologo=true&seed=${seed}`;
-        return res.status(200).json({ isImage: true, url: proxiedUrl });
+        const prompt = encodeURIComponent(text || 'aesthetic');
+        
+        const rawUrl = `https://pollinations.ai/p/${prompt}?width=1024&height=1024&nologo=true&seed=${seed}`;
+        const finalUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+        
+        return res.status(200).json({ isImage: true, url: finalUrl });
     }
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -13,7 +17,7 @@ export default async function handler(req, res) {
         headers: { "Authorization": `Bearer ${process.env.GROQ_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
-            messages: [{ role: "system", content: "you are dubaaai. chill. lowercase only." }, ...messages],
+            messages: [{ role: "system", content: "you are dubaaai. chill. lowercase." }, ...messages],
             temperature: 0.6
         })
     });
