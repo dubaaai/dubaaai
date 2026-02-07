@@ -1,8 +1,9 @@
 {
+  "version": 2,
   "rewrites": [
     {
-      "source": "/cdn/:path*",
-      "destination": "https://gen.pollinations.ai/:path*"
+      "source": "/cdn-img/(.*)",
+      "destination": "https://pollinations.ai/p/$1"
     }
   ]
 }
